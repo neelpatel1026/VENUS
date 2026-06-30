@@ -1,0 +1,535 @@
+/* ===========================
+   TESTIMONIAL SECTION
+=========================== */
+
+/* .testimonial-section {
+  padding: 80px 20px;
+  text-align: center;
+  background: #f8f8f8;
+  overflow: hidden;
+} */
+ /* .testimonial-section {
+  padding: 100px 20px;
+  text-align: center;
+  background: #f7f7f7;
+  overflow: hidden;
+} */
+ .testimonial-section {
+  padding: 60px 20px;
+  background: #f7f7f7;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* .testimonial-section h2 {
+  font-size: 48px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 60px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+} */
+/* .testimonial-section h2 {
+  font-size: 36px;
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 70px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+} */
+
+.testimonial-section h2 {
+  font-size: 32px;
+  font-weight: 500;
+  color: #222;
+  margin-bottom: 40px;
+  letter-spacing: 1px;
+}
+
+/* ===========================
+   SLIDER
+=========================== */
+
+.testimonial-slider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* gap: 40px; */
+  gap: 20px;
+}
+
+/* ===========================
+   AVATARS
+=========================== */
+
+/* .avatars {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 90px;
+} */
+
+.avatars {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* gap: 80px; */
+  .avatars {
+  gap: 55px;
+}
+}
+
+.avatars img {
+  object-fit: cover;
+  cursor: pointer;
+  border-radius: 25px;
+
+  transition: all 0.6s ease;
+}
+
+/* Center Image */
+
+/* .avatars .active {
+  width: 180px;
+  height: 180px;
+
+  opacity: 1;
+
+  transform: scale(1);
+} */
+
+/* Side Images */
+
+/* .avatars .small {
+  width: 90px;
+  height: 90px;
+
+  opacity: 0.8;
+} */
+
+.avatars .active {
+  width: 140px;
+  height: 140px;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.avatars .small {
+  width: 75px;
+  height: 75px;
+  opacity: 0.8;
+}
+
+/* Extra Fade */
+
+.avatars .fade {
+  opacity: 0.35;
+}
+.avatars img {
+  object-fit: cover;
+  border-radius: 30px;
+  cursor: pointer;
+
+  transition: all 0.5s ease;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* Active User */
+
+.avatars .active {
+  width: 180px;
+  height: 180px;
+  opacity: 1;
+  transform: scale(1.05);
+  z-index: 2;
+}
+
+/* Side Users */
+
+.avatars .small {
+  width: 90px;
+  height: 90px;
+  opacity: 0.75;
+}
+
+/* Far Users */
+
+.avatars .fade {
+  opacity: 0.35;
+}
+
+/* ===========================
+   ARROWS
+=========================== */
+
+
+
+.arrow {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  color: #111;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* Show on slider hover */
+.testimonial-slider:hover .arrow {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Hover Effect */
+.arrow:hover {
+  transform: translateY(-3px) scale(1.08);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Click Effect */
+.arrow:active {
+  transform: scale(0.92);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+/* Keyboard Accessibility */
+.arrow:focus {
+  outline: none;
+}
+
+.arrow {
+  width: 55px;
+  height: 55px;
+  border: none;
+  border-radius: 50%;
+  background: #ffffff;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  transition: all .35s ease;
+}
+
+.arrow:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px rgba(0,0,0,.12);
+}
+
+.arrow:active {
+  transform: scale(.92);
+}
+
+/* Optional Premium Gradient Hover */
+.arrow:hover {
+  background: linear-gradient(
+    135deg,
+    #8b5cf6,
+    #ec4899
+  );
+  color: #fff;
+}
+
+/* ===========================
+   INSTAGRAM USER
+=========================== */
+
+/* .insta-user {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  margin-top: 15px;
+
+  color: #444;
+  font-size: 20px;
+  font-weight: 500;
+} */
+
+.insta-user {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 14px;
+  color: #555;
+}
+
+
+
+/* ===========================
+   REVIEW CONTENT
+=========================== */
+
+/* .review-content {
+  max-width: 900px;
+  margin: 60px auto 0;
+  animation: fadeIn 0.5s ease;
+}
+
+.stars {
+  color: #f4b400;
+  font-size: 30px;
+  margin-bottom: 25px;
+  letter-spacing: 4px;
+}
+
+.review-content p{
+  font-size:24px;
+  line-height:1.8;
+  max-width:900px;
+  margin:auto;
+  color:#333;
+}
+
+.review-content h4 {
+  font-size: 30px;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.review-content span {
+  color: #6b7280;
+  font-size: 18px;
+} */
+
+/* .review-content {
+  max-width: 900px;
+  margin: 70px auto 0;
+  animation: fadeIn 0.6s ease;
+} */
+
+.review-content {
+    max-width: 900px;
+  margin: 25px auto 0;
+  max-width: 700px;
+  animation: fadeIn 0.6s ease;
+}
+
+
+/* .stars {
+  color: #f4b400;
+  font-size: 34px;
+  margin-bottom: 30px;
+  letter-spacing: 4px;
+} */
+
+.stars {
+    color: #f4b400;
+  font-size: 22px;
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+}
+
+.review-content p {
+  font-size: 22px;
+  line-height: 1.9;
+  font-weight: 400;
+  color: #333;
+
+  max-width: 950px;
+  margin: auto;
+}
+
+/* .review-content h4 {
+  font-size: 24px;
+  font-weight: 500;
+  margin-top: 25px;
+  color: #444;
+  font-style: italic;
+} */
+
+.review-content h4 {
+  font-size: 18px;
+  margin-top: 12px;
+  font-style: italic;
+  font-weight: 500;
+  color: #666;
+}
+
+.review-content span {
+  display: block;
+  margin-top: 10px;
+
+  font-size: 18px;
+  color: #666;
+}
+
+/* ===========================
+   ANIMATION
+=========================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===========================
+   TABLET (768px - 992px)
+=========================== */
+
+@media (max-width: 992px) {
+
+  .testimonial-section {
+    padding: 70px 20px;
+  }
+
+  .testimonial-section h2 {
+    font-size: 38px;
+    margin-bottom: 50px;
+  }
+
+  .testimonial-slider {
+    gap: 25px;
+  }
+
+  .avatars {
+    gap: 35px;
+  }
+
+  .avatars .active {
+    width: 130px;
+    height: 130px;
+  }
+
+  .avatars .small {
+    width: 70px;
+    height: 70px;
+  }
+
+  .review-content {
+    margin-top: 40px;
+  }
+
+  .review-content p {
+    font-size: 18px;
+  }
+
+  .review-content h4 {
+    font-size: 26px;
+  }
+
+  .stars {
+    font-size: 24px;
+  }
+}
+
+/* ===========================
+   MOBILE (max-width: 767px)
+=========================== */
+
+@media (max-width: 767px) {
+
+  .testimonial-section {
+    padding: 60px 15px;
+  }
+
+  .testimonial-section h2 {
+    font-size: 28px;
+    margin-bottom: 35px;
+  }
+
+  .testimonial-slider {
+    gap: 10px;
+  }
+
+  .avatars {
+    gap: 14px;
+  }
+
+  .avatars .active {
+    width: 90px;
+    height: 90px;
+    border-radius: 20px;
+  }
+
+  .avatars .small {
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
+  }
+
+  .review-content {
+    margin-top: 30px;
+  }
+
+  .review-content p {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .review-content h4 {
+    font-size: 22px;
+  }
+
+  .review-content span {
+    font-size: 14px;
+  }
+
+  .insta-user {
+    font-size: 16px;
+  }
+
+  .stars {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  .arrow {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* ===========================
+   SMALL MOBILE (max-width: 480px)
+=========================== */
+
+@media (max-width: 480px) {
+
+  .avatars {
+    gap: 10px;
+  }
+
+  .avatars .active {
+    width: 80px;
+    height: 80px;
+  }
+
+  .avatars .small {
+    width: 42px;
+    height: 42px;
+  }
+
+  .review-content p {
+    font-size: 14px;
+  }
+
+  .review-content h4 {
+    font-size: 20px;
+  }
+}

@@ -1,0 +1,139 @@
+.addresses-page {
+  max-width: 1400px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+.address-form-container {
+  background: #fff;
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  margin-bottom: 40px;
+}
+
+.address-form-container h2 {
+  margin-bottom: 20px;
+}
+
+.address-form {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 15px;
+}
+
+.address-form input,
+.address-form select {
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+.address-form button {
+  grid-column: span 2;
+  padding: 14px;
+  border: none;
+  background: #0f766e;
+  color: white;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.address-form button:hover {
+  background: #115e59;
+}
+
+.saved-addresses h2 {
+  margin-bottom: 20px;
+}
+
+.address-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(320px,1fr));
+  gap: 20px;
+}
+
+.address-card {
+  background: white;
+  border-radius: 18px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  transition: .3s;
+}
+
+.address-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+}
+
+.address-header {
+  margin-bottom: 15px;
+}
+
+.address-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #e6fffa;
+  color: #0f766e;
+  padding: 8px 14px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.address-card h4 {
+  margin-bottom: 10px;
+}
+
+.address-card p {
+  color: #555;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.address-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.edit-btn,
+.delete-btn {
+  flex: 1;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background: #0f766e;
+  color: white;
+}
+
+.delete-btn {
+  background: #ef4444;
+  color: white;
+}
+
+@media (max-width: 768px) {
+
+  .address-form {
+    grid-template-columns: 1fr;
+  }
+
+  .address-form button {
+    grid-column: span 1;
+  }
+
+  .addresses-page {
+    padding: 20px 15px;
+  }
+
+  .address-grid {
+    grid-template-columns: 1fr;
+  }
+}
