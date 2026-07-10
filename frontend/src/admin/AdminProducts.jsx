@@ -1,490 +1,207 @@
-import React, { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext.jsx';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import AdminSidebar from "./AdminSidebar";
 
 const AdminProducts = () => {
-
   const { user } = useContext(AuthContext);
-
   const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   /* ================= FETCH PRODUCTS ================= */
-
   useEffect(() => {
-
     const fetchProducts = async () => {
-
       try {
-
         const res = await fetch('/api/products');
-
         const data = await res.json();
-
-        setProducts(Array.isArray(data) ? data : []);
-
+        setProducts(data);
       } catch (error) {
-
         console.error(error);
       }
     };
-
     fetchProducts();
-
   }, []);
 
   /* ================= DELETE PRODUCT ================= */
+  const handleDelete = (id) => {
+    toast((t) => (
+      <div className="custom-confirm-toast">
+        <p style={{ margin: "0 0 10px 0", fontWeight: "600", fontSize: "0.95rem" }}>Are you sure you want to delete this product?</p>
+        <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
+              try {
+                const res = await fetch(`/api/products/${id}`, {
+                  method: 'DELETE',
+                  headers: {
+                    Authorization: `Bearer ${user.token}`
+                  }
+                });
 
-  const handleDelete = async (id) => {
-
-    const confirmDelete = window.confirm(
-      'Are you strictly sure you want to delete this product?'
-    );
-
-    if (!confirmDelete) return;
-
-    try {
-
-      const res = await fetch(`/api/products/${id}`, {
-
-        method: 'DELETE',
-
-        headers: {
-          Authorization: `Bearer ${user.token}`
-        }
-      });
-
-      if (res.ok) {
-
-        setProducts(
-          products.filter(
-            product => product._id !== id
-          )
-        );
+                if (res.ok) {
+                  setProducts(products.filter((p) => p._id !== id));
+                  toast.success("Product deleted successfully");
+                } else {
+                  const errData = await res.json();
+                  toast.error(errData.message || "Failed to delete product");
+                }
+              } catch (error) {
+                console.error(error);
+                toast.error("Failed to delete product");
+              }
+            }}
+            style={{
+              background: "#DC2626",
+              color: "#fff",
+              border: "none",
+              padding: "6px 14px",
+              borderRadius: "6px",
+              fontSize: "0.85rem",
+              fontWeight: "600",
+              cursor: "pointer"
+            }}
+          >
+            Delete
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            style={{
+              background: "#F3F4F6",
+              color: "#1F2937",
+              border: "1px solid #E5E7EB",
+              padding: "6px 14px",
+              borderRadius: "6px",
+              fontSize: "0.85rem",
+              fontWeight: "600",
+              cursor: "pointer"
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ), {
+      duration: 8000,
+      position: "top-center",
+      style: {
+        borderLeft: "4px solid #DC2626",
       }
-
-    } catch (error) {
-
-      console.error(error);
-    }
+    });
   };
 
-  /* ================= UI ================= */
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
+    <div className="admin-layout-wrapper">
+      {/* LEFT COLUMN: SIDEBAR */}
+      <AdminSidebar />
 
-    <div style={containerStyle}>
-
-      {/* HEADER */}
-
-      <div style={headerStyle}>
-
-        <div>
-
-          <h2 style={headingStyle}>
-            Manage Products
-          </h2>
-
-          <p style={subTextStyle}>
-            Manage your store inventory and products
-          </p>
-
+      {/* RIGHT COLUMN: MAIN CONTENT */}
+      <div className="admin-content-console">
+        <div className="admin-page-header">
+          <div>
+            <h2>Store Products</h2>
+            <p>Manage skincare stock, prices, categories, and catalogs.</p>
+          </div>
+          <Link to="/admin/add-product" className="btn-admin-primary">
+            + New Product
+          </Link>
         </div>
 
-        <Link
-          to="/admin/add-product"
-          className="btn"
-          style={addButtonStyle}
-        >
-          + Add Product
-        </Link>
-
-      </div>
-
-      {/* MOBILE CARDS */}
-
-      <div style={mobileWrapperStyle}>
-
-        {products.map(product => (
-
-          <div
-            key={product._id}
-            style={mobileCardStyle}
-          >
-
-            <img
-              src={product.image}
-              alt={product.name}
-              style={mobileImageStyle}
+        {/* SEARCH AND TABLE */}
+        <div className="admin-table-container">
+          <div className="admin-table-search-bar">
+            <input
+              type="text"
+              placeholder="Search products by name or category..."
+              className="admin-search-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
-
-            <div style={mobileContentStyle}>
-
-              <h3 style={productNameStyle}>
-                {product.name}
-              </h3>
-
-              <p style={categoryStyle}>
-                {product.category}
-              </p>
-
-              <div style={mobilePriceStyle}>
-                ₹{product.price.toFixed(2)}
-              </div>
-
-              <div style={stockStyle}>
-                Stock: {product.stock}
-              </div>
-
-              <div style={mobileButtonContainer}>
-
-                <Link
-                  to={`/admin/edit-product/${product._id}`}
-                  style={editBtn}
-                >
-                  Edit
-                </Link>
-
-                <button
-                  onClick={() =>
-                    handleDelete(product._id)
-                  }
-                  style={deleteBtn}
-                >
-                  Delete
-                </button>
-
-              </div>
-
-            </div>
-
           </div>
-        ))}
 
-      </div>
-
-      {/* DESKTOP TABLE */}
-
-      <div style={tableWrapperStyle}>
-
-        <table style={tableStyle}>
-
-          <thead>
-
-            <tr style={rowStyle}>
-
-              <th style={thStyle}>
-                PRODUCT
-              </th>
-
-              <th style={thStyle}>
-                NAME
-              </th>
-
-              <th style={thStyle}>
-                PRICE
-              </th>
-
-              <th style={thStyle}>
-                CATEGORY
-              </th>
-
-              <th style={thStyle}>
-                STOCK
-              </th>
-
-              <th style={thStyle}>
-                ACTIONS
-              </th>
-
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            {products.map(product => (
-
-              <tr
-                key={product._id}
-                style={rowStyle}
-              >
-
-                <td style={tdStyle}>
-
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    style={tableImageStyle}
-                  />
-
-                </td>
-
-                <td style={tdStyle}>
-                  {product.name}
-                </td>
-
-                <td style={priceStyle}>
-                  ₹{product.price.toFixed(2)}
-                </td>
-
-                <td style={tdStyle}>
-                  {product.category}
-                </td>
-
-                <td style={tdStyle}>
-                  {product.stock}
-                </td>
-
-                <td style={tdStyle}>
-
-                  <div style={actionWrapperStyle}>
-
-                    <Link
-                      to={`/admin/edit-product/${product._id}`}
-                      style={editBtn}
-                    >
-                      Edit
-                    </Link>
-
-                    <button
-                      onClick={() =>
-                        handleDelete(product._id)
-                      }
-                      style={deleteBtn}
-                    >
-                      Delete
-                    </button>
-
-                  </div>
-
-                </td>
-
+          <table className="admin-premium-table">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Actions</th>
               </tr>
-            ))}
+            </thead>
+            <tbody>
+              {filteredProducts.map((product) => {
+                const isLowStock = product.stock <= 3;
+                return (
+                  <tr key={product._id}>
+                    <td>
+                      <img
+                        src={product.imageUrl || "/placeholder.jpg"}
+                        alt={product.name}
+                        style={{
+                          width: "44px",
+                          height: "44px",
+                          borderRadius: "8px",
+                          objectFit: "cover",
+                          border: "1px solid var(--admin-border)",
+                        }}
+                      />
+                    </td>
+                    <td>
+                      <strong style={{ fontWeight: "600" }}>{product.name}</strong>
+                    </td>
+                    <td>
+                      <span className="status-pill" style={{ background: "#F3F4F6", color: "#374151" }}>
+                        {product.category}
+                      </span>
+                    </td>
+                    <td>
+                      <span style={{ fontWeight: "600", color: "var(--admin-gold)" }}>
+                        ₹{product.price.toFixed(2)}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`status-pill ${isLowStock ? "pill-rejected" : "pill-active"}`}>
+                        {product.stock} left {isLowStock && "⚠️"}
+                      </span>
+                    </td>
+                    <td>
+                      <div style={{ display: "flex", gap: "10px" }}>
+                        <Link to={`/admin/edit-product/${product._id}`} className="btn-admin-outline">
+                          Edit
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(product._id)}
+                          className="btn-admin-outline"
+                          style={{ borderColor: "#DC2626", color: "#DC2626" }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
 
-          </tbody>
-
-        </table>
+          {filteredProducts.length === 0 && (
+            <div style={{ padding: "40px", textAlign: "center", color: "var(--admin-text-muted)" }}>
+              No products found matching filters.
+            </div>
+          )}
+        </div>
 
       </div>
-
     </div>
   );
-};
-
-/* ================= STYLES ================= */
-
-const containerStyle = {
-
-  background:'#FFFFFF',
-color:'#1F2937',
-border:'1px solid #ECE6DC',
-boxShadow:'0 20px 50px rgba(0,0,0,.06)',
-  maxWidth: '1200px',
-
-  margin: '40px auto',
-
-  padding: '30px',
-
-  // background: '#18181b',
-
-  borderRadius: '18px',
-};
-
-const headerStyle = {
-  display: 'flex',
-
-  justifyContent: 'space-between',
-
-  alignItems: 'center',
-
-  gap: '20px',
-
-  flexWrap: 'wrap',
-
-  marginBottom: '30px'
-};
-
-const headingStyle = {
-  // color: '#f97316',
-  color:'#C8A96B',
-
-  marginBottom: '8px'
-};
-
-const subTextStyle = {
-  // color: '#a1a1aa'
-  color:'#6B7280'
-};
-
-const addButtonStyle = {
-  whiteSpace: 'nowrap'
-};
-
-/* ================= TABLE ================= */
-
-const tableWrapperStyle = {
-  overflowX: 'auto'
-};
-
-const tableStyle = {
-  width: '100%',
-
-  borderCollapse: 'collapse',
-
-  minWidth: '850px'
-};
-
-const rowStyle = {
-  borderBottom:'1px solid #ECE6DC'
-};
-
-const thStyle = {
-  padding: '18px 15px',
-
-  textAlign: 'left',
-
-  // color: '#a1a1aa',
-  color:'#8B7355',
-
-  fontSize: '0.9rem',
-
-  fontWeight: '600'
-};
-
-const tdStyle = {
-  padding: '18px 15px',
-
-  verticalAlign: 'middle'
-};
-
-const priceStyle = {
-  ...tdStyle,
-
-  color: '#f97316',
-
-  fontWeight: '700'
-};
-
-const tableImageStyle = {
-  width: '70px',
-
-  height: '70px',
-
-  objectFit: 'cover',
-
-  borderRadius: '10px'
-};
-
-const actionWrapperStyle = {
-  display: 'flex',
-
-  gap: '10px',
-
-  flexWrap: 'wrap'
-};
-
-/* ================= BUTTONS ================= */
-
-const editBtn = {
-  background:'#C8A96B',
-color:'#fff',
-
-  padding: '8px 14px',
-
-  borderRadius: '8px',
-
-  textDecoration: 'none',
-
-  fontWeight: '500',
-
-  border: 'none',
-
-  cursor: 'pointer'
-};
-
-const deleteBtn = {
-  background: '#ef4444',
-
-  color: '#fff',
-
-  padding: '8px 14px',
-
-  borderRadius: '8px',
-
-  border: 'none',
-
-  cursor: 'pointer',
-
-  fontWeight: '500'
-};
-
-/* ================= MOBILE ================= */
-
-const mobileWrapperStyle = {
-  display: 'none',
-
-  flexDirection: 'column',
-
-  gap: '20px',
-
-  marginBottom: '20px'
-};
-
-const mobileCardStyle = {
-  background: '#09090b',
-
-  border: '1px solid rgba(255,255,255,0.05)',
-
-  borderRadius: '16px',
-
-  overflow: 'hidden'
-};
-
-const mobileImageStyle = {
-  width: '100%',
-
-  height: '220px',
-
-  objectFit: 'cover'
-};
-
-const mobileContentStyle = {
-  padding: '18px'
-};
-
-const productNameStyle = {
-  marginBottom: '8px',
-
-  color: '#fff'
-};
-
-const categoryStyle = {
-  color: '#a1a1aa',
-
-  marginBottom: '12px'
-};
-
-const mobilePriceStyle = {
-  color: '#f97316',
-
-  fontSize: '1.3rem',
-
-  fontWeight: '700',
-
-  marginBottom: '10px'
-};
-
-const stockStyle = {
-  color: '#d4d4d8',
-
-  marginBottom: '18px'
-};
-
-const mobileButtonContainer = {
-  display: 'flex',
-
-  gap: '12px'
 };
 
 export default AdminProducts;

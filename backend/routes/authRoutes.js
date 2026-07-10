@@ -1,5 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const rateLimit = require("express-rate-limit");
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 15,
+  message: {
+    message: "Too many authentication requests from this IP, please try again after 15 minutes."
+  }
+});
 
 const {
   registerUser,
@@ -15,11 +24,11 @@ const { protect } = require('../middleware/authMiddleware.js');
 const User = require('../models/User.js');
 
 router.get("/users", getUsers);
-router.post('/register', registerUser);
-router.post('/login', loginUser);
-router.post('/google-login', googleLogin);
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password', resetPassword);
+router.post('/register', authLimiter, registerUser);
+router.post('/login', authLimiter, loginUser);
+router.post('/google-login', authLimiter, googleLogin);
+router.post('/forgot-password', authLimiter, forgotPassword);
+router.post('/reset-password', authLimiter, resetPassword);
 
 
 // GET CURRENT LOGGED IN USER

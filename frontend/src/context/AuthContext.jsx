@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useState,
   useEffect
@@ -144,15 +144,11 @@ export const AuthProvider = ({ children }) => {
         });
 
       } catch (error) {
-
-        console.log(
-          'Auth check failed:',
-          error
-        );
-
-        // AUTO LOGOUT
-
-        logout();
+        console.log('Auth check failed:', error);
+        // Only auto-logout on explicit auth invalidation (401 or 403 status)
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
 
       } finally {
 

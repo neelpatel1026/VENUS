@@ -79,7 +79,12 @@ export default function HeroSlider() {
 
     if (currentSlide.type === "video" && videoRef.current) {
       videoRef.current.currentTime = 0;
-      videoRef.current.play();
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn("Video play request interrupted:", err.message);
+        });
+      }
     }
   }}
 >
@@ -102,7 +107,7 @@ export default function HeroSlider() {
           <source src={slide.src} type="video/mp4" />
         </video>
       ) : (
-        <img src={slide.src} alt="" />
+        <img src={slide.src} alt={`Venus Care Banner Slide ${index + 1}`} />
       )}
     </div>
   </SwiperSlide>

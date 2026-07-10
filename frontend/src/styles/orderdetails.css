@@ -1,0 +1,777 @@
+/* ==========================================================================
+   PREMIUM TRACKING & ORDER DETAILS STYLES - VENUS CARE
+   ========================================================================== */
+
+.order-details-container {
+  max-width: 1300px;
+  margin: 60px auto;
+  padding: 0 24px;
+}
+
+.order-details-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.order-details-header-row h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  color: #1f2937;
+  font-weight: 400;
+  margin: 0 0 6px;
+}
+
+.order-details-header-row .subtext {
+  color: #6b7280;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Status Badges */
+.status-summary-badge {
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 8px 20px;
+  border-radius: 30px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-summary-badge.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-summary-badge.status-confirmed {
+  background: #fdf6e2;
+  color: #c8a96b;
+  border: 1px solid #c8a96b44;
+}
+
+.status-summary-badge.status-preparing,
+.status-summary-badge.status-packed {
+  background: #fcf8f2;
+  color: #8b6b3d;
+}
+
+.status-summary-badge.status-shipped {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-summary-badge.status-out-for-delivery {
+  background: #fae8ff;
+  color: #86198f;
+}
+
+.status-summary-badge.status-delivered {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-summary-badge.status-cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-summary-badge.status-returned,
+.status-summary-badge.status-refunded {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+/* ==========================================================================
+   2. STATS GRID OVERVIEW
+   ========================================================================== */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #f3ece0;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(200, 169, 107, 0.02);
+}
+
+.stat-card h4 {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin: 0 0 8px;
+}
+
+.stat-card p {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+/* ==========================================================================
+   3. DETAILS CARD STRUCTS
+   ========================================================================== */
+
+.details-section-card {
+  background: #ffffff;
+  border: 1px solid #f3ece0;
+  border-radius: 20px;
+  padding: 35px;
+  box-shadow: 0 10px 40px rgba(200, 169, 107, 0.03);
+  margin-bottom: 30px;
+}
+
+.details-section-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #fcfaf6;
+  padding-bottom: 12px;
+}
+
+/* loading / error states */
+.orderdetails-loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  gap: 20px;
+}
+
+.orderdetails-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3ece0;
+  border-top-color: #c8a96b;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.order-details-error-page {
+  text-align: center;
+  padding: 80px 20px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.order-details-error-page h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+}
+
+.btn-gold-accent {
+  display: inline-block;
+  background: #c8a96b;
+  color: #ffffff;
+  padding: 12px 28px;
+  border-radius: 30px;
+  margin-top: 20px;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   4. ETA PROGRESS CARD
+   ========================================================================== */
+
+.eta-progress-card {
+  background: linear-gradient(135deg, #fcfbfa 0%, #fbf6ea 100%);
+}
+
+.eta-header-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.eta-card-badge {
+  display: inline-block;
+  background: #c8a96b1a;
+  color: #8b6b3d;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+
+.eta-progress-card h2 {
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 6px;
+}
+
+.eta-time-window {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.courier-badge-box {
+  background: #ffffff;
+  border: 1px solid #ece5da;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #8b6b3d;
+}
+
+.shipping-completion-tracker {
+  border-top: 1px solid #f5eee0;
+  padding-top: 24px;
+}
+
+.progress-bar-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 10px;
+}
+
+.progress-bar-track-line {
+  height: 8px;
+  background: #ece5da;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill-line {
+  height: 100%;
+  background: linear-gradient(90deg, #c8a96b 0%, #16a34a 100%);
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   5. TRANSIT CHRONOLOGY TIMELINE
+   ========================================================================== */
+
+.tracker-timeline-vertical-flow {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-left: 35px;
+  margin-top: 10px;
+}
+
+.tracker-timeline-vertical-flow::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 11px;
+  width: 2px;
+  height: calc(100% - 25px);
+  background: #ece5da;
+}
+
+.timeline-tracker-step {
+  position: relative;
+  padding-bottom: 30px;
+}
+
+.timeline-tracker-step:last-child {
+  padding-bottom: 0;
+}
+
+.tracker-dot {
+  position: absolute;
+  left: -35px;
+  top: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #ece5da;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  z-index: 1;
+}
+
+/* Stage completion markers styling */
+.completed-step .tracker-dot {
+  background: #c8a96b;
+  border-color: #c8a96b;
+  color: #ffffff;
+}
+
+.active-step .tracker-dot {
+  background: #ffffff;
+  border-color: #c8a96b;
+  color: #c8a96b;
+  box-shadow: 0 0 0 4px rgba(200, 169, 107, 0.15);
+  animation: pulseDot 1.5s infinite;
+}
+
+@keyframes pulseDot {
+  0% { box-shadow: 0 0 0 0 rgba(200, 169, 107, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(200, 169, 107, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(200, 169, 107, 0); }
+}
+
+.tracker-step-content {
+  background: #ffffff;
+  padding: 20px 24px;
+  border-radius: 14px;
+  border: 1px solid #fdfdfd;
+  transition: all 0.25s ease;
+}
+
+.completed-step .tracker-step-content {
+  border-color: #f7eedf;
+  background: #fdfbf7;
+}
+
+.active-step .tracker-step-content {
+  border-color: #c8a96b66;
+  background: #fbf9f3;
+  box-shadow: 0 4px 20px rgba(200, 169, 107, 0.04);
+}
+
+.future-step .tracker-step-content {
+  opacity: 0.6;
+}
+
+.step-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.step-title-row h4 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.step-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+
+.completed-step .step-badge {
+  color: #8b6b3d;
+}
+
+.active-step .step-badge {
+  color: #c8a96b;
+}
+
+.step-desc {
+  font-size: 0.88rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Special Cancelled/Returned Tracker layout */
+.special-status-timeline {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.special-status-timeline.cancelled {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.special-status-timeline.returned {
+  background: #ffedd5;
+  border: 1px solid #fed7aa;
+  color: #c2410c;
+}
+
+.special-icon {
+  font-size: 2rem;
+}
+
+.special-status-timeline h4 {
+  font-size: 1.15rem;
+  margin: 0 0 4px;
+}
+
+.special-status-timeline p {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* ==========================================================================
+   6. COURIER ACTIONS PANEL
+   ========================================================================== */
+
+.courier-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+  background: #fbfbfc;
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid #f1f3f5;
+}
+
+.meta-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.meta-col span {
+  font-size: 0.82rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+
+.meta-col strong {
+  font-size: 1.05rem;
+  color: #1f2937;
+}
+
+.courier-actions-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-courier-primary {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #c8a96b 0%, #b59453 100%);
+  color: #ffffff;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-courier-primary:hover {
+  transform: translateY(-1px);
+}
+
+.btn-courier-secondary {
+  padding: 12px 24px;
+  background: #1f2937;
+  color: #ffffff;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-courier-secondary:hover {
+  background: #111827;
+}
+
+.btn-courier-outline {
+  padding: 11px 24px;
+  background: transparent;
+  border: 1.5px solid #c8a96b;
+  color: #c8a96b;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-courier-outline:hover {
+  background: #c8a96b;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   7. PURCHASED ITEMS FLOW
+   ========================================================================== */
+
+.purchased-items-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.purchased-item-row {
+  display: flex;
+  gap: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #fcfbf8;
+  align-items: center;
+}
+
+.purchased-item-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.item-thumb {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #fdfbf7;
+  border: 1px solid #f3ece0;
+}
+
+.item-details-box {
+  flex: 1;
+}
+
+.item-details-box h4 {
+  font-size: 1rem;
+  color: #1f2937;
+  margin: 0 0 6px;
+}
+
+.item-meta-row {
+  display: flex;
+  gap: 20px;
+  font-size: 0.88rem;
+  color: #6b7280;
+  flex-wrap: wrap;
+}
+
+.item-subtotal-tag {
+  color: #c8a96b;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   8. INFO SPLIT BOXES
+   ========================================================================== */
+
+.info-split-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.info-box-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-box-column h3 {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 16px;
+}
+
+.info-fields-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-group label {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+
+.field-group span {
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+
+/* ==========================================================================
+   9. SYSTEM ACTION FOOTER & REASSURANCE
+   ========================================================================== */
+
+.order-details-actions-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.btn-invoice-download {
+  padding: 14px 28px;
+  background: #1f2937;
+  color: #ffffff;
+  border: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-invoice-download:hover {
+  background: #111827;
+}
+
+.btn-product-return {
+  padding: 14px 28px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-product-return:hover {
+  background: #fecaca;
+}
+
+/* Support matrix */
+.support-reassurance-card {
+  text-align: center;
+}
+
+.support-reassurance-card h4 {
+  font-size: 1.15rem;
+  color: #1f2937;
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.reassurance-subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+.support-links-row {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.support-links-row a {
+  font-size: 0.88rem;
+  color: #c8a96b;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.support-links-row a:hover {
+  color: #a88a4e;
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN BREAKPOINTS
+   ========================================================================== */
+
+/* Laptop / Desktop Layout scales down (1024px to 1280px) */
+@media (max-width: 1280px) {
+  .order-details-container {
+    max-width: 1000px;
+    margin: 40px auto;
+  }
+}
+
+/* Small Laptop / Large Tablet Stack (768px to 1023px) */
+@media (max-width: 1023px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+}
+
+/* Tablet (480px to 767px) */
+@media (max-width: 767px) {
+  .order-details-container {
+    padding: 0 16px;
+  }
+  .order-details-header-row h1 {
+    font-size: 2.1rem;
+  }
+  .details-section-card {
+    padding: 24px;
+    border-radius: 16px;
+  }
+  .info-split-card {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
+/* Small Mobile Devices (320px to 479px) */
+@media (max-width: 479px) {
+  .order-details-container {
+    padding: 0 12px;
+  }
+  .order-details-header-row h1 {
+    font-size: 1.75rem;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .stat-card {
+    padding: 16px;
+  }
+  .eta-progress-card h2 {
+    font-size: 1.6rem;
+  }
+  .courier-meta-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .courier-actions-row {
+    flex-direction: column;
+  }
+  .btn-courier-primary,
+  .btn-courier-secondary,
+  .btn-courier-outline {
+    width: 100%;
+    text-align: center;
+  }
+  .order-details-actions-row {
+    flex-direction: column;
+  }
+  .btn-invoice-download,
+  .btn-product-return {
+    width: 100%;
+    text-align: center;
+  }
+  .support-links-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+}

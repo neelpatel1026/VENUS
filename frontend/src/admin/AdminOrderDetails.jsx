@@ -1,16 +1,14 @@
-import React, { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import "../styles/AdminOrderDetails.css";
+import toast from "react-hot-toast";
+import AdminSidebar from "./AdminSidebar";
 
 const AdminOrderDetails = () => {
   const { id } = useParams();
-
   const { user } = useContext(AuthContext);
-
   const [order, setOrder] = useState(null);
-  // const [status, setStatus] = useState(order?.status || "Pending");
   const [status, setStatus] = useState("Pending");
 
   const updateStatus = async () => {
@@ -22,24 +20,22 @@ const AdminOrderDetails = () => {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
-        },
+        }
       );
-
-      console.log(res.data);
 
       if (res.data.success) {
         setOrder((prev) => ({
           ...prev,
           status,
         }));
-
-        alert("Status Updated Successfully");
+        toast.success("Order status updated successfully!");
       }
     } catch (error) {
       console.error(error);
-      alert("Failed to update status");
+      toast.error("Failed to update status");
     }
   };
+
   const refundOrder = async () => {
     try {
       const res = await axios.post(
@@ -49,46 +45,45 @@ const AdminOrderDetails = () => {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
-        },
+        }
       );
 
-      alert(res.data.message);
-
-      window.location.reload();
+      if (res.data.success) {
+        setOrder((prev) => ({
+          ...prev,
+          paymentStatus: "Refunded",
+        }));
+        toast.success("Refund processed successfully!");
+      }
     } catch (error) {
-      alert(error.response?.data?.message);
+      console.error(error.response?.data?.message || error.message);
+      toast.error(error.response?.data?.message || "Failed to issue refund");
     }
   };
 
   const downloadInvoice = async () => {
     try {
-      const response = await fetch(`/api/orders/${order._id}/invoice`, {
+      const response = await axios.get(`/api/orders/${order._id}/invoice`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
+        responseType: "blob",
       });
 
-      const blob = await response.blob();
-
-      const url = window.URL.createObjectURL(blob);
-
+      const file = new Blob([response.data], { type: "application/pdf" });
+      const fileURL = URL.createObjectURL(file);
       const link = document.createElement("a");
-
-      link.href = url;
-
-      link.download = `invoice-${order._id}.pdf`;
-
+      link.href = fileURL;
+      link.setAttribute("download", `Invoice-${order._id}.pdf`);
       document.body.appendChild(link);
-
       link.click();
-
-      link.remove();
-
-      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
     } catch (error) {
-      console.error(error);
+      console.error("Failed to download invoice:", error);
+      toast.error("Failed to download invoice PDF");
     }
   };
+
   useEffect(() => {
     const fetchOrder = async () => {
       try {
@@ -97,7 +92,6 @@ const AdminOrderDetails = () => {
             Authorization: `Bearer ${user.token}`,
           },
         });
-
         setOrder(res.data);
         setStatus(res.data.status);
       } catch (error) {
@@ -111,301 +105,166 @@ const AdminOrderDetails = () => {
   }, [id, user]);
 
   if (!order) {
-    return <h2>Loading...</h2>;
+    return (
+      <div className="admin-layout-wrapper">
+        <AdminSidebar />
+        <div className="admin-content-console" style={{ textAlign: "center", padding: "100px 0" }}>
+          <p style={{ color: "var(--admin-text-muted)" }}>Loading order details...</p>
+        </div>
+      </div>
+    );
   }
 
+  const orderDate = new Date(order.createdAt).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
   return (
-    <div className="order-details-container">
-      <div className="stats-grid">
-        <div className="stat-card">
-          <h4>Order ID</h4>
-          <p>{order._id.slice(-8)}</p>
-        </div>
+    <div className="admin-layout-wrapper">
+      {/* LEFT COLUMN: SIDEBAR */}
+      <AdminSidebar />
 
-        <div className="stat-card">
-          <h4>Date</h4>
-          <p>{new Date(order.createdAt).toLocaleDateString()}</p>
-        </div>
-
-        <div className="stat-card">
-          <h4>Payment</h4>
-          <p>{order.paymentStatus}</p>
-        </div>
-
-        <div className="stat-card">
-          <h4>Total</h4>
-          <p>₹{order.totalAmount}</p>
-        </div>
-      </div>
-      <div className="page-header">
-        <div>
-          <h1>Order Details</h1>
-
-          <p>Complete customer order information</p>
-        </div>
-
-        <div
-          className={`status-badge ${
-            order.status === "Delivered" ? "success" : "warning"
-          }`}
-        >
-          {order.status}
-        </div>
-      </div>
-      {/* <a
-        href={`/api/orders/${order._id}/invoice`}
-        target="_blank"
-        rel="noreferrer"
-        className="invoice-btn"
-      >
-        Download Invoice
-      </a> */}
-
-      <button onClick={downloadInvoice} className="invoice-btn">
-        Download Invoice
-      </button>
-      {/* {order.status === "Returned" && order.paymentStatus !== "Refunded" && ( */}
-      {order.status === "Returned" && order.paymentStatus === "Paid" && (
-        <button onClick={refundOrder} className="refund-btn">
-          Refund Customer
-        </button>
-      )}
-      <div className="info-card">
-        <h2>Customer Information</h2>
-
-        <div className="info-grid">
-          <div>
-            <label>Customer Name</label>
-            <span>{order.customerName}</span>
+      {/* RIGHT COLUMN: MAIN CONTENT */}
+      <div className="admin-content-console">
+        <div className="admin-page-header">
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            <h2>Order Details</h2>
+            <span className={`status-pill pill-${order.status.toLowerCase()}`}>{order.status}</span>
           </div>
-
-          <div>
-            <label>Email</label>
-            <span>{order.customerEmail}</span>
-          </div>
-
-          <div>
-            <label>Phone</label>
-            <span>{order.customerPhone}</span>
-          </div>
-
-          <div>
-            <label>Order ID</label>
-            <span>{order._id}</span>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button onClick={downloadInvoice} className="btn-admin-primary">
+              📄 Invoice PDF
+            </button>
+            {order.status === "Returned" && order.paymentStatus === "Paid" && (
+              <button onClick={refundOrder} className="btn-admin-outline" style={{ borderColor: "#DC2626", color: "#DC2626" }}>
+                💸 Issue Refund
+              </button>
+            )}
+            <Link to="/admin/orders" className="btn-admin-secondary">
+              Back to Orders
+            </Link>
           </div>
         </div>
-      </div>
 
-      {/* <h2>Products Purchased</h2> */}
-      <div className="info-card">
-        <h2>Products Purchased</h2>
-
-        {order.items.map((item, index) => (
-          <div className="product-card" key={index}>
-            <img
-              src={item.productImage}
-              alt={item.productName}
-              className="product-image"
-            />
-
-            <div className="product-details">
-              <h3>{item.productName}</h3>
-
-              <div className="product-meta">
-                <span>Qty: {item.qty}</span>
-
-                <span>₹{item.price}</span>
-
-                <span className="subtotal-pill">
-                  Subtotal ₹{item.qty * item.price}
-                </span>
-              </div>
-            </div>
+        {/* ORDER OVERVIEW KPIs */}
+        <div className="admin-kpis-grid">
+          <div className="admin-kpi-card">
+            <span className="kpi-title">Order ID</span>
+            <h3 className="kpi-val" style={{ fontFamily: "monospace", fontSize: "1.1rem" }}>
+              #{order._id.toUpperCase()}
+            </h3>
           </div>
-        ))}
-      </div>
-
-      <div className="info-card">
-        <h2>Shipping Address</h2>
-
-        <div className="info-grid">
-          <div>
-            <label>Name</label>
-            <span>{order.shippingAddress.fullName}</span>
+          <div className="admin-kpi-card">
+            <span className="kpi-title">Order Date</span>
+            <h3 className="kpi-val" style={{ fontSize: "1.1rem" }}>{orderDate}</h3>
           </div>
-
-          <div>
-            <label>Phone</label>
-            <span>{order.shippingAddress.phone}</span>
+          <div className="admin-kpi-card">
+            <span className="kpi-title">Payment Status</span>
+            <h3 className="kpi-val" style={{ fontSize: "1.1rem" }}>{order.paymentStatus}</h3>
           </div>
-
-          <div>
-            <label>Address</label>
-            <span>{order.shippingAddress.addressLine1}</span>
-          </div>
-
-          <div>
-            <label>City</label>
-            <span>{order.shippingAddress.city}</span>
-          </div>
-
-          <div>
-            <label>State</label>
-            <span>{order.shippingAddress.state}</span>
-          </div>
-
-          <div>
-            <label>Pincode</label>
-            <span>{order.shippingAddress.pincode}</span>
+          <div className="admin-kpi-card">
+            <span className="kpi-title">Total Transaction</span>
+            <h3 className="kpi-val gold-text" style={{ fontSize: "1.1rem" }}>₹{order.totalAmount.toFixed(2)}</h3>
           </div>
         </div>
-      </div>
-      {order.deliveredAt && (
-        <div className="info-card">
-          <h2>Return Window</h2>
 
-          <div className="info-grid">
-            <div>
-              <label>Delivered At</label>
-
-              <span>{new Date(order.deliveredAt).toLocaleDateString()}</span>
-            </div>
-
-            <div>
-              <label>Return Allowed Till</label>
-
-              <span>
-                {new Date(order.returnAllowedTill).toLocaleDateString()}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="info-card">
-        <h2>Payment Details</h2>
-        {order.paymentStatus === "Refunded" && (
-          <div className="info-card">
-            <h2>Refund Information</h2>
-
-            <div className="info-grid">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "30px", alignItems: "start" }}>
+          {/* CUSTOMER INFORMATION CARD */}
+          <div className="admin-form-card" style={{ maxWidth: "100%" }}>
+            <h3 style={{ marginBottom: "20px", fontWeight: "600", fontSize: "1.1rem" }}>
+              Customer Shipping Address
+            </h3>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
               <div>
-                <label>Refund Status</label>
-
-                <span>{order.refundTracking?.status}</span>
+                <span style={{ fontSize: "0.78rem", fontWeight: "600", color: "var(--admin-text-muted)" }}>Name</span>
+                <p style={{ fontWeight: "600", margin: "4px 0 0 0" }}>{order.customerName}</p>
               </div>
-
               <div>
-                <label>Refund Date</label>
-
-                <span>
-                  {order.refundedAt
-                    ? new Date(order.refundedAt).toLocaleDateString()
-                    : "N/A"}
-                </span>
+                <span style={{ fontSize: "0.78rem", fontWeight: "600", color: "var(--admin-text-muted)" }}>Email</span>
+                <p style={{ fontWeight: "600", margin: "4px 0 0 0" }}>{order.customerEmail}</p>
+              </div>
+              <div>
+                <span style={{ fontSize: "0.78rem", fontWeight: "600", color: "var(--admin-text-muted)" }}>Phone</span>
+                <p style={{ fontWeight: "600", margin: "4px 0 0 0" }}>{order.customerPhone}</p>
+              </div>
+              <div>
+                <span style={{ fontSize: "0.78rem", fontWeight: "600", color: "var(--admin-text-muted)" }}>City / State</span>
+                <p style={{ fontWeight: "600", margin: "4px 0 0 0" }}>
+                  {order.shippingAddress?.city}, {order.shippingAddress?.state}
+                </p>
+              </div>
+              <div style={{ gridColumn: "span 2" }}>
+                <span style={{ fontSize: "0.78rem", fontWeight: "600", color: "var(--admin-text-muted)" }}>Address Street</span>
+                <p style={{ fontWeight: "600", margin: "4px 0 0 0" }}>{order.shippingAddress?.addressLine}</p>
               </div>
             </div>
           </div>
-        )}
-        <div className="info-card">
-          <h2>Admin Notes</h2>
 
-          <textarea
-            value={order.adminNotes || ""}
-            readOnly
-            style={{
-              width: "100%",
-              minHeight: "120px",
-              padding: "15px",
-              borderRadius: "10px",
-              border: "1px solid #ddd",
-            }}
-          />
-        </div>
-
-        <div className="info-grid">
-          <div>
-            <label>Method</label>
-            <span>{order.paymentMethod}</span>
-          </div>
-
-          <div>
-            <label>Status</label>
-
-            <span
-              className={order.paymentStatus === "Paid" ? "paid" : "pending"}
-            >
-              {order.paymentStatus}
-            </span>
-          </div>
-
-          <div>
-            <label>Payment ID</label>
-            <span>{order.paymentId || "N/A"}</span>
+          {/* UPDATE SHIPMENT STATUS CARD */}
+          <div className="admin-form-card" style={{ maxWidth: "100%" }}>
+            <h3 style={{ marginBottom: "20px", fontWeight: "600", fontSize: "1.1rem" }}>
+              Update Order Status
+            </h3>
+            <div className="admin-form-group">
+              <label>Shipment State</label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="admin-form-input"
+              >
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Preparing">Preparing</option>
+                <option value="Packed">Packed</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Out For Delivery">Out For Delivery</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+                <option value="Returned">Returned</option>
+              </select>
+            </div>
+            <button onClick={updateStatus} className="btn-admin-primary">
+              Apply Status Update
+            </button>
           </div>
         </div>
-      </div>
 
-      <div className="summary-card">
-        <h2>Order Summary</h2>
-
-        <div className="summary-row">
-          <span>Subtotal</span>
-          <span>₹{order.subtotal}</span>
+        {/* PRODUCTS PURCHASED TABLE */}
+        <div className="admin-table-container" style={{ marginTop: "40px" }}>
+          <div className="admin-table-search-bar">
+            <h3 style={{ margin: 0, fontWeight: "600", fontSize: "1.05rem" }}>Ordered Items</h3>
+          </div>
+          <table className="admin-premium-table">
+            <thead>
+              <tr>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {order.products?.map((item, index) => {
+                const subtotal = item.price * item.quantity;
+                return (
+                  <tr key={index}>
+                    <td>
+                      <strong style={{ fontWeight: "600" }}>{item.product?.name || "Product Item"}</strong>
+                    </td>
+                    <td>₹{item.price.toFixed(2)}</td>
+                    <td>{item.quantity}</td>
+                    <td>
+                      <strong className="amount-gold">₹{subtotal.toFixed(2)}</strong>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
 
-        <div className="summary-row">
-          <span>Shipping</span>
-          <span>₹{order.shippingCharge}</span>
-        </div>
-
-        <div className="summary-row">
-          <span>Tax</span>
-          <span>₹{order.taxAmount}</span>
-        </div>
-
-        <div className="summary-row total">
-          <span>Total</span>
-          <span>₹{order.totalAmount}</span>
-        </div>
-        <div className="summary-row">
-          <span>Order Status</span>
-
-          <span
-            style={{
-              color: "#C8A96B",
-              fontWeight: "700",
-            }}
-          >
-            {order.status}
-          </span>
-        </div>
-      </div>
-      {/* <div className="status-section"> */}
-
-      <div className="status-section premium-status">
-        <h3>Order Status</h3>
-
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
-          {/* <option value="Pending">Pending</option>
-          <option value="Processing">Processing</option>
-          <option value="Shipped">Shipped</option>
-          <option value="Delivered">Delivered</option>
-          <option value="Cancelled">Cancelled</option>
-          <option value="Refunded">Refunded</option> */}
-
-          <option value="Pending">Pending</option>
-          <option value="Confirmed">Confirmed</option>
-          <option value="Packed">Packed</option>
-          <option value="Shipped">Shipped</option>
-          <option value="Out For Delivery">Out For Delivery</option>
-          <option value="Delivered">Delivered</option>
-          <option value="Returned">Returned</option>
-          <option value="Cancelled">Cancelled</option>
-        </select>
-
-        {/* <button onClick={updateStatus}>Update Status</button> */}
-        <button onClick={updateStatus}>✓ Update Status</button>
       </div>
     </div>
   );

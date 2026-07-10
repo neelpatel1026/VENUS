@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/cartSlice";
@@ -9,7 +8,6 @@ import { AuthContext } from "../context/AuthContext";
 import {
   HiOutlineEye,
   HiOutlineShoppingBag,
-  HiOutlineHeart,
   HiStar,
 } from "react-icons/hi";
 
@@ -59,6 +57,7 @@ const ProductCard = ({ product }) => {
           src={product.imageUrl}
           alt={product.name}
           className="product-image"
+          loading="lazy"
         />
 
         {/* Hover Overlay */}

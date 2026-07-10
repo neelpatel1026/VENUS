@@ -12,6 +12,7 @@
 
 .navbar {
   background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(15px);
   backdrop-filter: blur(15px);
   border-bottom: 1px solid #f1f5f9;
 
@@ -46,6 +47,7 @@
 
 .navbar.scrolled {
   background: #fff;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid #ececec;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
@@ -272,6 +274,8 @@
     left: 0;
 
     width: 100%;
+    max-height: calc(100vh - 72px);
+    overflow-y: auto;
 
     /* background: rgba(9, 9, 11, 0.98); */
     background: #ffffff;
@@ -290,7 +294,7 @@
     /* border-top: 1px solid rgba(255,255,255,0.05); */
     border-top: 1px solid #e5e7eb;
 
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   }
 
   /* OPEN MENU */

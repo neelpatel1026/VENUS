@@ -53,6 +53,18 @@ body{
 /* ================= MAIN CONTENT ================= */
  .main-content {
   min-height: 85vh;
+  animation: fadeInPage 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes fadeInPage {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .container {
@@ -103,7 +115,7 @@ ul {
 
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3);
+  box-shadow: 0 4px 14px rgba(200, 169, 107, 0.3);
 
   display: inline-flex;
 
@@ -116,7 +128,7 @@ ul {
 .btn:hover {
   transform: translateY(-2px);
 
-  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.5);
+  box-shadow: 0 6px 20px rgba(200, 169, 107, 0.4);
 
   filter: brightness(1.1);
 }
@@ -204,6 +216,33 @@ button {
   font-family: inherit;
 }
 
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+select,
+textarea {
+  border: 1px solid #ECE6DC;
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: #FFFFFF;
+  color: #1F2937;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+  border-color: #C8A96B;
+  box-shadow: 0 0 0 3px rgba(200, 169, 107, 0.15);
+}
+
 /* ================= ANIMATION ================= */
 
 @keyframes fadeIn {
@@ -223,20 +262,20 @@ button {
 
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: #FAF7F2;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
-
+  background: #E8DFD2;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: #C8A96B;
 }
 
 /* ================= TABLET ================= */
@@ -321,6 +360,29 @@ button {
     padding: 13px;
 
     border-radius: 7px;
+  }
+}
+
+/* ================= ACCESSIBILITY HARDENINGS ================= */
+
+/* Visible Focus States for Keyboard Nav */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #C8A96B;
+  outline-offset: 4px;
+}
+
+/* Motion Reduction Support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-delay: 0s !important;
+    animation-duration: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    scroll-behavior: auto !important;
   }
 }
 

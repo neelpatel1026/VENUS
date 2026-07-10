@@ -1,6 +1,7 @@
-import React, {
+import {
   useState,
-  useContext
+  useContext,
+  useEffect
 } from 'react';
 
 import {
@@ -12,9 +13,6 @@ import { AuthContext }
 from '../context/AuthContext';
 
 import '../styles/auth.css';
-
-import { GoogleLogin }
-from '@react-oauth/google';
 
 import axios from 'axios';
 
@@ -139,6 +137,45 @@ const Login = () => {
     }
   };
 
+  useEffect(() => {
+    const loadGsiScript = () => {
+      if (document.getElementById("google-gsi-client")) {
+        if (window.google) initGoogleGsi();
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.id = "google-gsi-client";
+      script.async = true;
+      script.defer = true;
+      script.onload = () => initGoogleGsi();
+      document.body.appendChild(script);
+    };
+
+    const initGoogleGsi = () => {
+      if (window.google) {
+        if (!window.googleGsiInitialized) {
+          window.google.accounts.id.initialize({
+            client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+            callback: handleGoogleSuccess,
+          });
+          window.googleGsiInitialized = true;
+        }
+
+        const container = document.getElementById("google-signin-btn-container");
+        if (container) {
+          window.google.accounts.id.renderButton(container, {
+            theme: "outline",
+            size: "large",
+            width: 280,
+          });
+        }
+      }
+    };
+
+    loadGsiScript();
+  }, []);
+
   /* ================= UI ================= */
 
   return (
@@ -199,15 +236,7 @@ const Login = () => {
             justifyContent: 'center',
           }}
         >
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={() => {
-
-              toast.error(
-                'Google Login Failed'
-              );
-            }}
-          />
+          <div id="google-signin-btn-container"></div>
         </div>
 
         {/* FORGOT PASSWORD */}

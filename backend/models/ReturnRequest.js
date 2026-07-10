@@ -60,4 +60,7 @@ const returnRequestSchema = new mongoose.Schema(
   },
 );
 
+returnRequestSchema.index({ userId: 1 });
+returnRequestSchema.index({ orderId: 1 });
+
 module.exports = mongoose.model("ReturnRequest", returnRequestSchema);

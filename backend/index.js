@@ -13,7 +13,11 @@ connectDB();
 const app = express();
 
 // Security Headers
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+  })
+);
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -22,13 +26,45 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 15,
+  message: {
+    message: "Too many authentication requests from this IP, please try again after 15 minutes."
+  }
+});
+
 // CORS
+const allowedOrigins = ["http://localhost:5173"];
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
 app.use(
   cors({
-    origin: ["http://localhost:5173", process.env.FRONTEND_URL],
+    origin: allowedOrigins,
     credentials: true,
   }),
 );
+
+// NoSQL Query Injection Sanitizer
+const sanitizeMongo = (obj) => {
+  if (obj instanceof Object) {
+    for (const key in obj) {
+      if (key.startsWith('$')) {
+        delete obj[key];
+      } else {
+        sanitizeMongo(obj[key]);
+      }
+    }
+  }
+};
+
+app.use((req, res, next) => {
+  if (req.body) sanitizeMongo(req.body);
+  if (req.query) sanitizeMongo(req.query);
+  if (req.params) sanitizeMongo(req.params);
+  next();
+});
 
 // Body Parser
 app.use(express.json());
@@ -41,10 +77,31 @@ app.use("/api/orders", require("./routes/orderRoutes"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
 app.use("/api/analytics", require("./routes/analyticsRoutes"));
 app.use("/api/address", require("./routes/addressRoutes"));
-app.use("/api/otp", require("./routes/otpRoutes"));
-app.use("/api/email-otp", require("./routes/emailOtpRoutes"));
+app.use("/api/otp", authLimiter, require("./routes/otpRoutes"));
+app.use("/api/email-otp", authLimiter, require("./routes/emailOtpRoutes"));
 app.use("/api/returns", require("./routes/returnRoutes"));
 app.use("/api/wallet", require("./routes/walletRoutes"));
+app.use("/api/complaints", require("./routes/complaintRoutes"));
+// Health Check Endpoint
+const mongoose = require("mongoose");
+app.get("/api/health", (req, res) => {
+  const dbStatus = mongoose.connection.readyState === 1 ? "Connected" : "Disconnected";
+  if (dbStatus === "Connected") {
+    return res.status(200).json({
+      status: "UP",
+      database: dbStatus,
+      uptime: process.uptime(),
+      timestamp: new Date()
+    });
+  } else {
+    return res.status(500).json({
+      status: "DOWN",
+      database: dbStatus,
+      timestamp: new Date()
+    });
+  }
+});
+
 // Production Frontend
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
@@ -54,7 +111,7 @@ if (process.env.NODE_ENV === "production") {
   });
 } else {
   app.get("/", (req, res) => {
-    res.send("ELYSORIA API is running...");
+    res.send("VENUS CARE API is running...");
   });
 }
 
@@ -63,6 +120,15 @@ app.use((err, req, res, next) => {
   res.status(500).json({
     message: err.message,
   });
+});
+
+process.on("unhandledRejection", (err) => {
+  console.error(`🔴 UNHANDLED REJECTION: ${err.message}`);
+});
+
+process.on("uncaughtException", (err) => {
+  console.error(`🔴 UNCAUGHT EXCEPTION: ${err.message}`);
+  process.exit(1);
 });
 
 // Server

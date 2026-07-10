@@ -1,48 +1,43 @@
-import React, { useState, useContext } from "react";
-
+import { useState, useContext } from "react";
 import "../styles/ReturnRequest.css";
-
+import toast from "react-hot-toast";
 import axios from "axios";
-
 import { useNavigate, useParams } from "react-router-dom";
-
 import { AuthContext } from "../context/AuthContext";
 
 const ReturnRequest = () => {
   const { id } = useParams();
-
   const navigate = useNavigate();
-
   const { user } = useContext(AuthContext);
 
   const [images, setImages] = useState([]);
-
+  const [previews, setPreviews] = useState([]);
   const [reason, setReason] = useState("");
-
   const [loading, setLoading] = useState(false);
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    setImages(files);
+    
+    // Generate object URLs for immediate preview rendering
+    const objectUrls = files.map((file) => URL.createObjectURL(file));
+    setPreviews(objectUrls);
+  };
 
   const submitReturn = async () => {
     if (!reason.trim()) {
-      alert("Please enter return reason");
+      toast.error("Please enter return reason");
       return;
     }
 
     if (reason.length < 10) {
-      alert("Please provide more details");
+      toast.error("Please provide more details (minimum 10 characters)");
       return;
     }
 
     try {
       setLoading(true);
-
-      // await axios.post(
-      //   "/api/returns",
-      //   {
-      //     orderId: id,
-      //     reason,
-      //   },
       const formData = new FormData();
-
       formData.append("orderId", id);
       formData.append("reason", reason);
 
@@ -58,7 +53,7 @@ const ReturnRequest = () => {
 
       navigate("/return-success");
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to submit request");
+      toast.error(error.response?.data?.message || "Failed to submit request");
     } finally {
       setLoading(false);
     }
@@ -82,12 +77,26 @@ const ReturnRequest = () => {
         />
 
         <div className="char-count">{reason.length}/500</div>
-        <input
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={(e) => setImages(Array.from(e.target.files))}
-        />
+
+        <div className="image-upload">
+          <label style={{ fontSize: "0.85rem", fontWeight: "600", color: "#4B5563", display: "block", marginBottom: "8px" }}>
+            Upload Proof Images
+          </label>
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+        </div>
+
+        {previews.length > 0 && (
+          <div className="image-preview">
+            {previews.map((src, index) => (
+              <img key={index} src={src} alt={`Selected Proof ${index + 1}`} />
+            ))}
+          </div>
+        )}
 
         <button
           className="return-btn"

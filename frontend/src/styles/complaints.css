@@ -1,0 +1,154 @@
+.complaints-page {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.complaints-page h1 {
+  font-size: 2.2rem;
+  color: #1F2937;
+  margin-bottom: 30px;
+  font-weight: 700;
+}
+
+.complaints-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 50px;
+  background: #FAF7F2;
+  border: 1px solid #E8DFD2;
+  border-radius: 20px;
+  color: #6B7280;
+  font-size: 1.1rem;
+}
+
+.empty-state a {
+  display: inline-block;
+  margin-top: 15px;
+  background: #C8A96B;
+  color: #FFFFFF;
+  padding: 10px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background 0.2s ease;
+}
+
+.empty-state a:hover {
+  background: #B59559;
+}
+
+.complaint-card {
+  background: #FFFFFF;
+  border: 1px solid #E8DFD2;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.complaint-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-bottom: 1px solid #FAF7F2;
+  padding-bottom: 15px;
+}
+
+.complaint-card-header h3 {
+  font-size: 1.2rem;
+  color: #1F2937;
+  font-weight: 600;
+  margin: 0;
+}
+
+.ticket-id {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #6B7280;
+  background: #F3F4F6;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-left: 10px;
+}
+
+.complaint-meta {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: #6B7280;
+}
+
+.complaint-meta span strong {
+  color: #4B5563;
+}
+
+.complaint-body {
+  font-size: 0.95rem;
+  color: #4B5563;
+  line-height: 1.6;
+}
+
+.reply-box {
+  background: #FAF7F2;
+  border-left: 4px solid #C8A96B;
+  border-radius: 0 12px 12px 0;
+  padding: 15px 20px;
+  margin-top: 10px;
+}
+
+.reply-box h5 {
+  color: #C8A96B;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 0 0 5px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.reply-box p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #4B5563;
+  line-height: 1.5;
+}
+
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.pending {
+  background: #FFF4E5;
+  color: #D97706;
+}
+
+.status-badge.in-progress {
+  background: #E8F0FE;
+  color: #2563EB;
+}
+
+.status-badge.resolved {
+  background: #E7F8EE;
+  color: #16A34A;
+}
+
+.status-badge.closed {
+  background: #F3F4F6;
+  color: #6B7280;
+}

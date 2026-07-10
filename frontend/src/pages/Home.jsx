@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import HeroSlider from "../components/HeroSlider";
 import WhyVenus from "../components/WhyVenus";

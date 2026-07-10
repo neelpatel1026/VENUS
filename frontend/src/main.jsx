@@ -4,9 +4,10 @@ import App from "./App.jsx";
 import { Provider } from "react-redux";
 import { store } from "./redux/store.js";
 import { AuthProvider } from "./context/AuthContext.jsx";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "react-hot-toast";
 import "./styles/global.css";
+import "./styles/notifications.css";
+import "./styles/admin.css";
 
 /* ================= ROOT ================= */
 
@@ -18,7 +19,6 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <AuthProvider>
-        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
           {/* MAIN APP */}
 
           <App />
@@ -29,16 +29,32 @@ root.render(
             position="top-right"
             reverseOrder={false}
             toastOptions={{
-              duration: 3000,
-              style: {
-                background: "#111",
-                color: "#fff",
-                border: "1px solid #333",
-                borderRadius: "12px",
+              className: "premium-toast-card",
+              duration: 3500,
+              success: {
+                className: "premium-toast-card success-toast",
+                iconTheme: {
+                  primary: "#16A34A",
+                  secondary: "#ffffff",
+                },
               },
+              error: {
+                className: "premium-toast-card error-toast",
+                duration: 6000,
+                iconTheme: {
+                  primary: "#DC2626",
+                  secondary: "#ffffff",
+                },
+              },
+              loading: {
+                className: "premium-toast-card loading-toast",
+                iconTheme: {
+                  primary: "#C8A165",
+                  secondary: "#ffffff",
+                },
+              }
             }}
           />
-        </GoogleOAuthProvider>
       </AuthProvider>
     </Provider>
   </React.StrictMode>,

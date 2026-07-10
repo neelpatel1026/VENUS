@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import '../styles/auth.css';
+import toast from 'react-hot-toast';
 
 const Register = () => {
 
@@ -22,33 +23,30 @@ const Register = () => {
 
   // NAME VALIDATION
   if (name.trim().length < 3) {
-    return alert(
-      'Name must be at least 3 characters'
-    );
+    toast.error('Name must be at least 3 characters');
+    return;
   }
 
   // EMAIL VALIDATION
-  const emailRegex =
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   if (!emailRegex.test(email)) {
-    return alert('Invalid email');
+    toast.error('Invalid email format');
+    return;
   }
 
   // PHONE VALIDATION
   const phoneRegex = /^[0-9]{10}$/;
 
   if (!phoneRegex.test(phone)) {
-    return alert(
-      'Phone number must be 10 digits'
-    );
+    toast.error('Phone number must be exactly 10 digits');
+    return;
   }
 
   // PASSWORD VALIDATION
   if (password.length < 6) {
-    return alert(
-      'Password must be at least 6 characters'
-    );
+    toast.error('Password must be at least 6 characters');
+    return;
   }
 
   try {
@@ -74,25 +72,15 @@ const Register = () => {
     const data = await res.json();
 
     if (res.ok) {
-
-      alert(
-        'Registration Successful!'
-      );
-
+      toast.success('Registration Successful! Welcome to VENUS CARE.');
       login(data);
-
       navigate('/');
-
     } else {
-
-      alert(data.message);
+      toast.error(data.message || 'Registration failed');
     }
-
   } catch (error) {
-
     console.error(error);
-
-    alert('Something went wrong');
+    toast.error('Something went wrong. Please try again.');
   }
 };
 

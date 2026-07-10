@@ -1,419 +1,664 @@
-:root{
-  --gold:#C8A165;
-  --gold-dark:#B88E4F;
-  --cream:#FAF7F2;
-  --white:#FFFFFF;
-  --border:#E8DFD2;
-  --text:#1F2937;
-  --muted:#6B7280;
+/* ==========================================================================
+   PREMIUM CUSTOMER ACCOUNT DASHBOARD STYLES - VENUS CARE
+   ========================================================================== */
+
+:root {
+  --gold: #C8A165;
+  --gold-dark: #B88E4F;
+  --cream: #FAF7F2;
+  --white: #FFFFFF;
+  --border: #E8DFD2;
+  --text: #1F2937;
+  --muted: #6B7280;
+  --soft-gold: rgba(200, 161, 101, 0.08);
 }
 
-/* ===== MAIN GRID ===== */
-
-.profile-admin-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:24px;
-  margin-bottom:32px;
+.profile-dashboard-wrapper {
+  max-width: 1200px;
+  margin: 50px auto;
+  padding: 0 24px;
 }
 
-/* ===== PREMIUM CARD ===== */
+/* ==========================================================================
+   1. SIMPLIFIED PROFILE HERO HEADER
+   ========================================================================== */
 
-.admin-card,
-.profile-card{
-  background:linear-gradient(
-    145deg,
-    #ffffff,
-    #faf8f4
-  );
-
-  border:1px solid var(--border);
-
-  border-radius:24px;
-
-  padding:28px;
-
-  transition:.35s ease;
-
-  position:relative;
-
-  overflow:hidden;
+.profile-hero-section {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 20px;
+  box-shadow: 0 4px 20px rgba(200, 161, 101, 0.02);
 }
 
-.admin-card::before,
-.profile-card::before{
-  content:"";
-
-  position:absolute;
-
-  top:0;
-  left:0;
-
-  width:100%;
-  height:4px;
-
-  background:linear-gradient(
-    90deg,
-    var(--gold),
-    #f0d7a0
-  );
-
-  transform:scaleX(0);
-
-  transition:.4s;
+.profile-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
-.admin-card:hover::before,
-.profile-card:hover::before{
-  transform:scaleX(1);
+.profile-avatar-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  box-shadow: 0 6px 15px rgba(200, 161, 101, 0.15);
 }
 
-.admin-card:hover,
-.profile-card:hover{
-  transform:translateY(-10px);
-
-  border-color:var(--gold);
-
-  box-shadow:
-    0 20px 40px rgba(0,0,0,.08),
-    0 0 0 1px rgba(200,161,101,.15);
+.profile-user-info-text {
+  display: flex;
+  flex-direction: column;
 }
 
-.admin-card h3,
-.profile-card h3{
-  color:var(--text);
-  margin-bottom:12px;
+.membership-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.admin-card h2{
-  font-size:2.4rem;
-  color:var(--gold);
-  margin-bottom:8px;
+.membership-row h2 {
+  font-size: 1.35rem;
+  color: var(--text);
+  margin: 0;
+  font-weight: 600;
 }
 
-.admin-card p{
-  color:var(--muted);
+.status-verification-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
-/* ===== PROFILE TOP ===== */
-
-.profile-top-grid{
-  display:grid;
-  grid-template-columns:2fr 1fr;
-  gap:24px;
-  margin-top:25px;
+.status-verification-badge.verified {
+  background: #dcfce7;
+  color: #166534;
 }
 
-.profile-details{
-  display:grid;
-  gap:16px;
+.status-verification-badge.pending {
+  background: #fef3c7;
+  color: #92400e;
 }
 
-.profile-details div{
-  padding-bottom:12px;
-  border-bottom:1px solid #f0ebe3;
+.hero-subtext {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 4px 0 0 0;
+  font-weight: 400;
 }
 
-.profile-details span{
-  font-size:.8rem;
-  color:var(--muted);
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-.profile-details h4{
-  margin-top:4px;
-  color:var(--text);
+.btn-edit-profile-action {
+  background: var(--gold);
+  color: var(--white);
+  border: none;
+  padding: 10px 20px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.25s;
 }
 
-/* ===== BUTTONS ===== */
-
-.edit-btn,
-.view-order-btn,
-.action-btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-
-  padding:12px 22px;
-
-  border:none;
-
-  border-radius:50px;
-
-  background:var(--gold);
-
-  color:white;
-
-  text-decoration:none;
-
-  cursor:pointer;
-
-  font-weight:600;
-
-  transition:.3s;
+.btn-edit-profile-action:hover {
+  background: var(--gold-dark);
 }
 
-.edit-btn:hover,
-.view-order-btn:hover,
-.action-btn:hover{
-  background:var(--gold-dark);
-  transform:translateY(-2px);
+.btn-logout-luxury {
+  background: transparent;
+  border: 1.5px solid var(--text);
+  color: var(--text);
+  padding: 9px 20px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
-.logout-btn{
-  background:#111827;
-  color:white;
-  border:none;
-  border-radius:50px;
-  padding:12px 24px;
-  cursor:pointer;
+.btn-logout-luxury:hover {
+  background: var(--text);
+  color: var(--white);
 }
 
-/* ===== DASHBOARD STATS ===== */
+/* ==========================================================================
+   2. DUAL COLUMN LAYOUT & SIDEBAR
+   ========================================================================== */
 
-.stats-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:20px;
-  margin-bottom:35px;
+.profile-main-layout {
+  display: grid;
+  grid-template-columns: 1fr 2.5fr;
+  gap: 40px;
+  align-items: start;
 }
 
-.stat-card{
-  background:white;
-
-  border:1px solid var(--border);
-
-  border-radius:22px;
-
-  padding:25px;
-
-  text-align:center;
-
-  transition:.3s;
+.profile-sidebar-col,
+.profile-content-col {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
-.stat-card:hover{
-  transform:translateY(-8px);
+.sidebar-info-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(200, 161, 101, 0.01);
 }
 
-.stat-card h2{
-  color:var(--gold);
-  font-size:2rem;
-  margin-bottom:8px;
+.sidebar-info-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 16px 0;
+  border-bottom: 1px solid #fdfbf9;
+  padding-bottom: 8px;
 }
 
-.stat-card p{
-  color:var(--muted);
+/* Fields stack */
+.info-fields-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 16px;
 }
 
-/* ===== ORDER CARD ===== */
-
-.order-card{
-  background:white;
-
-  border:1px solid var(--border);
-
-  border-radius:20px;
-
-  padding:25px;
-
-  display:grid;
-
-  grid-template-columns:2fr auto;
-
-  align-items:center;
-
-  gap:20px;
-
-  transition:.3s;
+.info-field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
-.order-card:hover{
-  transform:translateY(-6px);
+.field-title {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
-.order-actions{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
+.field-value {
+  font-size: 0.95rem;
+  color: var(--text);
+  font-weight: 600;
+  word-break: break-all;
 }
 
-/* ===== BADGES ===== */
-
-.status-badge{
-  padding:10px 18px;
-  border-radius:30px;
-  font-size:14px;
-  font-weight:600;
+.btn-sidebar-action {
+  width: 100%;
+  padding: 10px 16px;
+  background: var(--text);
+  color: var(--white);
+  border: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.status-delivered{
-  background:#E7F8EE;
-  color:#16A34A;
+.btn-sidebar-action:hover {
+  background: #111827;
 }
 
-.status-pending{
-  background:#FFF4E5;
-  color:#D97706;
+.btn-sidebar-link {
+  background: none;
+  border: none;
+  color: var(--gold);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  text-align: left;
 }
 
-.status-shipped{
-  background:#E8F0FE;
-  color:#2563EB;
+.btn-sidebar-link:hover {
+  text-decoration: underline;
+  color: var(--gold-dark);
 }
 
-/* ===== ADMIN MODULES ===== */
-
-.admin-module-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:24px;
+/* Address snippet */
+.address-snippet-box {
+  background: #fdfbf8;
+  border: 1px solid #f3ece0;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
 }
 
-.module-icon{
-  font-size:2.4rem;
-  margin-bottom:15px;
+.address-snippet-label {
+  display: inline-block;
+  background: var(--soft-gold);
+  color: #8b6b3d;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
 }
 
-/* ===== REWARDS ===== */
-
-.reward-card{
-  background:
-  linear-gradient(
-    135deg,
-    #c8a165,
-    #e3c27c
-  );
-
-  color:white;
-
-  padding:30px;
-
-  border-radius:24px;
-
-  margin-bottom:30px;
+.address-snippet-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 4px 0;
 }
 
-.reward-card h2{
-  color:white;
-}
-.hero-profile-grid{
-  display:grid;
-  grid-template-columns:2fr 1fr;
-  gap:24px;
-  margin-top:25px;
+.address-snippet-lines,
+.address-snippet-city {
+  font-size: 0.85rem;
+  color: #4b5563;
+  margin: 0 0 3px 0;
 }
 
-.account-card{
-  min-height:420px;
+.address-snippet-empty {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0 0 14px 0;
 }
 
-.latest-order-card{
-  min-height:420px;
-
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  text-align:center;
+/* Support stack */
+.support-links-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.latest-order-content h2{
-  color:#6b7280;
-  margin-bottom:15px;
+.support-sidebar-link {
+  font-size: 0.88rem;
+  color: var(--gold);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
 }
 
-.latest-order-content h1{
-  font-size:3rem;
-  color:#C8A165;
-  margin-bottom:15px;
+.support-sidebar-link:hover {
+  color: var(--gold-dark);
+  text-decoration: underline;
 }
 
-.latest-order-content .status-badge{
-  display:inline-block;
-  margin-bottom:20px;
+/* ==========================================================================
+   3. RIGHT COLUMN - ORDERS HISTORY
+   ========================================================================== */
+
+.dashboard-order-history-section h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 20px 0;
 }
 
-.profile-details{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:20px;
-  margin-top:20px;
+.order-history-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.profile-details div{
-  padding:15px;
-  background:#faf8f4;
-  border-radius:14px;
+.history-order-item-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
 }
 
-.profile-details span{
-  color:#777;
-  font-size:.85rem;
+.history-header-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  border-bottom: 1px solid #fdfbf8;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
 }
 
-.profile-details h4{
-  margin-top:8px;
-  font-size:1rem;
+.meta-block {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
-.profile-admin-grid a {
+.meta-block span {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.meta-block strong {
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.amount-gold {
+  color: var(--gold) !important;
+}
+
+.status-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  display: inline-block;
+  text-align: center;
+}
+
+.status-pill.status-delivered {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-pill.status-pending,
+.status-pill.status-processing,
+.status-pill.status-packed {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-pill.status-shipped {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-pill.status-cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-pill.status-returned {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+/* History products */
+.history-items-thumbnail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.history-thumbnail-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #fbfbfc;
+}
+
+.history-thumbnail-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.history-thumb-image {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #f3ece0;
+}
+
+.history-thumb-details {
+  flex: 1;
+}
+
+.history-thumb-details h4 {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 2px 0;
+}
+
+.history-thumb-details p {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Buy Again outline gold/gray border */
+.btn-history-buyagain-outline {
+  padding: 6px 14px;
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-history-buyagain-outline:hover {
+  background: var(--gold);
+  color: var(--white);
+}
+
+.history-actions-footer {
+  border-top: 1px solid #f5eee0;
+  padding-top: 14px;
+  display: flex;
+  gap: 10px;
+}
+
+/* Primary track button */
+.btn-history-track-primary {
+  padding: 9px 18px;
+  background: var(--gold);
+  color: var(--white);
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.btn-history-track-primary:hover {
+  background: var(--gold-dark);
+}
+
+/* Secondary Invoice button */
+.btn-history-invoice-secondary {
+  padding: 9px 18px;
+  background: var(--text);
+  color: var(--white);
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-history-invoice-secondary:hover {
+  background: #111827;
+}
+
+/* Empty Orders */
+.profile-empty-orders-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 2.2rem;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.profile-empty-orders-card h4 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.profile-empty-orders-card p {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.btn-shop-redirect {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--white);
+  padding: 10px 24px;
+  font-weight: 600;
+  border-radius: 30px;
   text-decoration: none;
 }
 
-.profile-admin-grid .admin-card {
-  transition: all 0.3s ease;
+/* Admin redirect card */
+.admin-profile-redirect-card {
+  max-width: 500px;
+  margin: 80px auto;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
 }
 
-.profile-admin-grid .admin-card:hover {
-  transform: translateY(-5px);
+.admin-profile-redirect-card h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  color: var(--text);
+  margin-bottom: 10px;
 }
 
-@media(max-width:992px){
-
-  .hero-profile-grid{
-    grid-template-columns:1fr;
-  }
-
-  .profile-details{
-    grid-template-columns:1fr;
-  }
-
+.admin-profile-redirect-card p {
+  color: var(--muted);
+  margin-bottom: 24px;
 }
 
-/* ===== RESPONSIVE ===== */
+.admin-routes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
 
-@media(max-width:1200px){
+.admin-route-btn {
+  padding: 14px;
+  background: #fcfbf9;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
 
-  .stats-grid{
-    grid-template-columns:repeat(2,1fr);
+.admin-route-btn:hover {
+  border-color: var(--gold);
+  background: var(--soft-gold);
+}
+
+
+/* ==========================================================================
+   RESPONSIVE DESIGN BREAKPOINTS
+   ========================================================================== */
+
+/* Laptop / Desktop Layout scales down (1024px to 1280px) */
+@media (max-width: 1280px) {
+  .profile-dashboard-wrapper {
+    max-width: 1000px;
+    margin: 40px auto;
+  }
+  .profile-main-layout {
+    grid-template-columns: 1fr 2.2fr;
+    gap: 30px;
   }
 }
 
-@media(max-width:992px){
-
-  .profile-top-grid{
-    grid-template-columns:1fr;
-  }
-
-  .stats-grid{
-    grid-template-columns:repeat(2,1fr);
+/* Small Laptop / Large Tablet Stack (768px to 1023px) */
+@media (max-width: 1023px) {
+  .profile-main-layout {
+    grid-template-columns: 1fr;
+    gap: 30px;
   }
 }
 
-@media(max-width:768px){
-
-  .stats-grid{
-    grid-template-columns:1fr;
+/* Tablet (480px to 767px) */
+@media (max-width: 767px) {
+  .profile-dashboard-wrapper {
+    padding: 0 16px;
   }
-
-  .profile-admin-grid{
-    grid-template-columns:1fr;
+  .profile-hero-section {
+    padding: 24px 20px;
+    flex-direction: column;
+    text-align: center;
   }
-
-  .order-card{
-    grid-template-columns:1fr;
+  .profile-avatar-row {
+    flex-direction: column;
+    gap: 12px;
   }
+  .membership-row {
+    justify-content: center;
+  }
+  .header-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  .btn-edit-profile-action,
+  .btn-logout-luxury {
+    width: 100%;
+    text-align: center;
+  }
+  .history-header-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+}
 
-  .order-actions{
-    justify-content:flex-start;
+/* Small Mobile Devices (320px to 479px) */
+@media (max-width: 479px) {
+  .profile-dashboard-wrapper {
+    padding: 0 12px;
+  }
+  .history-header-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .history-thumbnail-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .btn-history-buyagain-outline {
+    width: 100%;
+    text-align: center;
+    margin-top: 8px;
+  }
+  .history-actions-footer {
+    flex-direction: column;
+  }
+  .btn-history-track-primary,
+  .btn-history-invoice-secondary {
+    width: 100%;
+    text-align: center;
   }
 }

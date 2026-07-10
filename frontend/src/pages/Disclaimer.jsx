@@ -19,12 +19,12 @@
 //       </h2>
       
 //       <p style={{ marginBottom: '20px' }}>
-//         The data, interfaces, and graphical components represented across the ShopNest domain strictly act uniquely as an educational development platform. This codebase models rigorous application structures and architectures for purely demonstrative, portfolio-oriented engineering usage.
+//         The data, interfaces, and graphical components represented across the VENUS CARE domain strictly act uniquely as an educational development platform. This codebase models rigorous application structures and architectures for purely demonstrative, portfolio-oriented engineering usage.
 //       </p>
 
 //       <h4 style={{ color: '#f97316', marginTop: '25px', marginBottom: '10px' }}>1. Accuracy of Materials</h4>
 //       <p style={{ marginBottom: '15px' }}>
-//         The materials spanning the ShopNest interface may heavily include dynamic technical, typographical, or dummy photographic elements. Product matrices mapped in the DB pipeline do absolutely not correlate to strictly real physical outputs and are safely populated via generic Unsplash imagery protocols.
+//         The materials spanning the VENUS CARE interface may heavily include dynamic technical, typographical, or dummy photographic elements. Product matrices mapped in the DB pipeline do absolutely not correlate to strictly real physical outputs and are safely populated via generic Unsplash imagery protocols.
 //       </p>
 
 //       <h4 style={{ color: '#f97316', marginTop: '25px', marginBottom: '10px' }}>2. Payment Processing Restrictions</h4>
@@ -34,7 +34,7 @@
 
 //       <h4 style={{ color: '#f97316', marginTop: '25px', marginBottom: '10px' }}>3. External Binding Links</h4>
 //       <p style={{ marginBottom: '15px' }}>
-//         ShopNest operates completely independent domains and takes strictly zero absolute parameter responsibility over the specific contents or behaviors populated via external routing anchors generated implicitly by third-party configurations. 
+//         VENUS CARE operates completely independent domains and takes strictly zero absolute parameter responsibility over the specific contents or behaviors populated via external routing anchors generated implicitly by third-party configurations. 
 //       </p>
 
 //       <p style={{ marginTop: '30px', fontStyle: 'italic', fontSize: '0.9rem' }}>
@@ -74,7 +74,7 @@ const Disclaimer = () => {
       </h2>
 
       <p style={{ marginBottom: '20px' }}>
-        Welcome to ELYSORIA. We are committed to providing high-quality,
+        Welcome to VENUS CARE. We are committed to providing high-quality,
         100% acid-free skincare products designed to support healthy and
         radiant skin. Please read the following disclaimer carefully before
         using our website or products.
@@ -94,7 +94,7 @@ const Disclaimer = () => {
       </h4>
       <p style={{ marginBottom: '15px' }}>
         Skincare results vary from person to person depending on skin type,
-        lifestyle, and individual conditions. ELYSORIA does not guarantee
+        lifestyle, and individual conditions. VENUS CARE does not guarantee
         specific results from the use of any product.
       </p>
 
@@ -123,7 +123,7 @@ const Disclaimer = () => {
       </h4>
       <p style={{ marginBottom: '15px' }}>
         Our website may contain links to third-party websites for additional
-        information or services. ELYSORIA is not responsible for the content,
+        information or services. VENUS CARE is not responsible for the content,
         privacy policies, or practices of such external websites.
       </p>
 
@@ -131,7 +131,7 @@ const Disclaimer = () => {
         6. Limitation of Liability
       </h4>
       <p>
-        ELYSORIA shall not be held liable for any direct, indirect,
+        VENUS CARE shall not be held liable for any direct, indirect,
         incidental, or consequential damages resulting from the use or
         misuse of our products or website. By using our website, you agree
         to these terms and conditions.
@@ -144,7 +144,7 @@ const Disclaimer = () => {
           fontSize: '0.9rem'
         }}
       >
-        By accessing and using the ELYSORIA website, you acknowledge that
+        By accessing and using the VENUS CARE website, you acknowledge that
         you have read, understood, and agreed to this disclaimer.
       </p>
     </div>

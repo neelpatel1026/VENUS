@@ -2,7 +2,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { clearCart } from "../redux/cartSlice";
 import "../styles/checkout.css";
@@ -18,6 +18,17 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState("");
+
+  const [address, setAddress] = useState({
+    fullName: "",
+    phone: "",
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    state: "",
+    pincode: "",
+    country: "",
+  });
 
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -100,17 +111,6 @@ const Checkout = () => {
 
     localStorage.setItem("orders", JSON.stringify(existingOrders));
   };
-
-  const [address, setAddress] = useState({
-    fullName: "",
-    phone: "",
-    addressLine1: "",
-    addressLine2: "",
-    city: "",
-    state: "",
-    pincode: "",
-    country: "India",
-  });
 
   const totalPrice = cartItems.reduce(
     (acc, item) => acc + item.price * item.qty,
@@ -350,10 +350,42 @@ const Checkout = () => {
   };
 
   return (
-    <div className="checkout-container">
-      <div className="checkout-header">
-        <h1>Secure Checkout</h1>
-        <p>Complete your order with confidence.</p>
+    <div className="checkout-container" style={{ padding: "0 0 40px 0" }}>
+      {/* Editorial Hero Header Banner */}
+      <div 
+        className="premium-page-hero"
+        style={{ 
+          background: "linear-gradient(135deg, #FAF6F0 0%, #F5ECE0 100%)", 
+          borderBottom: "1px solid rgba(200, 169, 107, 0.2)", 
+          padding: "40px 20px", 
+          textAlign: "center", 
+          position: "relative",
+          overflow: "hidden",
+          width: "100%",
+          marginBottom: "40px"
+        }}
+      >
+        <div style={{ position: "absolute", width: "200px", height: "200px", borderRadius: "50%", background: "rgba(200, 169, 107, 0.08)", filter: "blur(40px)", top: "-50px", left: "-50px", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", width: "250px", height: "250px", borderRadius: "50%", background: "rgba(200, 169, 107, 0.05)", filter: "blur(60px)", bottom: "-80px", right: "-50px", pointerEvents: "none" }} />
+        
+        <div style={{ maxWidth: "800px", margin: "0 auto", position: "relative", zIndex: "2" }}>
+          <div style={{ fontSize: "0.75rem", letterSpacing: "2px", textTransform: "uppercase", color: "#8B7355", marginBottom: "14px", fontWeight: "700" }}>
+            <Link to="/" style={{ color: "#8B7355", textDecoration: "none" }}>Home</Link>
+            <span style={{ margin: "0 8px", opacity: 0.5 }}>/</span>
+            <span style={{ color: "#1F2937" }}>Checkout</span>
+          </div>
+          
+          <span style={{ display: "inline-block", fontSize: "0.8rem", letterSpacing: "3px", textTransform: "uppercase", color: "#C8A96B", fontWeight: "700", marginBottom: "8px" }}>
+            Secure Transaction
+          </span>
+          <h1 style={{ fontFamily: "'Cinzel', 'Didot', 'Times New Roman', serif", fontSize: "2.5rem", fontWeight: "700", color: "#1F2937", margin: "0 0 10px 0", letterSpacing: "-0.5px", lineHeight: "1.2" }}>
+            Secure Checkout Center
+          </h1>
+          <div style={{ width: "40px", height: "1px", background: "#C8A96B", margin: "14px auto" }} />
+          <p style={{ fontSize: "0.95rem", color: "#6B7280", margin: "0 auto", lineHeight: "1.6", maxWidth: "600px" }}>
+            Input your shipping credentials and payment methods to finalize your purchase order.
+          </p>
+        </div>
       </div>
 
       <form className="checkout-layout" onSubmit={handleSubmit}>

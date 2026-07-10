@@ -1,378 +1,217 @@
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import AdminSidebar from "./AdminSidebar";
 
 const AddProduct = () => {
-
   const { user } = useContext(AuthContext);
-
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-  name: '',
-  description: '',
-  price: '',
-  originalPrice: '',
-  category: '',
-  stock: ''
-});
+    name: '',
+    description: '',
+    price: '',
+    originalPrice: '',
+    category: '',
+    stock: ''
+  });
 
   const [image, setImage] = useState(null);
-
+  const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  /* ================= ADMIN CHECK ================= */
 
   if (!user || user.role !== 'admin') {
     navigate('/');
     return null;
   }
 
-  /* ================= SUBMIT ================= */
+  // Handle local image file previews
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     if (Number(formData.price) < 0) {
-  alert("Price cannot be negative");
-  return;
-}
+      toast.error("Price cannot be negative");
+      return;
+    }
 
-if (Number(formData.originalPrice) < 0) {
-  alert("Original Price cannot be negative");
-  return;
-}
+    if (Number(formData.originalPrice) < 0) {
+      toast.error("Original Price cannot be negative");
+      return;
+    }
 
-if (
-  Number(formData.originalPrice) <
-  Number(formData.price)
-) {
-  alert(
-    "Original Price must be greater than Price"
-  );
-  return;
-}
+    if (Number(formData.originalPrice) < Number(formData.price)) {
+      toast.error("Original Price must be greater than Price");
+      return;
+    }
 
     if (!image) {
-      return alert('Please select an image');
+      toast.error('Please select an image');
+      return;
     }
 
     setLoading(true);
-
     const data = new FormData();
-
     data.append('name', formData.name);
     data.append('description', formData.description);
     data.append('price', formData.price);
     data.append('category', formData.category);
     data.append('stock', formData.stock);
     data.append('originalPrice', formData.originalPrice);
-
     data.append('image', image);
 
     try {
-
       const res = await fetch('/api/products', {
         method: 'POST',
-
         headers: {
           Authorization: `Bearer ${user.token}`
         },
-
         body: data
       });
 
       const responseData = await res.json();
 
       if (res.ok) {
-
-        alert('Product created successfully with Cloudinary Image URL!');
-
-        navigate('/shop');
-
+        toast.success('Product created successfully!');
+        navigate('/admin/products');
       } else {
-
-        alert(responseData.message || 'Error creating product');
+        toast.error(responseData.message || 'Error creating product');
       }
-
     } catch (error) {
-
       console.error(error);
-
+      toast.error('Failed to create product');
     } finally {
-
       setLoading(false);
     }
   };
 
   return (
+    <div className="admin-layout-wrapper">
+      {/* LEFT COLUMN: SIDEBAR */}
+      <AdminSidebar />
 
-    <div style={containerStyle}>
-
-      <div style={cardStyle}>
-
-        <p
-  style={{
-    textAlign:'center',
-    color:'#6B7280',
-    marginBottom:'30px'
-  }}
->
-  Create and publish premium products for your store
-</p>
-
-        <h2 style={headingStyle}>
-          Add New Product
-        </h2>
-
-        <form
-          onSubmit={handleSubmit}
-          style={formStyle}
-        >
-
-          {/* PRODUCT NAME */}
-
-          <input
-            type="text"
-            placeholder="Product Name"
-            required
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                name: e.target.value
-              })
-            }
-            style={inputStyle}
-          />
-
-          {/* DESCRIPTION */}
-
-          <textarea
-            placeholder="Description"
-            required
-            rows="5"
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                description: e.target.value
-              })
-            }
-            style={textareaStyle}
-          />
-
-          {/* PRICE */}
-
-          <input
-            type="number"
-            placeholder="Price"
-            required
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                price: e.target.value
-              })
-            }
-            style={inputStyle}
-          />
-
-          <input
-  type="number"
-  min="0"
-  placeholder="Original Price"
-  required
-  onChange={(e) =>
-    setFormData({
-      ...formData,
-      originalPrice: e.target.value
-    })
-  }
-  style={inputStyle}
-/>
-
-          {/* CATEGORY */}
-
-          <input
-            type="text"
-            placeholder="Category"
-            required
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                category: e.target.value
-              })
-            }
-            style={inputStyle}
-          />
-
-          {/* STOCK */}
-
-          <input
-            type="number"
-            placeholder="Stock Quantity"
-            required
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                stock: e.target.value
-              })
-            }
-            style={inputStyle}
-          />
-
-          {/* IMAGE UPLOAD */}
-
-          <div style={uploadBoxStyle}>
-
-            <label style={uploadLabelStyle}>
-              Upload Product Image
-            </label>
-
-            <input
-              type="file"
-              accept="image/*"
-              required
-              onChange={(e) =>
-                setImage(e.target.files[0])
-              }
-              style={fileInputStyle}
-            />
-
+      {/* RIGHT COLUMN: MAIN CONTENT */}
+      <div className="admin-content-console">
+        <div className="admin-page-header">
+          <div>
+            <h2>Inventory Catalog</h2>
+            <p>Add and publish premium skincare cosmetics items.</p>
           </div>
+        </div>
 
+        <div className="admin-form-card" style={{ maxWidth: "800px" }}>
+          <form onSubmit={handleSubmit}>
+            
+            <div className="admin-form-group">
+              <label>Product Name</label>
+              <input
+                type="text"
+                className="admin-form-input"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              />
+            </div>
 
+            <div className="admin-form-group">
+              <label>Description</label>
+              <textarea
+                className="admin-form-input"
+                required
+                rows="4"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              />
+            </div>
 
-          {/* BUTTON */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div className="admin-form-group">
+                <label>Sale Price (₹)</label>
+                <input
+                  type="number"
+                  className="admin-form-input"
+                  required
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                />
+              </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn"
-            style={buttonStyle}
-          >
+              <div className="admin-form-group">
+                <label>Original Price (₹)</label>
+                <input
+                  type="number"
+                  className="admin-form-input"
+                  required
+                  value={formData.originalPrice}
+                  onChange={(e) => setFormData({ ...formData, originalPrice: e.target.value })}
+                />
+              </div>
+            </div>
 
-            {loading
-              ? 'Uploading & Creating...'
-              : 'Publish Product'
-            }
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div className="admin-form-group">
+                <label>Category</label>
+                <input
+                  type="text"
+                  className="admin-form-input"
+                  required
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                />
+              </div>
 
-          </button>
+              <div className="admin-form-group">
+                <label>Stock Count</label>
+                <input
+                  type="number"
+                  className="admin-form-input"
+                  required
+                  value={formData.stock}
+                  onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                />
+              </div>
+            </div>
 
-        </form>
+            <div className="admin-form-group">
+              <label>Product Image</label>
+              <input
+                type="file"
+                className="admin-form-input"
+                accept="image/*"
+                onChange={handleImageChange}
+              />
+              {imagePreview && (
+                <div style={{ marginTop: "12px" }}>
+                  <div className="admin-image-upload-preview-box">
+                    <img src={imagePreview} alt="Preview" />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div style={{ marginTop: "30px", display: "flex", gap: "12px" }}>
+              <button type="submit" className="btn-admin-primary" disabled={loading}>
+                {loading ? "Creating..." : "Save Product"}
+              </button>
+              <button type="button" className="btn-admin-secondary" onClick={() => navigate("/admin/products")}>
+                Cancel
+              </button>
+            </div>
+
+          </form>
+        </div>
 
       </div>
-
     </div>
   );
 };
 
-/* ================= STYLES ================= */
-
-const containerStyle = {
-  width: '100%',
-
-  padding: '20px',
-
-  display: 'flex',
-
-  justifyContent: 'center',
-
-  alignItems: 'center'
-};
-
-const cardStyle = {
-  width: '100%',
-
-  maxWidth: '750px',
-
-  background: '#FFFFFF',
-
-  padding: '50px',
-
-  borderRadius: '28px',
-
-  border: '1px solid #ECE6DC',
-
-  boxShadow:
-    '0 20px 50px rgba(0,0,0,.06)'
-};
-
-const headingStyle = {
-  color: '#1F2937',
-
-  marginBottom: '35px',
-
-  fontSize: '2.5rem',
-
-  textAlign: 'center'
-};
-
-const formStyle = {
-  display: 'flex',
-
-  flexDirection: 'column',
-
-  gap: '18px'
-};
-
-const inputStyle = {
-  padding: '16px 18px',
-
-  background: '#FFFFFF',
-
-  border: '1px solid #D6D6D6',
-
-  borderRadius: '14px',
-
-  color: '#1F2937',
-
-  fontSize: '15px',
-
-  outline: 'none',
-
-  width: '100%'
-};
-
-const textareaStyle = {
-  ...inputStyle,
-
-  resize: 'none'
-};
-
-const uploadBoxStyle = {
-  padding: '22px',
-
-  border: '2px dashed #C8A96B',
-
-  borderRadius: '18px',
-
-  background: '#FAF7F2'
-};
-
-const uploadLabelStyle = {
-  display: 'block',
-
-  marginBottom: '12px',
-
-  color: '#6B7280',
-
-  fontWeight: '600'
-};
-
-const fileInputStyle = {
-  color: '#1F2937',
-
-  width: '100%'
-};
-
-const buttonStyle = {
-  marginTop: '10px',
-
-  width: '100%',
-
-  padding: '15px'
-};
-
 export default AddProduct;
-
-

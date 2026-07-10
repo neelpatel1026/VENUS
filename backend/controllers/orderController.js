@@ -10,10 +10,10 @@ const exportOrders = require("../utils/exportOrders");
 // @access  Private
 
 const addOrderItems = async (req, res) => {
-  try {
-    const { items, totalAmount, address, paymentId } = req.body;
-    console.log(address);
+  const { items, totalAmount, address, paymentId } = req.body;
+  const deductedItems = [];
 
+  try {
     // Validate items
     if (!items || items.length === 0) {
       return res.status(400).json({
@@ -21,40 +21,41 @@ const addOrderItems = async (req, res) => {
       });
     }
 
-    // Check stock availability
+    // Atomic stock check and deduction loop
     for (const item of items) {
-      const product = await Product.findById(item.productId);
+      const product = await Product.findOneAndUpdate(
+        { _id: item.productId, stock: { $gte: item.qty } },
+        { $inc: { stock: -item.qty } },
+        { new: true }
+      );
 
       if (!product) {
-        return res.status(404).json({
-          message: "Product not found",
-        });
-      }
+        // Rollback previously deducted items
+        for (const rolledBackItem of deductedItems) {
+          await Product.findByIdAndUpdate(rolledBackItem.productId, {
+            $inc: { stock: rolledBackItem.qty },
+          });
+        }
 
-      // Check stock
-      if (product.stock <= 0 || product.stock < item.qty) {
+        const prod = await Product.findById(item.productId);
         return res.status(400).json({
-          message: `${product.name} is out of stock`,
+          message: `${prod ? prod.name : "Product"} has insufficient stock or does not exist`,
         });
       }
+      deductedItems.push({ productId: item.productId, qty: item.qty });
     }
 
     // OTP Verification for COD
-
     if ((req.body.paymentMethod || "COD") === "COD") {
       const user = await User.findById(req.user._id);
 
-      console.log("USER PHONE:", user.phone);
-
-      console.log("ADDRESS PHONE:", address.phone);
-
-      // console.log("OTP VERIFIED:", user.otpVerified);
-      console.log("EMAIL VERIFIED:", user.emailVerified);
-
-      // if (!user.otpVerified) {
       if (!user.emailVerified) {
-        console.log("FAILED OTP");
-
+        // Rollback stocks since validation failed!
+        for (const rolledBackItem of deductedItems) {
+          await Product.findByIdAndUpdate(rolledBackItem.productId, {
+            $inc: { stock: rolledBackItem.qty },
+          });
+        }
         return res.status(400).json({
           success: false,
           message: "Please verify your email before placing COD order",
@@ -66,9 +67,7 @@ const addOrderItems = async (req, res) => {
       userId: req.user._id,
       customerName: req.user.name,
       customerEmail: req.user.email,
-
       customerPhone: address.phone,
-
       items: items.map((item) => ({
         productId: item.productId || item._id,
         productName: item.productName || item.name,
@@ -76,12 +75,10 @@ const addOrderItems = async (req, res) => {
         qty: item.qty,
         price: item.price,
       })),
-
       subtotal: totalAmount,
       shippingCharge: 0,
       taxAmount: 0,
       totalAmount,
-
       shippingAddress: {
         fullName: address.fullName,
         phone: address.phone,
@@ -91,11 +88,7 @@ const addOrderItems = async (req, res) => {
         pincode: address.pincode,
         country: address.country,
       },
-
       paymentMethod: req.body.paymentMethod || "COD",
-
-      // paymentId,
-      // paymentStatus: "Pending",
       paymentId,
       otpVerified: (req.body.paymentMethod || "COD") === "COD",
       paymentStatus: "Pending",
@@ -105,59 +98,35 @@ const addOrderItems = async (req, res) => {
     // Save order
     const createdOrder = await order.save();
 
-    // Safely decrease stock
-    for (const item of items) {
-      await Product.findByIdAndUpdate(
-        item.productId,
-        {
-          $inc: { stock: -item.qty },
-        },
-        {
-          new: true,
-        },
-      );
-    }
-
     // Send confirmation email
     const message = `
       <h2>Order Confirmation</h2>
-
       <p>Hello ${req.user.name},</p>
-
-      <p>
-        Your order has been successfully placed!
+      <p>Your order has been successfully placed!</p>
+      <p><strong>Order ID:</strong> ${createdOrder._id}</p>
+      <p><strong>Total Amount:</strong> ₹${totalAmount}</p>
+      <p><strong>Shipping Address:</strong><br/>
+         ${address.addressLine1}, ${address.city}
       </p>
-
-      <p>
-        <strong>Order ID:</strong> ${createdOrder._id}
-      </p>
-
-      <p>
-        <strong>Total Amount:</strong> ₹${totalAmount}
-      </p>
-
-      <p>
-        <strong>Shipping Address:</strong><br/>
-        // ${address.street}, ${address.city}
-        ${address.addressLine1}, ${address.city}
-      </p>
-
-      <p>
-        Thank you for shopping with VENUS ❤️
-      </p>
+      <p>Thank you for shopping with VENUS ❤️</p>
     `;
 
     sendEmail({
       email: req.user.email,
-      subject: "ELYSORIA - Order Confirmation",
+      subject: "VENUS CARE - Order Confirmation",
       message,
     }).catch(console.error);
 
     // Send response
     res.status(201).json(createdOrder);
   } catch (error) {
-    console.log(error);
-
+    console.error(error);
+    // Rollback stocks on any general server/db error during saving
+    for (const rolledBackItem of deductedItems) {
+      await Product.findByIdAndUpdate(rolledBackItem.productId, {
+        $inc: { stock: rolledBackItem.qty },
+      });
+    }
     res.status(500).json({
       message: "Server Error",
     });
@@ -227,7 +196,7 @@ const updateOrderStatus = async (req, res) => {
     await sendEmail({
   email: order.customerEmail,
 
-  subject: `Order ${status} - ELYSORIA`,
+  subject: `Order ${status} - VENUS CARE`,
 
   message: `
     <h2>Order Update</h2>
@@ -249,7 +218,7 @@ const updateOrderStatus = async (req, res) => {
     </p>
 
     <p>
-      Thank you for shopping with ELYSORIA ❤️
+      Thank you for shopping with VENUS CARE ❤️
     </p>
   `,
 });
@@ -330,7 +299,7 @@ const downloadInvoice = async (req, res) => {
 
     console.log("Order found:", order._id);
 
-    generateInvoice(order, res);
+    await generateInvoice(order, res);
   } catch (error) {
     console.error("INVOICE ERROR:", error);
 
@@ -342,8 +311,42 @@ const downloadInvoice = async (req, res) => {
 
 const exportOrdersExcel = async (req, res) => {
   try {
-    const orders = await Order.find({}).sort({ createdAt: -1 });
+    const { search, status, paymentMethod, startDate, endDate } = req.query;
+    const query = {};
 
+    if (search) {
+      if (search.match(/^[0-9a-fA-F]{24}$/)) {
+        query._id = search;
+      } else {
+        query.$or = [
+          { customerName: { $regex: search, $options: "i" } },
+          { customerEmail: { $regex: search, $options: "i" } },
+          { customerPhone: { $regex: search, $options: "i" } }
+        ];
+      }
+    }
+
+    if (status) {
+      query.status = status;
+    }
+
+    if (paymentMethod) {
+      query.paymentMethod = paymentMethod;
+    }
+
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) {
+        query.createdAt.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        query.createdAt.$lte = end;
+      }
+    }
+
+    const orders = await Order.find(query).sort({ createdAt: -1 });
     await exportOrders(orders, res);
   } catch (error) {
     res.status(500).json({

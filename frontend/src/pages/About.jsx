@@ -1,136 +1,3 @@
-// import React from "react";
-
-// const About = () => {
-//   const containerStyle = {
-//     maxWidth: "900px",
-//     margin: "0 auto",
-//     padding: "40px",
-//     background: "#18181b",
-//     borderRadius: "16px",
-//     border: "1px solid rgba(255, 255, 255, 0.05)",
-//     boxShadow: "0 10px 40px rgba(0,0,0,0.5)",
-//     textAlign: "center",
-//   };
-
-//   const socialBtnStyle = {
-//     display: "inline-block",
-//     margin: "10px",
-//     padding: "10px 20px",
-//     background: "#27272a",
-//     color: "#fff",
-//     borderRadius: "8px",
-//     textDecoration: "none",
-//     transition: "all 0.3s ease",
-//     border: "1px solid rgba(255, 255, 255, 0.1)",
-//   };
-
-//   return (
-//     <div style={containerStyle}>
-//       <img
-//         // src="/dp.jpg"
-//         src="https://d1csarkz8obe9u.cloudfront.net/posterpreviews/bird-logo-small-bird-logo-design-template-c4348de128885c179590981155618672_screen.jpg?ts=1677414261"
-//         alt="@ELYSORIA"
-//         style={{
-//           width: "180px",
-//           height: "180px",
-//           borderRadius: "50%",
-//           objectFit: "cover",
-//           border: "4px solid #f97316",
-//           marginBottom: "20px",
-//           boxShadow: "0 4px 20px rgba(249, 115, 22, 0.4)",
-//         }}
-//       />
-//       <h2 style={{ fontSize: "2.5rem", marginBottom: "10px", color: "#fff" }}>
-//         About VENUS
-//       </h2>
-//       <h3
-//         style={{ fontSize: "1.5rem", color: "#f97316", marginBottom: "15px" }}
-//       >
-//         VENUS Premium Acid-Free Skincare
-//       </h3>
-
-//       {/* <p style={{ color: '#a1a1aa', fontSize: '1.2rem', lineHeight: '1.8', maxWidth: '600px', margin: '0 auto 30px auto' }}>
-//         <strong>Join the community and grow together!</strong> Welcome to my platform where we build, deploy, and scale highly engineered systems.
-//       </p> */}
-//       <p
-//         style={{
-//           color: "#a1a1aa",
-//           fontSize: "1.2rem",
-//           lineHeight: "1.8",
-//           maxWidth: "600px",
-//           margin: "0 auto 30px auto",
-//         }}
-//       >
-//         <strong>Reveal Your Natural Beauty with VENUS.</strong> We are dedicated
-//         to creating premium 100% acid-free skincare products that care for your
-//         skin gently while delivering effective results. Because healthy, glowing
-//         skin begins with pure ingredients.
-//       </p>
-//       <div
-//         style={{
-//           display: "flex",
-//           flexWrap: "wrap",
-//           justifyContent: "center",
-//           gap: "10px",
-//           marginTop: "20px",
-//         }}
-//       >
-//         {/* <a href="https://instagram.com/patelneel1026" target="_blank" rel="noreferrer" style={{ ...socialBtnStyle, background: 'rgba(236, 72, 153, 0.2)', borderColor: '#ec4899', color: '#ec4899' }}>📸 Instagram</a> */}
-//         <a
-//           href="https://www.instagram.com/patelneel1026/"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//           style={{
-//             ...socialBtnStyle,
-//             background: "rgba(236, 72, 153, 0.2)",
-//             borderColor: "#ec4899",
-//             color: "#ec4899",
-//           }}
-//         >
-//           📸 Instagram{" "}
-//         </a>
-//         <a
-//           href="https://www.linkedin.com/in/neel-patel-628434285/"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//           style={{
-//             ...socialBtnStyle,
-//             background: "rgba(59, 130, 246, 0.2)",
-//             borderColor: "#3b82f6",
-//             color: "#3b82f6",
-//           }}
-//         >
-//           💼 LinkedIn
-//         </a>
-//         <a
-//           href="https://x.com/patelneel1026"
-//           target="_blank"
-//           rel="noreferrer"
-//           style={socialBtnStyle}
-//         >
-//           ✖️ X (Twitter)
-//         </a>
-//         <a
-//           href="https://wa.me/919672681026"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//           style={{
-//             ...socialBtnStyle,
-//             background: "rgba(34, 197, 94, 0.2)",
-//             borderColor: "#22c55e",
-//             color: "#22c55e",
-//           }}
-//         >
-//           💬 WhatsApp
-//         </a>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default About;
-
-import React from "react";
 import { Link } from "react-router-dom";
 import {
   FaLeaf,
@@ -171,18 +38,49 @@ const About = () => {
   ];
 
   return (
-    <div
-      style={{
-        background: "#fafafa",
-        minHeight: "100vh",
-        padding: "60px 20px",
-      }}
-    >
-      {/* Hero Section */}
+    <div style={{ background: "#FCFBF9", minHeight: "100vh" }}>
+      
+      {/* Editorial Hero Header Banner */}
+      <div 
+        className="premium-page-hero"
+        style={{ 
+          background: "linear-gradient(135deg, #FAF6F0 0%, #F5ECE0 100%)", 
+          borderBottom: "1px solid rgba(200, 169, 107, 0.2)", 
+          padding: "40px 20px", 
+          textAlign: "center", 
+          position: "relative",
+          overflow: "hidden"
+        }}
+      >
+        <div style={{ position: "absolute", width: "200px", height: "200px", borderRadius: "50%", background: "rgba(200, 169, 107, 0.08)", filter: "blur(40px)", top: "-50px", left: "-50px", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", width: "250px", height: "250px", borderRadius: "50%", background: "rgba(200, 169, 107, 0.05)", filter: "blur(60px)", bottom: "-80px", right: "-50px", pointerEvents: "none" }} />
+        
+        <div style={{ maxWidth: "800px", margin: "0 auto", position: "relative", zIndex: "2" }}>
+          <div style={{ fontSize: "0.75rem", letterSpacing: "2px", textTransform: "uppercase", color: "#8B7355", marginBottom: "14px", fontWeight: "700" }}>
+            <Link to="/" style={{ color: "#8B7355", textDecoration: "none" }}>Home</Link>
+            <span style={{ margin: "0 8px", opacity: 0.5 }}>/</span>
+            <span style={{ color: "#1F2937" }}>About</span>
+          </div>
+          
+          <span style={{ display: "inline-block", fontSize: "0.8rem", letterSpacing: "3px", textTransform: "uppercase", color: "#C8A96B", fontWeight: "700", marginBottom: "8px" }}>
+            Venus Care Story
+          </span>
+          <h1 style={{ fontFamily: "'Cinzel', 'Didot', 'Times New Roman', serif", fontSize: "2.5rem", fontWeight: "700", color: "#1F2937", margin: "0 0 10px 0", letterSpacing: "-0.5px", lineHeight: "1.2" }}>
+            Crafted for Luxury Beauty
+          </h1>
+          <div style={{ width: "40px", height: "1px", background: "#C8A96B", margin: "14px auto" }} />
+          <p style={{ fontSize: "0.95rem", color: "#6B7280", margin: "0 auto", lineHeight: "1.6", maxWidth: "600px" }}>
+            Learn about our heritage of clean botanical formulations, organic ingredients, and modern skin science.
+          </p>
+        </div>
+      </div>
+
+      {/* Main Content */}
       <div
         style={{
           maxWidth: "1200px",
           margin: "auto",
+          padding: "60px 20px",
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))",
           gap: "50px",
@@ -194,10 +92,13 @@ const About = () => {
           <img
             src="https://images.unsplash.com/photo-1556228578-8c89e6adf883?q=80&w=1200&auto=format&fit=crop"
             alt="Venus Skincare"
+            loading="lazy"
             style={{
-              width: "100%",
+              width: "85%",
+              display: "block",
+              margin: "0 auto",
               borderRadius: "20px",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
             }}
           />
         </div>
@@ -206,36 +107,40 @@ const About = () => {
         <div>
           <span
             style={{
-              color: "#f97316",
-              fontWeight: "600",
-              letterSpacing: "1px",
+              color: "#C8A96B",
+              fontWeight: "700",
+              letterSpacing: "2px",
+              fontSize: "0.8rem",
             }}
           >
-            PREMIUM SKINCARE BRAND
+            PREMIUM APOTHECARY BRAND
           </span>
 
-          <h1
+          <h2
             style={{
-              fontSize: "3rem",
+              fontSize: "2.5rem",
               margin: "15px 0",
-              color: "#18181b",
+              color: "#1F2937",
+              fontFamily: "'Cinzel', 'Didot', serif",
             }}
           >
-            About VENUS
-          </h1>
+            Pure Skincare Rituals
+          </h2>
 
           <h3
             style={{
-              color: "#f97316",
+              color: "#C8A96B",
               marginBottom: "20px",
+              fontSize: "1.2rem",
+              fontWeight: "600",
             }}
           >
-            Premium Acid-Free Skincare
+            Premium Acid-Free Botanicals
           </h3>
 
           <p
             style={{
-              color: "#525252",
+              color: "#6B7280",
               lineHeight: "1.9",
               fontSize: "1.05rem",
             }}
@@ -250,7 +155,7 @@ const About = () => {
 
           <p
             style={{
-              color: "#525252",
+              color: "#6B7280",
               lineHeight: "1.9",
               marginTop: "15px",
             }}
@@ -267,18 +172,20 @@ const About = () => {
       <div
         style={{
           maxWidth: "1200px",
-          margin: "100px auto 0",
+          margin: "0 auto",
+          padding: "20px",
         }}
       >
         <h2
           style={{
             textAlign: "center",
             fontSize: "2.2rem",
-            color: "#18181b",
+            color: "#1F2937",
             marginBottom: "50px",
+            fontFamily: "'Cinzel', 'Didot', serif",
           }}
         >
-          Why Choose VENUS?
+          Standards of Pure Care
         </h2>
 
         <div
@@ -297,14 +204,15 @@ const About = () => {
                 padding: "30px",
                 borderRadius: "16px",
                 textAlign: "center",
-                boxShadow: "0 5px 20px rgba(0,0,0,0.08)",
+                boxShadow: "0 5px 20px rgba(0,0,0,0.02)",
+                border: "1px solid #E8DFD2",
                 transition: "0.3s",
               }}
             >
               <div
                 style={{
                   fontSize: "2rem",
-                  color: "#f97316",
+                  color: "#C8A96B",
                   marginBottom: "15px",
                 }}
               >
@@ -314,7 +222,7 @@ const About = () => {
               <h3
                 style={{
                   marginBottom: "10px",
-                  color: "#18181b",
+                  color: "#1F2937",
                 }}
               >
                 {item.title}
@@ -322,7 +230,7 @@ const About = () => {
 
               <p
                 style={{
-                  color: "#525252",
+                  color: "#6B7280",
                   lineHeight: "1.7",
                 }}
               >
@@ -338,7 +246,7 @@ const About = () => {
         style={{
           maxWidth: "1200px",
           margin: "100px auto",
-          background: "#18181b",
+          background: "#1F2937",
           borderRadius: "20px",
           padding: "50px 20px",
         }}
@@ -356,7 +264,7 @@ const About = () => {
             <div key={index}>
               <h2
                 style={{
-                  color: "#f97316",
+                  color: "#C8A96B",
                   fontSize: "2.5rem",
                   marginBottom: "10px",
                 }}
@@ -381,6 +289,7 @@ const About = () => {
         style={{
           maxWidth: "1200px",
           margin: "auto",
+          padding: "0 20px 100px 20px",
           display: "grid",
           gridTemplateColumns:
             "repeat(auto-fit,minmax(300px,1fr))",
@@ -392,13 +301,15 @@ const About = () => {
             background: "#fff",
             padding: "35px",
             borderRadius: "18px",
-            boxShadow: "0 5px 20px rgba(0,0,0,0.08)",
+            boxShadow: "0 5px 20px rgba(0,0,0,0.02)",
+            border: "1px solid #E8DFD2",
           }}
         >
           <h2
             style={{
-              color: "#f97316",
+              color: "#C8A96B",
               marginBottom: "15px",
+              fontFamily: "'Cinzel', 'Didot', serif",
             }}
           >
             Our Mission
@@ -406,7 +317,7 @@ const About = () => {
 
           <p
             style={{
-              color: "#525252",
+              color: "#6B7280",
               lineHeight: "1.8",
             }}
           >
@@ -421,13 +332,15 @@ const About = () => {
             background: "#fff",
             padding: "35px",
             borderRadius: "18px",
-            boxShadow: "0 5px 20px rgba(0,0,0,0.08)",
+            boxShadow: "0 5px 20px rgba(0,0,0,0.02)",
+            border: "1px solid #E8DFD2",
           }}
         >
           <h2
             style={{
-              color: "#f97316",
+              color: "#C8A96B",
               marginBottom: "15px",
+              fontFamily: "'Cinzel', 'Didot', serif",
             }}
           >
             Our Vision
@@ -435,7 +348,7 @@ const About = () => {
 
           <p
             style={{
-              color: "#525252",
+              color: "#6B7280",
               lineHeight: "1.8",
             }}
           >
@@ -450,9 +363,9 @@ const About = () => {
       <div
         style={{
           maxWidth: "1200px",
-          margin: "100px auto 0",
+          margin: "0 auto 100px auto",
           background:
-            "linear-gradient(135deg,#f97316,#ea580c)",
+            "linear-gradient(135deg, #1F2937 0%, #111827 100%)",
           padding: "60px 30px",
           borderRadius: "20px",
           textAlign: "center",
@@ -463,6 +376,7 @@ const About = () => {
           style={{
             fontSize: "2.5rem",
             marginBottom: "15px",
+            fontFamily: "'Cinzel', 'Didot', serif",
           }}
         >
           Healthy Skin Starts With Pure Ingredients
@@ -472,6 +386,7 @@ const About = () => {
           style={{
             marginBottom: "25px",
             fontSize: "1.05rem",
+            color: "#D1D5DB"
           }}
         >
           Discover our premium collection and experience
@@ -481,12 +396,14 @@ const About = () => {
         <Link
           to="/shop"
           style={{
-            background: "#fff",
-            color: "#f97316",
+            background: "#C8A96B",
+            color: "#fff",
             padding: "14px 30px",
             borderRadius: "50px",
             textDecoration: "none",
             fontWeight: "bold",
+            transition: "0.3s",
+            display: "inline-block"
           }}
         >
           Shop Collection

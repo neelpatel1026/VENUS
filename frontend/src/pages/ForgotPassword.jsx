@@ -235,6 +235,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import '../styles/auth.css';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const ForgotPassword = () => {
 
@@ -260,18 +261,11 @@ const ForgotPassword = () => {
         { email }
       );
 
-      alert('OTP Sent Successfully');
-
+      toast.success('OTP Sent Successfully');
       setOtpSent(true);
-
     } catch (error) {
-
       console.log(error);
-
-      alert(
-        error.response?.data?.message ||
-        'Failed To Send OTP'
-      );
+      toast.error(error.response?.data?.message || 'Failed To Send OTP');
 
     } finally {
 
@@ -295,8 +289,7 @@ const ForgotPassword = () => {
         }
       );
 
-      alert('Password Reset Successful');
-
+      toast.success('Password Reset Successful');
       // CLEAR STATES
       setEmail('');
       setOtp('');
@@ -305,15 +298,9 @@ const ForgotPassword = () => {
 
       // REDIRECT
       navigate('/login');
-
     } catch (error) {
-
       console.log(error);
-
-      alert(
-        error.response?.data?.message ||
-        'Reset Failed'
-      );
+      toast.error(error.response?.data?.message || 'Reset Failed');
 
     } finally {
 
