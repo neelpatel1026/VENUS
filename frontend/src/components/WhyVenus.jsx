@@ -1,7 +1,7 @@
 
 import { GiRabbit, GiPerfumeBottle } from "react-icons/gi";
 
-import { BsWallet2, BsGenderAmbiguous } from "react-icons/bs";
+import { BsGem, BsGenderAmbiguous } from "react-icons/bs";
 
 import "../styles/whyVenus.css";
 
@@ -30,9 +30,7 @@ const WhyVenus = () => {
         </div>
 
         <div className="why-card">
-          {/* <FaAward />
-          <h3>Affordable Luxury</h3> */}
-          <BsWallet2 />
+          <BsGem />
           <h3>Affordable Luxury</h3>
           <p>Premium quality and elegance at a reasonable price.</p>
         </div>

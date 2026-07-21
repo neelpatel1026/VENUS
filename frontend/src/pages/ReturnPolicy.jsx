@@ -7,12 +7,7 @@ const ReturnPolicy = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="policy-container">
-      <div className="policy-hero">
-        <h1>Return & Refund Policy</h1>
-        <p>Your satisfaction is our commitment. Find detailed guidelines for returning or exchanging your cosmetic items.</p>
-      </div>
-
+    <div className="policy-container route-fade-in" style={{ padding: "40px 20px" }}>
       <div className="policy-card">
         {/* Eligibility Section */}
         <div className="policy-section">

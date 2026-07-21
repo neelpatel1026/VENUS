@@ -145,8 +145,12 @@ const generateInvoice = async (order, res) => {
     doc.fillColor("white").font("Helvetica-Bold").fontSize(9.5);
     doc.text("Product Details", 65, yPos + 8);
     doc.text("Qty", 270, yPos + 8, { width: 40, align: "center" });
-    doc.text("Unit Price", 330, yPos + 8, { width: 90, align: "right" });
-    doc.text("Total Amount", 440, yPos + 8, { width: 90, align: "right" });
+    if (!order.giftReceipt) {
+      doc.text("Unit Price", 330, yPos + 8, { width: 90, align: "right" });
+      doc.text("Total Amount", 440, yPos + 8, { width: 90, align: "right" });
+    } else {
+      doc.text("Gift Item", 380, yPos + 8, { width: 150, align: "right" });
+    }
   };
 
   drawTableHeader(tableY);
@@ -175,8 +179,12 @@ const generateInvoice = async (order, res) => {
     // Render columns
     doc.text(item.productName, 65, tableY + 8, { width: 200, lineGap: 2 });
     doc.text(item.qty.toString(), 270, tableY + 8, { width: 40, align: "center" });
-    doc.text(formatPrice(item.price), 330, tableY + 8, { width: 90, align: "right" });
-    doc.text(formatPrice(item.qty * item.price), 440, tableY + 8, { width: 90, align: "right" });
+    if (!order.giftReceipt) {
+      doc.text(formatPrice(item.price), 330, tableY + 8, { width: 90, align: "right" });
+      doc.text(formatPrice(item.qty * item.price), 440, tableY + 8, { width: 90, align: "right" });
+    } else {
+      doc.text("Gift packaging", 380, tableY + 8, { width: 150, align: "right" });
+    }
 
     tableY += rowHeight;
   });
@@ -233,20 +241,30 @@ const generateInvoice = async (order, res) => {
   doc.fillColor(GOLD).fontSize(11).font("Helvetica-Bold").text("ORDER SUMMARY", 325, currentSummaryY + 12);
   doc.fillColor(DARK_GRAY).fontSize(9.5).font("Helvetica");
 
-  doc.text("Subtotal", 325, currentSummaryY + 32);
-  doc.text(formatPrice(subtotal), 440, currentSummaryY + 32, { width: 90, align: "right" });
+  if (!order.giftReceipt) {
+    doc.text("Subtotal", 325, currentSummaryY + 32);
+    doc.text(formatPrice(subtotal), 440, currentSummaryY + 32, { width: 90, align: "right" });
 
-  doc.text("Shipping Charge", 325, currentSummaryY + 48);
-  doc.text("FREE", 440, currentSummaryY + 48, { width: 90, align: "right" });
+    doc.text("Shipping Charge", 325, currentSummaryY + 48);
+    doc.text("FREE", 440, currentSummaryY + 48, { width: 90, align: "right" });
 
-  if (totalSavings > 0) {
-    doc.fillColor(SUCCESS_GREEN).font("Helvetica-Bold").text("Total Discount", 325, currentSummaryY + 64);
-    doc.text(`-${formatPrice(totalSavings)}`, 440, currentSummaryY + 64, { width: 90, align: "right" });
+    if (totalSavings > 0) {
+      doc.fillColor(SUCCESS_GREEN).font("Helvetica-Bold").text("Total Discount", 325, currentSummaryY + 64);
+      doc.text(`-${formatPrice(totalSavings)}`, 440, currentSummaryY + 64, { width: 90, align: "right" });
+    }
+
+    doc.fillColor(DARK_GRAY).font("Helvetica-Bold");
+    doc.text("Paid Grand Total", 325, currentSummaryY + 88);
+    doc.text(formatPrice(order.totalAmount), 440, currentSummaryY + 88, { width: 90, align: "right" });
+  } else {
+    doc.fillColor(DARK_GRAY).font("Helvetica-Bold").fontSize(9).text("GIFT RECEIPT - PRICE HIDDEN", 320, currentSummaryY + 30, { width: 215, align: "center" });
+    doc.fontSize(7.5).font("Helvetica").fillColor(LIGHT_GRAY).text("Prices have been hidden from this package inside invoice at the customer's request.", 320, currentSummaryY + 44, { width: 215, align: "center", lineGap: 1 });
+    
+    if (order.giftMessage) {
+      doc.fillColor(GOLD).font("Helvetica-Bold").fontSize(8).text("GIFT MESSAGE:", 320, currentSummaryY + 70, { width: 215, align: "center" });
+      doc.fillColor(DARK_GRAY).font("Helvetica-Oblique").fontSize(8).text(`"${order.giftMessage}"`, 320, currentSummaryY + 82, { width: 215, align: "center" });
+    }
   }
-
-  doc.fillColor(DARK_GRAY).font("Helvetica-Bold");
-  doc.text("Paid Grand Total", 325, currentSummaryY + 88);
-  doc.text(formatPrice(order.totalAmount), 440, currentSummaryY + 88, { width: 90, align: "right" });
 
   doc.y = currentSummaryY + 130;
 

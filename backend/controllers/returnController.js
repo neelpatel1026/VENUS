@@ -1,6 +1,7 @@
 const ReturnRequest = require("../models/ReturnRequest");
 const Order = require("../models/Order");
 const cloudinary = require("../config/cloudinary");
+const Product = require("../models/Product");
 
 const createReturnRequest = async (req, res) => {
   try {
@@ -68,6 +69,20 @@ const createReturnRequest = async (req, res) => {
       returnImages: imageUrls,
     });
 
+    order.status = "Return Requested";
+    order.orderTimeline.push({
+      status: "Return Requested",
+      timestamp: new Date(),
+      updatedBy: req.user ? req.user.name : "System",
+    });
+    await order.save();
+
+    // Send return request email asynchronously (non-blocking)
+    const { sendTimelineStatusEmailAsync } = require("../utils/notificationService.js");
+    sendTimelineStatusEmailAsync(order, "Return Requested").catch((err) => {
+      console.error("❌ Return Requested email failed:", err.message);
+    });
+
     res.status(201).json({
       success: true,
       request,
@@ -125,14 +140,48 @@ const updateReturnStatus = async (req, res) => {
       });
     }
 
+    const previousStatus = request.status;
     request.status = req.body.status;
-
     await request.save();
 
-    if (req.body.status === "Approved") {
-      await Order.findByIdAndUpdate(request.orderId, {
-        status: "Returned",
-      });
+    if (req.body.status === "Approved" && previousStatus !== "Approved") {
+      const order = await Order.findById(request.orderId);
+      if (order && order.status !== "Return Approved") {
+        // Restock inventory for all items in the order
+        for (const item of order.items) {
+          await Product.findByIdAndUpdate(item.productId, {
+            $inc: { stock: item.qty },
+          });
+        }
+        order.status = "Return Approved";
+        order.orderTimeline.push({
+          status: "Return Approved",
+          timestamp: new Date(),
+          updatedBy: req.user ? req.user.name : "System",
+        });
+        await order.save();
+
+        const { sendTimelineStatusEmailAsync } = require("../utils/notificationService.js");
+        sendTimelineStatusEmailAsync(order, "Return Approved").catch((err) => {
+          console.error("❌ Return Approved email failed:", err.message);
+        });
+      }
+    } else if (req.body.status === "Refunded" && previousStatus !== "Refunded") {
+      const order = await Order.findById(request.orderId);
+      if (order && order.status !== "Refund Completed") {
+        order.status = "Refund Completed";
+        order.orderTimeline.push({
+          status: "Refund Completed",
+          timestamp: new Date(),
+          updatedBy: req.user ? req.user.name : "System",
+        });
+        await order.save();
+
+        const { sendTimelineStatusEmailAsync } = require("../utils/notificationService.js");
+        sendTimelineStatusEmailAsync(order, "Refund Completed").catch((err) => {
+          console.error("❌ Refund Completed email failed:", err.message);
+        });
+      }
     }
 
     res.json({

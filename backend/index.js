@@ -2,7 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
+const globalLimiter = require("./middleware/globalLimiter.js");
 const connectDB = require("./config/db.js");
 const path = require("path");
 
@@ -12,27 +12,15 @@ connectDB();
 
 const app = express();
 
+// Trust Proxy for upstream reverse proxies (Nginx, Heroku, Cloudflare, etc.)
+app.set("trust proxy", 1);
+
+const helmetConfig = require("./middleware/helmetConfig.js");
+
 // Security Headers
-app.use(
-  helmet({
-    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
-  })
-);
+app.use(helmetConfig);
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 5000,
-});
-
-app.use(limiter);
-
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 15,
-  message: {
-    message: "Too many authentication requests from this IP, please try again after 15 minutes."
-  }
-});
+app.use(globalLimiter);
 
 // CORS
 const allowedOrigins = ["http://localhost:5173"];
@@ -66,8 +54,17 @@ app.use((req, res, next) => {
   next();
 });
 
-// Body Parser
+// Body Parser & Cookie Parser
+const cookieParser = require("cookie-parser");
 app.use(express.json());
+app.use(cookieParser());
+
+// CSRF Routes (exclude from protection middleware)
+app.use("/api/csrf", require("./routes/csrfRoutes"));
+
+// CSRF Protection Middleware
+const csrfProtection = require("./middleware/csrfProtection");
+app.use(csrfProtection);
 
 // Routes
 app.use("/api/auth", require("./routes/authRoutes"));
@@ -77,11 +74,11 @@ app.use("/api/orders", require("./routes/orderRoutes"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
 app.use("/api/analytics", require("./routes/analyticsRoutes"));
 app.use("/api/address", require("./routes/addressRoutes"));
-app.use("/api/otp", authLimiter, require("./routes/otpRoutes"));
-app.use("/api/email-otp", authLimiter, require("./routes/emailOtpRoutes"));
+app.use("/api/otp", require("./routes/otpRoutes"));
+app.use("/api/email-otp", require("./routes/emailOtpRoutes"));
 app.use("/api/returns", require("./routes/returnRoutes"));
-app.use("/api/wallet", require("./routes/walletRoutes"));
 app.use("/api/complaints", require("./routes/complaintRoutes"));
+app.use("/api/reviews", require("./routes/reviewRoutes"));
 // Health Check Endpoint
 const mongoose = require("mongoose");
 app.get("/api/health", (req, res) => {
@@ -115,10 +112,12 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// Error Handler
+// Global Error Handler Middleware
 app.use((err, req, res, next) => {
-  res.status(500).json({
-    message: err.message,
+  const statusCode = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
+  res.status(statusCode).json({
+    success: false,
+    message: err.message || "Internal Server Error",
   });
 });
 
@@ -134,4 +133,10 @@ process.on("uncaughtException", (err) => {
 // Server
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  
+  // Start the review email reminder scheduler
+  const { startReviewScheduler } = require("./utils/reviewScheduler.js");
+  startReviewScheduler();
+});

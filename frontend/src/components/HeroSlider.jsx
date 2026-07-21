@@ -1,117 +1,174 @@
-// import { useState, useEffect } from "react";
-import { useRef } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, EffectFade } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/effect-fade";
-
-import "swiper/css";
-import "./../styles/heroslider.css";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 import hero1 from "../assets/hero1.jpg";
 import hero2 from "../assets/hero2.jpg";
 import hero3 from "../assets/hero3.jpg";
-import herovideo from "../assets/herovideo.mp4";
+import hero4 from "../assets/hero4.jpg";
 
-import mp1 from "../assets/mp1.jpg";
-import mp2 from "../assets/mp2.jpg";
-import mp3 from "../assets/mp3.jpg";
-import mobile from "../assets/mobile.mp4";
+import "./../styles/heroslider.css";
 
-
-
-// const slides = [
-//   { type: "video", src: herovideo, delay: 29000 },
-//   { type: "image", src: hero1, delay: 3000 },
-//   { type: "image", src: hero2, delay: 3000 },
-//   { type: "image", src: hero3, delay: 3000 },
-// ];
-
-
+const slides = [
+  {
+    image: hero1,
+    subtitle: "THE SKINCARE APOTHECARY",
+    title: "Reveal Your Skin's Radiance",
+    buttonText: "Shop Collection",
+    align: "right",
+  },
+  {
+    image: hero2,
+    subtitle: "ELIXIR OF YOUTH",
+    title: "Timeless Plant Hydration",
+    buttonText: "Discover Luxury",
+    align: "left",
+  },
+  {
+    image: hero3,
+    subtitle: "SENSORY PERFECTION",
+    title: "Pure Botanical Rituals",
+    buttonText: "Explore Collection",
+    align: "right",
+  },
+  {
+    image: hero4,
+    subtitle: "CLEAN BEAUTY ESSENCE",
+    title: "Vegan & Active Nutrition",
+    buttonText: "Discover More",
+    align: "left",
+  },
+];
 
 export default function HeroSlider() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const autoplayTimer = useRef(null);
 
-  const videoRef = useRef(null);
+  // Swipe gesture hooks
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const minSwipeDistance = 50;
 
-  const isMobile = window.innerWidth <= 768;
-
-  const slides = [
-    {
-      type: "video",
-      src: isMobile ? mobile : herovideo,
-      // delay: 29000,
-      delay: isMobile ? 5000 : 29000,
-    },
-    {
-      type: "image",
-      src: isMobile ? mp1 : hero1,
-      delay: 1000,
-    },
-    {
-      type: "image",
-      src: isMobile ? mp2 : hero2,
-      delay: 1000,
-    },
-    {
-      type: "image",
-      src: isMobile ? mp3 : hero3,
-      delay: 1000,
-    },
-  ];
-  
-  return (
-
-<Swiper
-  className="hero-slider"
-  modules={[Autoplay, EffectFade]}
-  effect="fade"
-  speed={1500}
-  fadeEffect={{
-    crossFade: true,
-  }}
-  autoplay={{
-    delay: 3000,
-    disableOnInteraction: false,
-  }}
-  loop={true}
-  onSlideChange={(swiper) => {
-    const currentSlide = slides[swiper.realIndex];
-
-    if (currentSlide.type === "video" && videoRef.current) {
-      videoRef.current.currentTime = 0;
-      const playPromise = videoRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch((err) => {
-          console.warn("Video play request interrupted:", err.message);
-        });
-      }
+  const startAutoplay = useCallback(() => {
+    if (autoplayTimer.current) {
+      clearInterval(autoplayTimer.current);
     }
-  }}
->
+    autoplayTimer.current = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % slides.length);
+    }, 5000);
+  }, []);
 
+  useEffect(() => {
+    startAutoplay();
+    return () => {
+      if (autoplayTimer.current) {
+        clearInterval(autoplayTimer.current);
+      }
+    };
+  }, [startAutoplay]);
 
-      {slides.map((slide, index) => (
-  <SwiperSlide
-    key={index}
-    data-swiper-autoplay={slide.delay}
-  >
-    <div className="hero-slide">
-      {slide.type === "video" ? (
-        <video
-        ref={videoRef}
-          className="hero-video"
-          muted
-          playsInline
-          autoPlay
-        >
-          <source src={slide.src} type="video/mp4" />
-        </video>
-      ) : (
-        <img src={slide.src} alt={`Venus Care Banner Slide ${index + 1}`} />
-      )}
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % slides.length);
+    startAutoplay();
+  };
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
+    startAutoplay();
+  };
+
+  const handleDotClick = (index) => {
+    setCurrentIndex(index);
+    startAutoplay();
+  };
+
+  // Touch handlers for swipe support
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe) {
+      handleNext();
+    } else if (isRightSwipe) {
+      handlePrev();
+    }
+  };
+
+  return (
+    <div className="hero-slider-container">
+      {slides.map((slide, index) => {
+        const isActive = index === currentIndex;
+        return (
+          <div
+            key={index}
+            className={`hero-slide-wrapper ${isActive ? "active" : ""}`}
+            style={{ pointerEvents: isActive ? "auto" : "none" }}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
+            <img
+              src={slide.image}
+              alt={slide.title}
+              className="hero-slide-image"
+              loading={index === 0 ? "eager" : "lazy"}
+            />
+            {/* TEXT CONTENT OVERLAY (Responsive, luxury alignment) */}
+            <div className={`hero-slide-content-overlay align-${slide.align}`}>
+              <span className="hero-slide-subtitle">
+                {slide.subtitle}
+              </span>
+              <h2 className="hero-slide-title">
+                {slide.title}
+              </h2>
+              <div style={{ marginTop: "14px" }}>
+                <Link to="/shop" className="hero-slide-btn">
+                  {slide.buttonText}
+                </Link>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Glassmorphic Arrows */}
+      <button 
+        className="nav-arrow prev-arrow" 
+        onClick={handlePrev} 
+        aria-label="Previous slide"
+      >
+        <FiChevronLeft />
+      </button>
+      <button 
+        className="nav-arrow next-arrow" 
+        onClick={handleNext} 
+        aria-label="Next slide"
+      >
+        <FiChevronRight />
+      </button>
+
+      {/* Rounded indicators */}
+      <div className="hero-indicators">
+        {slides.map((_, index) => (
+          <button
+            key={index}
+            className={`indicator-dot ${index === currentIndex ? "active" : ""}`}
+            onClick={() => handleDotClick(index)}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
     </div>
-  </SwiperSlide>
-      ))}
-    </Swiper>
   );
 }

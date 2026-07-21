@@ -3,21 +3,26 @@ import { AuthContext } from '../context/AuthContext.jsx';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import AdminSidebar from "./AdminSidebar";
+import { getThumbnailUrl } from "../utils/imageHelper.js";
 
 const AdminProducts = () => {
   const { user } = useContext(AuthContext);
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
 
   /* ================= FETCH PRODUCTS ================= */
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true);
       try {
         const res = await fetch('/api/products');
         const data = await res.json();
         setProducts(data);
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchProducts();
@@ -137,14 +142,26 @@ const AdminProducts = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.map((product) => {
+              {loading ? (
+                [...Array(5)].map((_, idx) => (
+                  <tr key={idx}>
+                    <td><div className="shimmer-bg" style={{ width: "44px", height: "44px", borderRadius: "8px" }} /></td>
+                    <td><div className="shimmer-bg" style={{ height: "16px", width: "160px", borderRadius: "4px" }} /></td>
+                    <td><div className="shimmer-bg" style={{ height: "16px", width: "100px", borderRadius: "4px" }} /></td>
+                    <td><div className="shimmer-bg" style={{ height: "16px", width: "70px", borderRadius: "4px" }} /></td>
+                    <td><div className="shimmer-bg" style={{ height: "16px", width: "50px", borderRadius: "4px" }} /></td>
+                    <td><div className="shimmer-bg" style={{ height: "30px", width: "110px", borderRadius: "6px" }} /></td>
+                  </tr>
+                ))
+              ) : filteredProducts.map((product) => {
                 const isLowStock = product.stock <= 3;
                 return (
                   <tr key={product._id}>
                     <td>
                       <img
-                        src={product.imageUrl || "/placeholder.jpg"}
+                        src={getThumbnailUrl(product.imageUrl)}
                         alt={product.name}
+                        loading="lazy"
                         style={{
                           width: "44px",
                           height: "44px",
@@ -192,7 +209,7 @@ const AdminProducts = () => {
             </tbody>
           </table>
 
-          {filteredProducts.length === 0 && (
+          {!loading && filteredProducts.length === 0 && (
             <div style={{ padding: "40px", textAlign: "center", color: "var(--admin-text-muted)" }}>
               No products found matching filters.
             </div>

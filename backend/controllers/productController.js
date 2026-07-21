@@ -38,7 +38,11 @@ const getProductById = async (req, res) => {
     res.status(200).json(product);
 
   } catch (error) {
-
+    if (error.kind === 'ObjectId' || error.name === 'CastError') {
+      return res.status(404).json({
+        message: 'Product not found',
+      });
+    }
     res.status(500).json({
       message: error.message,
     });
@@ -121,6 +125,13 @@ if (Number(stock) < 0) {
       stock: stock || 0,
       imageUrl,
       originalPrice,
+      availableAsGift: req.body.availableAsGift === 'true' || req.body.availableAsGift === true,
+      giftWrapAvailable: req.body.giftWrapAvailable === 'true' || req.body.giftWrapAvailable === true,
+      luxuryGiftBoxAvailable: req.body.luxuryGiftBoxAvailable === 'true' || req.body.luxuryGiftBoxAvailable === true,
+      giftMessageAllowed: req.body.giftMessageAllowed === 'true' || req.body.giftMessageAllowed === true,
+      giftBadgeText: req.body.giftBadgeText || "",
+      estimatedPackingTime: req.body.estimatedPackingTime || "1-2 days",
+      giftPrice: req.body.giftPrice || 0,
     });
 
     res.status(201).json(product);
@@ -156,39 +167,29 @@ const updateProduct = async (req, res) => {
       originalPrice,
     } = req.body;
 
-    if (
-  price !== undefined &&
-  Number(price) < 0
-) {
-  return res.status(400).json({
-    message: "Price cannot be negative"
-  });
-}
+    const finalPrice = price !== undefined ? Number(price) : product.price;
+    const finalOriginalPrice = originalPrice !== undefined ? Number(originalPrice) : product.originalPrice;
 
-if (
-  originalPrice !== undefined &&
-  Number(originalPrice) < 0
-) {
-  return res.status(400).json({
-    message: "Original Price cannot be negative"
-  });
-}
+    if (price !== undefined && Number(price) < 0) {
+      return res.status(400).json({
+        message: "Price cannot be negative"
+      });
+    }
 
-if (
-  price !== undefined &&
-  originalPrice !== undefined &&
-  Number(originalPrice) < Number(price)
-) {
-  return res.status(400).json({
-    message: "Original Price must be greater than or equal to Price"
-  });
-}
+    if (originalPrice !== undefined && Number(originalPrice) < 0) {
+      return res.status(400).json({
+        message: "Original Price cannot be negative"
+      });
+    }
 
-    if (price !== undefined)
-  product.price = price;
+    if (finalOriginalPrice < finalPrice) {
+      return res.status(400).json({
+        message: "Original Price must be greater than or equal to Price"
+      });
+    }
 
-if (originalPrice !== undefined)
-  product.originalPrice = originalPrice;
+    if (price !== undefined) product.price = Number(price);
+    if (originalPrice !== undefined) product.originalPrice = Number(originalPrice);
 
     if (name) product.name = name.trim();
 
@@ -200,6 +201,21 @@ if (originalPrice !== undefined)
 
     if (stock !== undefined)
       product.stock = stock;
+
+    if (req.body.availableAsGift !== undefined)
+      product.availableAsGift = req.body.availableAsGift === 'true' || req.body.availableAsGift === true;
+    if (req.body.giftWrapAvailable !== undefined)
+      product.giftWrapAvailable = req.body.giftWrapAvailable === 'true' || req.body.giftWrapAvailable === true;
+    if (req.body.luxuryGiftBoxAvailable !== undefined)
+      product.luxuryGiftBoxAvailable = req.body.luxuryGiftBoxAvailable === 'true' || req.body.luxuryGiftBoxAvailable === true;
+    if (req.body.giftMessageAllowed !== undefined)
+      product.giftMessageAllowed = req.body.giftMessageAllowed === 'true' || req.body.giftMessageAllowed === true;
+    if (req.body.giftBadgeText !== undefined)
+      product.giftBadgeText = req.body.giftBadgeText;
+    if (req.body.estimatedPackingTime !== undefined)
+      product.estimatedPackingTime = req.body.estimatedPackingTime;
+    if (req.body.giftPrice !== undefined)
+      product.giftPrice = req.body.giftPrice;
 
     if (req.file) {
 

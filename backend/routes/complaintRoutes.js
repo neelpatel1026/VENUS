@@ -31,14 +31,16 @@ const optionalProtect = async (req, res, next) => {
   next();
 };
 
+const adminLimiter = require("../middleware/adminLimiter");
+
 router.route("/")
   .post(optionalProtect, createComplaint)
-  .get(protect, admin, getAdminComplaints);
+  .get(protect, admin, adminLimiter, getAdminComplaints);
 
 router.route("/my").get(protect, getMyComplaints);
 
 router.route("/:id")
   .get(protect, getComplaintById)
-  .put(protect, admin, updateComplaintAdmin);
+  .put(protect, admin, adminLimiter, updateComplaintAdmin);
 
 module.exports = router;

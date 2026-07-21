@@ -775,3 +775,125 @@
     gap: 12px;
   }
 }
+
+@keyframes pulse-gold {
+  0% { box-shadow: 0 0 0 0 rgba(200, 161, 101, 0.5); }
+  70% { box-shadow: 0 0 0 8px rgba(200, 161, 101, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(200, 161, 101, 0); }
+}
+
+/* ==========================================================================
+   10. RESPONSIVE HORIZONTAL PROGRESS TRACKER
+   ========================================================================== */
+
+.premium-progress-tracker {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  padding: 20px 0;
+}
+
+.premium-progress-line {
+  position: absolute;
+  top: 34px;
+  left: 4%;
+  right: 4%;
+  height: 4px;
+  background: #EFEFEF;
+  z-index: 1;
+}
+
+.premium-progress-fill {
+  position: absolute;
+  top: 34px;
+  left: 4%;
+  height: 4px;
+  background: #C8A165;
+  z-index: 1;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-tracker-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.progress-step-icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 2px solid #D1D5DB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9CA3AF;
+  transition: all 0.25s ease;
+}
+
+.progress-tracker-step.completed .progress-step-icon-wrap {
+  background: #16A34A;
+  border-color: #16A34A;
+  color: #FFFFFF;
+}
+
+.progress-tracker-step.current .progress-step-icon-wrap {
+  background: #C8A165;
+  border-color: #C8A165;
+  color: #FFFFFF;
+  box-shadow: 0 0 0 5px rgba(200, 161, 101, 0.18);
+  animation: pulse-gold 1.8s infinite;
+}
+
+.progress-step-label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 10px;
+  color: #6B7280;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.progress-tracker-step.completed .progress-step-label,
+.progress-tracker-step.current .progress-step-label {
+  color: #1A1A1A;
+}
+
+@media (max-width: 768px) {
+  .premium-progress-tracker {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    padding-left: 20px;
+  }
+  .premium-progress-line {
+    left: 36px;
+    top: 24px;
+    bottom: 24px;
+    width: 4px;
+    height: auto;
+  }
+  .premium-progress-fill {
+    left: 36px;
+    top: 24px;
+    width: 4px;
+    height: 0;
+  }
+  .progress-tracker-step {
+    flex-direction: row;
+    gap: 16px;
+    align-items: center;
+  }
+  .progress-step-label {
+    margin-top: 0;
+  }
+}

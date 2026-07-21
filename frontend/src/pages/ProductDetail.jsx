@@ -1,19 +1,40 @@
 import { useEffect, useState, useContext } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart, removeFromCart } from "../redux/cartSlice";
 import toast from "react-hot-toast";
+import { HiStar, HiCheckCircle, HiChevronUp, HiChevronDown } from "react-icons/hi";
 import { AuthContext } from "../context/AuthContext";
-import { HiStar, HiCheckCircle, HiChevronDown, HiChevronUp } from "react-icons/hi";
+import { getOptimizedImageUrl } from "../utils/imageHelper.js";
 import "../styles/product.css";
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [openFaq, setOpenFaq] = useState(null);
+
+  // Reviews States
+  const [reviews, setReviews] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [sortBy, setSortBy] = useState("newest");
+  const [eligible, setEligible] = useState(false);
+  const [eligibleOrderId, setEligibleOrderId] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [editReviewId, setEditReviewId] = useState(null);
+  
+  // Submit Modal Input States
+  const [rating, setRating] = useState(5);
+  const [title, setTitle] = useState("");
+  const [reviewContent, setReviewContent] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -37,6 +58,175 @@ const ProductDetail = () => {
     };
     fetchProduct();
   }, [id]);
+
+  // Fetch Reviews
+  const fetchReviews = async (resetPage = false) => {
+    try {
+      const nextPage = resetPage ? 1 : page;
+      const res = await fetch(`/api/reviews/product/${id}?page=${nextPage}&limit=5&sort=${sortBy}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (resetPage || nextPage === 1) {
+          setReviews(data.reviews || []);
+        } else {
+          setReviews((prev) => [...prev, ...(data.reviews || [])]);
+        }
+        setStats(data.stats || null);
+        setTotalPages(data.pagination?.pages || 1);
+        setTotalCount(data.pagination?.total || 0);
+        if (resetPage) setPage(1);
+      }
+    } catch (err) {
+      console.error("Failed to load reviews:", err);
+    }
+  };
+
+  // Check Eligibility
+  const checkReviewEligibility = async () => {
+    if (!user || !user.token) {
+      setEligible(false);
+      return;
+    }
+    try {
+      const res = await fetch(`/api/reviews/check-eligibility?productId=${id}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setEligible(data.eligible);
+        if (data.eligible) {
+          setEligibleOrderId(data.orderId);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to verify eligibility:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews(true);
+  }, [id, sortBy]);
+
+  useEffect(() => {
+    if (page > 1) {
+      fetchReviews(false);
+    }
+  }, [page]);
+
+  useEffect(() => {
+    checkReviewEligibility();
+  }, [id, user]);
+
+  useEffect(() => {
+    if (searchParams.get("reviewModal") === "true") {
+      const orderIdFromUrl = searchParams.get("orderId");
+      if (orderIdFromUrl) {
+        setEligibleOrderId(orderIdFromUrl);
+        setEligible(true);
+      }
+      setShowModal(true);
+    }
+  }, [searchParams]);
+
+  // Vote Helpful
+  const handleHelpfulVote = async (reviewId) => {
+    if (!user || !user.token) {
+      toast.error("Please login to vote");
+      return;
+    }
+    try {
+      const res = await fetch(`/api/reviews/${reviewId}/helpful`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Voted as helpful! 👍");
+        setReviews((prev) =>
+          prev.map((r) =>
+            r._id === reviewId
+              ? { ...r, helpfulCount: data.helpfulCount, helpfulUsers: [...r.helpfulUsers, user._id] }
+              : r
+          )
+        );
+      } else {
+        toast.error(data.message || "Failed to vote");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Network error");
+    }
+  };
+
+  // Submit Review Form
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    if (reviewContent.trim().length < 20) {
+      toast.error("Review must be at least 20 characters");
+      return;
+    }
+    if (reviewContent.trim().length > 1000) {
+      toast.error("Review must be under 1000 characters");
+      return;
+    }
+    try {
+      setSubmitting(true);
+      const url = editReviewId ? `/api/reviews/${editReviewId}` : "/api/reviews";
+      const method = editReviewId ? "PUT" : "POST";
+      const activeOrderId = searchParams.get("orderId") || eligibleOrderId;
+      const payload = editReviewId
+        ? { rating, title, review: reviewContent }
+        : { productId: id, orderId: activeOrderId, rating, title, review: reviewContent };
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(editReviewId ? "Review updated!" : "Review submitted successfully! ✨");
+        setShowModal(false);
+        setEditReviewId(null);
+        setTitle("");
+        setReviewContent("");
+        setRating(5);
+        fetchReviews(true);
+        checkReviewEligibility();
+      } else {
+        toast.error(data.message || "Failed to submit review");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Network error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const openWriteReviewModal = () => {
+    setEditReviewId(null);
+    setRating(5);
+    setTitle("");
+    setReviewContent("");
+    setShowModal(true);
+  };
+
+  const openEditReviewModal = (reviewObj) => {
+    setEditReviewId(reviewObj._id);
+    setRating(reviewObj.rating);
+    setTitle(reviewObj.title);
+    setReviewContent(reviewObj.review);
+    setShowModal(true);
+  };
 
   // Add To Cart
   const handleAddToCart = () => {
@@ -82,11 +272,22 @@ const ProductDetail = () => {
     setOpenFaq(openFaq === index ? null : index);
   };
 
-  // Loading UI
   if (loading) {
     return (
-      <div style={{ textAlign: "center", padding: "100px 0", color: "#C8A165", fontSize: "20px" }}>
-        Loading Product...
+      <div className="product-detail-wrapper route-fade-in" style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "40px" }}>
+          <div>
+            <div className="shimmer-bg" style={{ width: "100%", height: "400px", borderRadius: "20px" }} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div className="shimmer-bg" style={{ height: "12px", width: "80px", borderRadius: "4px" }} />
+            <div className="shimmer-bg" style={{ height: "36px", width: "80%", borderRadius: "4px" }} />
+            <div className="shimmer-bg" style={{ height: "24px", width: "150px", borderRadius: "4px" }} />
+            <div className="shimmer-bg" style={{ height: "70px", width: "100%", borderRadius: "16px" }} />
+            <div className="shimmer-bg" style={{ height: "100px", width: "100%", borderRadius: "12px" }} />
+            <div className="shimmer-bg" style={{ height: "48px", width: "100%", borderRadius: "14px" }} />
+          </div>
+        </div>
       </div>
     );
   }
@@ -106,7 +307,7 @@ const ProductDetail = () => {
       : 0;
 
   return (
-    <div className="product-detail-wrapper" style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px" }}>
+    <div className="product-detail-wrapper route-fade-in" style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px" }}>
       {/* Breadcrumb */}
       <div style={{ color: "#6B7280", marginBottom: "30px", fontSize: "0.85rem", letterSpacing: "0.5px" }}>
         <Link to="/" style={{ color: "#C8A165", textDecoration: "none" }}>Home</Link>
@@ -128,9 +329,13 @@ const ProductDetail = () => {
             </span>
           )}
           <img
-            src={product.imageUrl}
+            src={getOptimizedImageUrl(product.imageUrl || product.image, 1000)}
             alt={product.name}
             className="detail-image"
+            loading="lazy"
+            onError={(e) => {
+              e.target.src = "/cosmetic_1.avif";
+            }}
           />
         </div>
 
@@ -338,6 +543,255 @@ const ProductDetail = () => {
 
         </div>
       </div>
+
+      {/* Reviews Section */}
+      <div className="reviews-section">
+        <h3>Customer Reviews</h3>
+
+        {/* Summary box */}
+        <div className="reviews-summary-box">
+          <div className="reviews-stats-left">
+            <h2>{stats?.averageRating || 0}</h2>
+            <div className="reviews-stars-row">
+              {[...Array(5)].map((_, i) => (
+                <HiStar
+                  key={i}
+                  style={{
+                    color: i < Math.round(stats?.averageRating || 0) ? "#C8A165" : "#E5E7EB",
+                  }}
+                />
+              ))}
+            </div>
+            <span className="reviews-count-sub">
+              Based on {totalCount} verified reviews
+            </span>
+          </div>
+
+          <div className="reviews-breakdown-right">
+            {[5, 4, 3, 2, 1].map((stars) => {
+              const count = stats?.breakdown[stars] || 0;
+              const pct = totalCount > 0 ? Math.round((count / totalCount) * 100) : 0;
+              return (
+                <div key={stars} className="rating-bar-row">
+                  <span className="rating-star-label">
+                    {stars} <HiStar style={{ color: "#C8A165" }} />
+                  </span>
+                  <div className="rating-progress-track">
+                    <div className="rating-progress-bar" style={{ width: `${pct}%` }} />
+                  </div>
+                  <span className="rating-count-label">{pct}%</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Feed Header */}
+        <div className="reviews-feed-header">
+          <h4>Reviews Feed</h4>
+
+          <div className="reviews-feed-controls">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="reviews-sort-select"
+            >
+              <option value="newest">Newest First</option>
+              <option value="highest">Highest Rating</option>
+              <option value="lowest">Lowest Rating</option>
+              <option value="helpful">Most Helpful</option>
+            </select>
+
+            {eligible && (
+              <button onClick={openWriteReviewModal} className="btn-write-review-luxury">
+                Write a Review
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Feed list */}
+        {reviews.length === 0 ? (
+          <div
+            style={{
+              textAlign: "center",
+              padding: "40px",
+              background: "#FFFFFF",
+              border: "1px dashed #ECE7DF",
+              borderRadius: "16px",
+              color: "#6B7280",
+            }}
+          >
+            No verified reviews have been submitted for this skincare product yet.
+          </div>
+        ) : (
+          <div className="reviews-stack">
+            {reviews.map((rev) => {
+              const initialLetters = rev.customerName
+                ? rev.customerName
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .slice(0, 2)
+                    .toUpperCase()
+                : "U";
+
+              const diffTime = Math.abs(new Date() - new Date(rev.createdAt));
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+              const editable = user && user._id === rev.userId && diffDays <= 30;
+
+              const hasVotedHelpful = user && Array.isArray(rev.helpfulUsers) && rev.helpfulUsers.includes(user._id);
+
+              return (
+                <div key={rev._id} className="review-card-item">
+                  <div className="review-card-header">
+                    <div className="review-user-row">
+                      <div className="review-user-avatar">{initialLetters}</div>
+                      <div className="review-user-details">
+                        <h4>{rev.customerName}</h4>
+                        {rev.isVerifiedPurchase && (
+                          <span className="verified-purchase-badge">
+                            ✓ Verified Purchase
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="review-stars-meta">
+                      <div style={{ display: "flex", gap: "2px", color: "#C8A165", fontSize: "14px" }}>
+                        {[...Array(5)].map((_, idx) => (
+                          <HiStar
+                            key={idx}
+                            style={{
+                              color: idx < rev.rating ? "#C8A165" : "#E5E7EB",
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <span className="review-meta-date">
+                        {new Date(rev.createdAt).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="review-card-content">
+                    <h5>{rev.title}</h5>
+                    <p>{rev.review}</p>
+                  </div>
+
+                  <div className="review-card-actions">
+                    <button
+                      onClick={() => handleHelpfulVote(rev._id)}
+                      disabled={hasVotedHelpful}
+                      className={`helpful-btn ${hasVotedHelpful ? "voted" : ""}`}
+                    >
+                      👍 Helpful ({rev.helpfulCount})
+                    </button>
+
+                    {editable && (
+                      <span onClick={() => openEditReviewModal(rev)} className="edit-review-link">
+                        Edit Review
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Load More pagination */}
+        {page < totalPages && (
+          <button
+            onClick={() => setPage((prev) => prev + 1)}
+            className="btn-load-more-reviews"
+          >
+            Load More Reviews
+          </button>
+        )}
+      </div>
+
+      {/* Write/Edit Review Modal Overlay */}
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-content-card">
+            <h3>{editReviewId ? "Edit Your Review" : "Write a Product Review"}</h3>
+
+            {/* Star Picker */}
+            <div className="star-picker-row">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  type="button"
+                  key={star}
+                  onClick={() => setRating(star)}
+                  className={`star-picker-btn ${star <= rating ? "selected" : ""}`}
+                >
+                  <HiStar />
+                </button>
+              ))}
+            </div>
+
+            <form onSubmit={handleSubmitReview} className="modal-form">
+              <input
+                type="text"
+                placeholder="Review Title (e.g. Highly recommend!)"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                maxLength={80}
+              />
+
+              <textarea
+                placeholder="Share details of your experience with this product (minimum 20 characters)..."
+                value={reviewContent}
+                onChange={(e) => setReviewContent(e.target.value)}
+                required
+                rows={5}
+                maxLength={1000}
+              />
+              <div style={{ textAlign: "right", fontSize: "12px", color: "#6B7280", marginTop: "-12px" }}>
+                {reviewContent.length}/1000 characters (min 20)
+              </div>
+
+              <div className="modal-actions-row">
+                <button type="button" onClick={() => setShowModal(false)} className="btn-modal-cancel">
+                  Cancel
+                </button>
+                <button type="submit" disabled={submitting} className="btn-modal-submit">
+                  {submitting ? "Submitting..." : "Submit Review"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Sticky Mobile Add To Cart / Buy Now Panel */}
+      {user?.role !== "admin" && product.stock > 0 && (
+        <div className="mobile-sticky-action-bar">
+          <button 
+            onClick={handleAddToCart}
+            className="mobile-sticky-btn add-to-cart"
+            type="button"
+          >
+            Add to Bag
+          </button>
+          <button 
+            onClick={() => {
+              handleAddToCart();
+              navigate("/cart");
+            }}
+            className="mobile-sticky-btn buy-now"
+            type="button"
+          >
+            Buy Now
+          </button>
+        </div>
+      )}
     </div>
   );
 };

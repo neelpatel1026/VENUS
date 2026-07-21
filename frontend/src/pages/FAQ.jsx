@@ -37,12 +37,7 @@ const FAQ = () => {
   };
 
   return (
-    <div className="policy-container">
-      <div className="policy-hero">
-        <h1>Frequently Asked Questions</h1>
-        <p>Find answers to common questions about shipping, returns, refunds, payments, and account services.</p>
-      </div>
-
+    <div className="policy-container route-fade-in" style={{ padding: "40px 20px" }}>
       <div className="policy-card">
         <div className="faq-list">
           {faqs.map((faq, index) => (

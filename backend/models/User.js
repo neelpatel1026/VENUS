@@ -101,4 +101,9 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Production Indexes for User collection
+userSchema.index({ role: 1, createdAt: -1 });
+userSchema.index({ createdAt: -1 });
+userSchema.index({ googleId: 1 }, { sparse: true });
+
 module.exports = mongoose.model("User", userSchema);

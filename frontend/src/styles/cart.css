@@ -317,7 +317,7 @@
 
   .cart-container {
 
-    padding: 16px;
+    padding: 16px 16px 160px 16px !important;
   }
 
   /* LAYOUT */
@@ -412,32 +412,34 @@
   /* SUMMARY */
 
   .cart-summary {
-
     width: 100%;
-
-    position: static;
-
-    padding: 22px;
-
-    border-radius: 18px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #FFFFFF;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08);
+    padding: 16px 20px;
+    border-radius: 0;
+    border-top: 1px solid #ECECEC;
+    z-index: 1000;
   }
 
   .cart-summary h3 {
-
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    border-bottom: none;
+    padding-bottom: 0;
   }
 
   /* CHECKOUT BUTTON */
 
   .btn-checkout {
-
     width: 100%;
-
-    padding: 15px;
-
-    border-radius: 14px;
-
+    padding: 12px;
+    border-radius: 8px;
     font-size: 15px;
+    min-height: 48px;
   }
 
   /* CHECKOUT PAGE */

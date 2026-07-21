@@ -86,15 +86,6 @@
   margin: auto;
   padding: 0 20px;
 }
-.featured-products-grid{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:24px;
-
-  max-width:1400px;
-  margin:auto;
-  padding:0 20px;
-}
 
 @media (max-width:1200px){
 .featured-products-grid{
@@ -108,29 +99,84 @@ grid-template-columns:repeat(2,1fr);
 gap:16px;
 }
 }
-
-/* @media (max-width:480px){
-.featured-products-grid{
-grid-template-columns:repeat(2,1fr);
-gap:10px;
-padding:0 10px;
-}
-} */
 @media (max-width:480px){
-
-.featured-products-grid{
-    grid-template-columns:1fr;
-    gap:18px;
-    padding:0 16px;
+  .featured-products-grid{
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    padding: 0 10px !important;
+  }
 }
 
+/* ================= Category Chips ================= */
+.home-category-section {
+  padding: 40px 20px;
+  max-width: 1400px;
+  margin: auto;
+  text-align: center;
 }
 
-/* .featured-products-grid{
-  display:grid !important;
-  grid-template-columns:repeat(4,1fr) !important;
-  gap:24px !important;
-  max-width:1400px;
-  margin:auto;
-  padding:0 20px;
-} */
+.category-scroll-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .home-category-section {
+    padding: 30px 14px;
+  }
+  .category-scroll-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 8px 12px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Hide scrollbar */
+  .category-scroll-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+  .category-scroll-wrapper {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .category-chip-item {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+}
+
+.category-chip-item {
+  background: #FFFFFF;
+  border: 1px solid #EFE8DF;
+  color: #1A1A1A;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 30px;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.category-chip-item:hover {
+  background: #C8A165;
+  border-color: #C8A165;
+  color: #FFFFFF;
+  transform: translateY(-1.5px);
+}
+
+.chip-icon {
+  font-size: 16px;
+}
+
+

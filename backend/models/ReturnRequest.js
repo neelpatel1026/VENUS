@@ -60,7 +60,10 @@ const returnRequestSchema = new mongoose.Schema(
   },
 );
 
-returnRequestSchema.index({ userId: 1 });
+// Production Indexes for ReturnRequest collection
+returnRequestSchema.index({ userId: 1, createdAt: -1 });
 returnRequestSchema.index({ orderId: 1 });
+returnRequestSchema.index({ status: 1, createdAt: -1 });
+returnRequestSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model("ReturnRequest", returnRequestSchema);

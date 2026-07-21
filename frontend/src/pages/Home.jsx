@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import HeroSlider from "../components/HeroSlider";
 import WhyVenus from "../components/WhyVenus";
@@ -41,9 +42,34 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="home-container">
+    <div className="home-container route-fade-in">
       {/* Hero Section */}
       <HeroSlider />
+
+      {/* Categories chips horizontal scroll */}
+      <section className="home-category-section">
+        <div className="section-header" style={{ marginBottom: "28px" }}>
+          <span className="section-tag">CATEGORIES</span>
+          <h2 style={{ fontSize: "28px", marginTop: "8px" }}>Shop By Ritual</h2>
+        </div>
+        <div className="category-scroll-wrapper">
+          <Link to="/shop?category=Face%20Care" className="category-chip-item">
+            <span className="chip-icon">✨</span> Face Care
+          </Link>
+          <Link to="/shop?category=Fragrance" className="category-chip-item">
+            <span className="chip-icon">🌸</span> Fragrance
+          </Link>
+          <Link to="/shop?category=Body%20Care" className="category-chip-item">
+            <span className="chip-icon">🧴</span> Body Care
+          </Link>
+          <Link to="/shop?category=Serum" className="category-chip-item">
+            <span className="chip-icon">💧</span> Serums
+          </Link>
+          <Link to="/shop?category=Gifting" className="category-chip-item">
+            <span className="chip-icon">🎁</span> Gift Sets
+          </Link>
+        </div>
+      </section>
 
       {/* Featured Products */}
       <section className="featured-section">
@@ -58,9 +84,14 @@ const Home = () => {
         </div>
 
         {loading ? (
-          <div className="product-loader">
+          <div className="featured-products-grid">
             {[...Array(4)].map((_, index) => (
-              <div key={index} className="skeleton-card"></div>
+              <div key={index} style={{ border: "1px solid #ECE7DF", background: "#FFFFFF", padding: "16px", borderRadius: "16px", height: "420px", display: "flex", flexDirection: "column", gap: "14px" }}>
+                <div className="shimmer-bg" style={{ flex: '1', borderRadius: '12px' }}></div>
+                <div className="shimmer-bg skeleton-text-line" />
+                <div className="shimmer-bg skeleton-text-line short" />
+                <div className="shimmer-bg" style={{ height: "40px", borderRadius: "8px" }}></div>
+              </div>
             ))}
           </div>
         ) : error ? (

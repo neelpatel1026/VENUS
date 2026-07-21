@@ -1,12 +1,14 @@
 import { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { useLocation } from "react-router-dom";
+import { FiMapPin, FiPhone, FiMail, FiClock, FiShield, FiSmile } from "react-icons/fi";
 import "../styles/contact.css";
 
 const Contact = () => {
   const { user } = useContext(AuthContext);
+  const location = useLocation();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -32,6 +34,22 @@ const Contact = () => {
       }));
     }
   }, [user]);
+
+  // Prefill dynamic assistance requests from order details page
+  useEffect(() => {
+    if (location.state) {
+      const { orderId, productDetails } = location.state;
+      setFormData((prev) => ({
+        ...prev,
+        orderNumber: orderId || prev.orderNumber,
+        subject: orderId ? `Assistance Request for Order #${orderId.slice(-8).toUpperCase()}` : prev.subject,
+        message: productDetails 
+          ? `Hi VENUS CARE Support Team,\n\nI need assistance with my order containing: ${productDetails}.\n\n[Please describe your issue here]\n`
+          : prev.message,
+        category: "Order Issue"
+      }));
+    }
+  }, [location.state]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -94,7 +112,7 @@ const Contact = () => {
       const { data } = await axios.post("/api/complaints", formData, config);
 
       if (data.success) {
-        toast.success("Complaint submitted successfully!");
+        toast.success("Message sent successfully!");
         setFormData({
           name: user ? user.name || "" : "",
           email: user ? user.email || "" : "",
@@ -113,204 +131,220 @@ const Contact = () => {
   };
 
   return (
-    <div className="contact-container">
-      {/* Editorial Hero Header Banner */}
-      <div 
-        className="premium-page-hero"
-        style={{ 
-          background: "linear-gradient(135deg, #FAF6F0 0%, #F5ECE0 100%)", 
-          borderBottom: "1px solid rgba(200, 169, 107, 0.2)", 
-          padding: "40px 20px", 
-          textAlign: "center", 
-          position: "relative",
-          overflow: "hidden",
-          width: "100%",
-          marginBottom: "40px"
-        }}
-      >
-        <div style={{ position: "absolute", width: "200px", height: "200px", borderRadius: "50%", background: "rgba(200, 169, 107, 0.08)", filter: "blur(40px)", top: "-50px", left: "-50px", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", width: "250px", height: "250px", borderRadius: "50%", background: "rgba(200, 169, 107, 0.05)", filter: "blur(60px)", bottom: "-80px", right: "-50px", pointerEvents: "none" }} />
-        
-        <div style={{ maxWidth: "800px", margin: "0 auto", position: "relative", zIndex: "2" }}>
-          <div style={{ fontSize: "0.75rem", letterSpacing: "2px", textTransform: "uppercase", color: "#8B7355", marginBottom: "14px", fontWeight: "700" }}>
-            <Link to="/" style={{ color: "#8B7355", textDecoration: "none" }}>Home</Link>
-            <span style={{ margin: "0 8px", opacity: 0.5 }}>/</span>
-            <span style={{ color: "#1F2937" }}>Contact</span>
+    <div className="contact-page-wrapper route-fade-in">
+      <div className="contact-container">
+        {/* Two-Column Main Layout */}
+        <div className="contact-layout">
+          
+          {/* Left Column: Contact Information Card */}
+          <div className="info-card">
+            <h3>Store Information</h3>
+            <p className="info-card-desc">Reach out directly to our luxury experience centres.</p>
+            
+            <div className="info-details">
+              <div className="info-item">
+                <FiMapPin className="info-icon" />
+                <div className="info-text">
+                  <span>Store Name & Address</span>
+                  <h4>VENUS CARE</h4>
+                  <p>Ahmedabad, Gujarat, India</p>
+                </div>
+              </div>
+
+              <div className="info-item">
+                <FiPhone className="info-icon" />
+                <div className="info-text">
+                  <span>Phone Support</span>
+                  <h4>+91 96726 81026</h4>
+                  <p>Mon - Sat: 9:00 AM - 7:00 PM</p>
+                </div>
+              </div>
+
+              <div className="info-item">
+                <FiMail className="info-icon" />
+                <div className="info-text">
+                  <span>Customer Care Email</span>
+                  <h4>support@venuscare.com</h4>
+                  <p>Online ticketing response</p>
+                </div>
+              </div>
+
+              <div className="info-item">
+                <FiClock className="info-icon" />
+                <div className="info-text">
+                  <span>Business Hours</span>
+                  <h4>Mon - Sat: 9:00 AM - 7:00 PM</h4>
+                  <p>Closed on Sundays & National Holidays</p>
+                </div>
+              </div>
+
+              <div className="info-item">
+                <FiSmile className="info-icon" />
+                <div className="info-text">
+                  <span>Support Availability</span>
+                  <h4>24/7 online response</h4>
+                  <p>Fast review processing</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Support Form */}
+          <div className="form-column">
+            <h3>Send Us a Message</h3>
+            <p className="form-subtitle">Fill in the form below and our beauty specialists will get back to you shortly.</p>
+
+            <form onSubmit={handleSubmit} className="contact-form">
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="name">Full Name*</label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Your full name"
+                  />
+                  {errors.name && <span className="error-text">{errors.name}</span>}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="email">Email Address*</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Your email address"
+                  />
+                  {errors.email && <span className="error-text">{errors.email}</span>}
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="phone">Phone Number*</label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, "");
+                      if (value.length <= 10) {
+                        setFormData((prev) => ({ ...prev, phone: value }));
+                        if (errors.phone) setErrors((prev) => ({ ...prev, phone: "" }));
+                      }
+                    }}
+                    placeholder="10-digit phone number"
+                  />
+                  {errors.phone && <span className="error-text">{errors.phone}</span>}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="category">Category*</label>
+                  <select
+                    id="category"
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                  >
+                    <option value="General Inquiry">General Inquiry</option>
+                    <option value="Order Issue">Order Issue</option>
+                    <option value="Product Complaint">Product Complaint</option>
+                    <option value="Refund">Refund</option>
+                    <option value="Delivery">Delivery</option>
+                    <option value="Payment">Payment</option>
+                    <option value="Technical Issue">Technical Issue</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  {errors.category && <span className="error-text">{errors.category}</span>}
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="subject">Subject*</label>
+                  <input
+                    type="text"
+                    id="subject"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    placeholder="What is this regarding?"
+                  />
+                  {errors.subject && <span className="error-text">{errors.subject}</span>}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="orderNumber">Order Number (Optional)</label>
+                  <input
+                    type="text"
+                    id="orderNumber"
+                    name="orderNumber"
+                    value={formData.orderNumber}
+                    onChange={handleChange}
+                    placeholder="e.g. ORD17000000"
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="message">Message / Description*</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  rows="7"
+                  placeholder="Please describe your complaint or inquiry in detail..."
+                />
+                {errors.message && <span className="error-text">{errors.message}</span>}
+              </div>
+
+              <button type="submit" className="submit-btn" disabled={loading}>
+                {loading ? (
+                  <>
+                    <span className="spinner"></span>
+                    Submitting...
+                  </>
+                ) : (
+                  "Send Message"
+                )}
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* Bottom Trust Section (3 Premium Trust Items) */}
+        <div className="trust-section">
+          <div className="trust-item">
+            <FiClock className="trust-icon" />
+            <div className="trust-text">
+              <h4>Fast Response</h4>
+              <p>Usually within 24 hours</p>
+            </div>
           </div>
           
-          <span style={{ display: "inline-block", fontSize: "0.8rem", letterSpacing: "3px", textTransform: "uppercase", color: "#C8A96B", fontWeight: "700", marginBottom: "8px" }}>
-            Customer Experience Centre
-          </span>
-          <h1 style={{ fontFamily: "'Cinzel', 'Didot', 'Times New Roman', serif", fontSize: "2.5rem", fontWeight: "700", color: "#1F2937", margin: "0 0 10px 0", letterSpacing: "-0.5px", lineHeight: "1.2" }}>
-            Premium Assistance
-          </h1>
-          <div style={{ width: "40px", height: "1px", background: "#C8A96B", margin: "14px auto" }} />
-          <p style={{ fontSize: "0.95rem", color: "#6B7280", margin: "0 auto", lineHeight: "1.6", maxWidth: "600px" }}>
-            Whether you have skincare questions, product recommendations or order assistance, our beauty specialists are always ready to help.
-          </p>
-        </div>
-      </div>
+          <div className="trust-item">
+            <FiShield className="trust-icon" />
+            <div className="trust-text">
+              <h4>Secure Communication</h4>
+              <p>Your information stays private</p>
+            </div>
+          </div>
 
-      <div className="contact-layout">
-        {/* Company Information Card */}
-        <div className="info-card">
-          <h3>Store Information</h3>
-          <div className="info-details">
-            <div className="info-item">
-              <span>Store Name</span>
-              <h4>VENUS CARE</h4>
-            </div>
-            <div className="info-item">
-              <span>Address</span>
-              <h4>Ahmedabad, Gujarat, India</h4>
-            </div>
-            <div className="info-item">
-              <span>Phone</span>
-              <h4>+91 96726 81026</h4>
-            </div>
-            <div className="info-item">
-              <span>Support Email</span>
-              <h4>support@venuscare.com</h4>
-            </div>
-            <div className="info-item">
-              <span>Business Hours</span>
-              <h4>Mon - Sat: 9:00 AM - 7:00 PM</h4>
-            </div>
-            <div className="info-item">
-              <span>Support Availability</span>
-              <h4>24/7 online ticketing response</h4>
+          <div className="trust-item">
+            <FiSmile className="trust-icon" />
+            <div className="trust-text">
+              <h4>Premium Customer Care</h4>
+              <p>Dedicated beauty specialists</p>
             </div>
           </div>
         </div>
 
-        {/* Contact / Complaint Form */}
-        <div className="form-column">
-          <h3>Submit a Support Ticket</h3>
-          <p className="form-subtitle">Fill in the form below and our team will get back to you shortly.</p>
-
-          <form onSubmit={handleSubmit} className="contact-form">
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="name">Full Name*</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Your full name"
-                />
-                {errors.name && <span className="error-text">{errors.name}</span>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="email">Email Address*</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Your email address"
-                />
-                {errors.email && <span className="error-text">{errors.email}</span>}
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="phone">Phone Number*</label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={(e) => {
-                    // Only numbers and limit to 10
-                    const value = e.target.value.replace(/\D/g, "");
-                    if (value.length <= 10) {
-                      setFormData((prev) => ({ ...prev, phone: value }));
-                      if (errors.phone) setErrors((prev) => ({ ...prev, phone: "" }));
-                    }
-                  }}
-                  placeholder="10-digit phone number"
-                />
-                {errors.phone && <span className="error-text">{errors.phone}</span>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="category">Category*</label>
-                <select
-                  id="category"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                >
-                  <option value="General Inquiry">General Inquiry</option>
-                  <option value="Order Issue">Order Issue</option>
-                  <option value="Product Complaint">Product Complaint</option>
-                  <option value="Refund">Refund</option>
-                  <option value="Delivery">Delivery</option>
-                  <option value="Payment">Payment</option>
-                  <option value="Technical Issue">Technical Issue</option>
-                  <option value="Other">Other</option>
-                </select>
-                {errors.category && <span className="error-text">{errors.category}</span>}
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="subject">Subject*</label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  placeholder="What is this regarding?"
-                />
-                {errors.subject && <span className="error-text">{errors.subject}</span>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="orderNumber">Order Number (Optional)</label>
-                <input
-                  type="text"
-                  id="orderNumber"
-                  name="orderNumber"
-                  value={formData.orderNumber}
-                  onChange={handleChange}
-                  placeholder="e.g. ORD17000000"
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="message">Message / Description*</label>
-              <textarea
-                id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                rows="6"
-                placeholder="Please describe your complaint or inquiry in detail..."
-              />
-              {errors.message && <span className="error-text">{errors.message}</span>}
-            </div>
-
-            <button type="submit" className="submit-btn" disabled={loading}>
-              {loading ? (
-                <>
-                  <span className="spinner"></span>
-                  Submitting...
-                </>
-              ) : (
-                "Submit Support Ticket"
-              )}
-            </button>
-          </form>
-        </div>
       </div>
     </div>
   );

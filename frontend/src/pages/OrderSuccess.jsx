@@ -100,44 +100,7 @@ const OrderSuccess = () => {
   const savings = Math.max(0, subtotal - totalPaid);
 
   return (
-    <div className="ordersuccess-page-wrapper" style={{ padding: "0 0 40px 0" }}>
-      {/* Editorial Hero Header Banner */}
-      <div 
-        className="premium-page-hero"
-        style={{ 
-          background: "linear-gradient(135deg, #FAF6F0 0%, #F5ECE0 100%)", 
-          borderBottom: "1px solid rgba(200, 169, 107, 0.2)", 
-          padding: "40px 20px", 
-          textAlign: "center", 
-          position: "relative",
-          overflow: "hidden",
-          width: "100%",
-          marginBottom: "40px"
-        }}
-      >
-        <div style={{ position: "absolute", width: "200px", height: "200px", borderRadius: "50%", background: "rgba(200, 169, 107, 0.08)", filter: "blur(40px)", top: "-50px", left: "-50px", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", width: "250px", height: "250px", borderRadius: "50%", background: "rgba(200, 169, 107, 0.05)", filter: "blur(60px)", bottom: "-80px", right: "-50px", pointerEvents: "none" }} />
-        
-        <div style={{ maxWidth: "800px", margin: "0 auto", position: "relative", zIndex: "2" }}>
-          <div style={{ fontSize: "0.75rem", letterSpacing: "2px", textTransform: "uppercase", color: "#8B7355", marginBottom: "14px", fontWeight: "700" }}>
-            <Link to="/" style={{ color: "#8B7355", textDecoration: "none" }}>Home</Link>
-            <span style={{ margin: "0 8px", opacity: 0.5 }}>/</span>
-            <span style={{ color: "#1F2937" }}>Success</span>
-          </div>
-          
-          <span style={{ display: "inline-block", fontSize: "0.8rem", letterSpacing: "3px", textTransform: "uppercase", color: "#C8A96B", fontWeight: "700", marginBottom: "8px" }}>
-            Fulfillment Confirmed
-          </span>
-          <h1 style={{ fontFamily: "'Cinzel', 'Didot', 'Times New Roman', serif", fontSize: "2.5rem", fontWeight: "700", color: "#1F2937", margin: "0 0 10px 0", letterSpacing: "-0.5px", lineHeight: "1.2" }}>
-            Thank You For Your Purchase
-          </h1>
-          <div style={{ width: "40px", height: "1px", background: "#C8A96B", margin: "14px auto" }} />
-          <p style={{ fontSize: "0.95rem", color: "#6B7280", margin: "0 auto", lineHeight: "1.6", maxWidth: "600px" }}>
-            Your order has been registered and sent to billing. You can track your parcel tracking timelines below.
-          </p>
-        </div>
-      </div>
-
+    <div className="ordersuccess-page-wrapper route-fade-in">
       {/* 1. TOP CELEBRATION HEADER */}
       <div className="ordersuccess-hero-card">
         <div className="confetti-holder">
@@ -335,7 +298,15 @@ const OrderSuccess = () => {
               {order?.items ? (
                 order.items.map((item) => (
                   <div key={item.productId || item._id} className="summary-item-row-data">
-                    <img src={item.productImage || "/placeholder.jpg"} alt={item.productName} className="summary-item-thumb" />
+                    <img 
+                      src={item.productImage || item.imageUrl || item.image || "/cosmetic_1.avif"} 
+                      alt={item.productName} 
+                      className="summary-item-thumb" 
+                      loading="lazy"
+                      onError={(e) => {
+                        e.target.src = "/cosmetic_1.avif";
+                      }}
+                    />
                     <div className="summary-item-text">
                       <h4 className="summary-item-title">{item.productName}</h4>
                       <span className="summary-item-qty">Qty: {item.qty} × ₹{item.price.toFixed(2)}</span>

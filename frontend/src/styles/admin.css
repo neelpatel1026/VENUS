@@ -4,13 +4,13 @@
 
 :root {
   --admin-gold: #C8A165;
-  --admin-gold-hover: #B59053;
-  --admin-bg: #FAF9F6;
+  --admin-gold-hover: #B88C4A;
+  --admin-bg: #F8F8F8;
   --admin-card-bg: #FFFFFF;
-  --admin-border: #E8DFD2;
-  --admin-text-main: #1F2937;
+  --admin-border: #ECECEC;
+  --admin-text-main: #1A1A1A;
   --admin-text-muted: #6B7280;
-  --admin-shadow: 0 4px 25px rgba(200, 161, 101, 0.05);
+  --admin-shadow: 0 10px 35px rgba(0, 0, 0, 0.05);
 }
 
 .admin-layout-wrapper {
@@ -436,3 +436,281 @@
     width: 100%;
   }
 }
+
+/* ==================================================
+   CUSTOM LUXURY COSMETICS PANEL SKIN UTILITIES
+   ================================================== */
+.badge-payment {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+.badge-payment.pending {
+  background: #F3F4F6;
+  color: #4B5563;
+}
+.badge-payment.paid {
+  background: #DEF7EC;
+  color: #16A34A;
+}
+.badge-payment.refunded {
+  background: #E1EFFE;
+  color: #2563EB;
+}
+.badge-payment.failed {
+  background: #FDE8E8;
+  color: #DC2626;
+}
+
+.badge-shipment {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+.badge-shipment.pending, .badge-shipment.confirmed {
+  background: #FEF3C7;
+  color: #F59E0B;
+}
+.badge-shipment.preparing, .badge-shipment.packed {
+  background: #E1EFFE;
+  color: #2563EB;
+}
+.badge-shipment.shipped, .badge-shipment.outfordelivery {
+  background: #E0E7FF;
+  color: #4F46E5;
+}
+.badge-shipment.delivered {
+  background: #DEF7EC;
+  color: #16A34A;
+}
+.badge-shipment.cancelled, .badge-shipment.returned {
+  background: #FDE8E8;
+  color: #DC2626;
+}
+
+/* Product previews Shopify style */
+.product-thumbs-preview {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.product-preview-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: contain;
+  background: #FFFFFF;
+  border: 1px solid #ECECEC;
+}
+.product-preview-more-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6B7280;
+  background: #ECECEC;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+/* Buttons */
+.btn-admin-export {
+  background: #C8A165;
+  color: #FFFFFF;
+  border: none;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-admin-export:hover {
+  background: #B88C4A;
+  transform: translateY(-1.5px);
+}
+.btn-admin-view {
+  background: transparent;
+  border: 1px solid #C8A165;
+  color: #C8A165;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+.btn-admin-view:hover {
+  background: #C8A165;
+  color: #FFFFFF;
+}
+.btn-admin-invoice {
+  background: #FFFFFF;
+  border: 1px solid #ECECEC;
+  color: #1A1A1A;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-admin-invoice:hover {
+  background: #F8F8F8;
+  border-color: #B0B0B0;
+}
+
+.admin-card-container {
+  background: #FFFFFF;
+  border-radius: 20px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.05);
+  border: 1px solid #ECECEC;
+  padding: 24px;
+}
+
+/* ==================================================
+   ADMIN RESPONSIVE SYSTEM OVERRIDES
+   ================================================== */
+.admin-mobile-toggle-header {
+  display: none;
+}
+.admin-drawer-close-btn {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .admin-sidebar-menu {
+    width: 220px;
+    padding: 20px 14px;
+  }
+  .admin-content-console {
+    max-width: calc(100% - 220px);
+    padding: 30px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-layout-wrapper {
+    flex-direction: column;
+  }
+  
+  .admin-mobile-toggle-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: #FFFFFF;
+    border-bottom: 1px solid var(--admin-border);
+    padding: 0 16px;
+    z-index: 10005;
+  }
+  
+  .admin-hamburger-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--admin-text-main);
+    display: flex;
+    align-items: center;
+  }
+
+  .admin-drawer-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 10010;
+  }
+
+  .admin-sidebar-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 10015;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .admin-sidebar-menu.drawer-open {
+    transform: translateX(0);
+  }
+
+  .admin-drawer-close-btn {
+    display: flex;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--admin-text-muted);
+  }
+  
+  .admin-sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .admin-content-console {
+    max-width: 100% !important;
+    padding: 20px 16px;
+    margin-top: 56px;
+  }
+
+  .admin-kpis-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  
+  .admin-kpi-card {
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .kpi-val {
+    font-size: 1.4rem;
+  }
+
+  /* Force table scrolling to prevent layout clipping */
+  .admin-table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .admin-table-container table {
+    min-width: 600px; /* Force scroll limits */
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-kpis-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+

@@ -1,142 +1,142 @@
-import {
-  useState,
-  useContext,
-  useEffect
-} from 'react';
-
-import {
-  useNavigate,
-  Link
-} from 'react-router-dom';
-
-import { AuthContext }
-from '../context/AuthContext';
-
-import '../styles/auth.css';
-
-import axios from 'axios';
-
-import toast
-from 'react-hot-toast';
+import { useState, useContext, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import { motion } from "framer-motion";
+import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
+import axios from "axios";
+import toast from "react-hot-toast";
+import "../styles/auth.css";
 
 const Login = () => {
+  const [emailOrPhone, setEmailOrPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
-  /* ================= STATES ================= */
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [isEmailValid, setIsEmailValid] = useState(false);
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
 
-  const [emailOrPhone, setEmailOrPhone] =
-    useState('');
-
-  const [password, setPassword] =
-    useState('');
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const { login } =
-    useContext(AuthContext);
-
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  /* ================= NORMAL LOGIN ================= */
+  // Load saved credentials if "Remember Me" was previously selected
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("venus_remember_me_email");
+    if (savedEmail) {
+      setEmailOrPhone(savedEmail);
+      setIsEmailValid(true);
+      setRememberMe(true);
+    }
+  }, []);
 
+  const handleEmailChange = (val) => {
+    setEmailOrPhone(val);
+    if (!val.trim()) {
+      setEmailError("Email or phone is required");
+      setIsEmailValid(false);
+    } else {
+      setEmailError("");
+      setIsEmailValid(true);
+    }
+  };
+
+  const handlePasswordChange = (val) => {
+    setPassword(val);
+    if (!val.trim()) {
+      setPasswordError("Password is required");
+      setIsPasswordValid(false);
+    } else if (val.trim().length < 6) {
+      setPasswordError("Password must be at least 6 characters");
+      setIsPasswordValid(false);
+    } else {
+      setPasswordError("");
+      setIsPasswordValid(true);
+    }
+  };
+
+  // NORMAL LOGIN SUBMIT
   const handleSubmit = async (e) => {
-
     e.preventDefault();
+    if (loading) return;
+
+    // Local input trimming
+    const trimmedInput = emailOrPhone.trim();
+    const trimmedPassword = password.trim();
+
+    let hasErrors = false;
+    if (!trimmedInput) {
+      setEmailError("Email or phone is required");
+      setIsEmailValid(false);
+      hasErrors = true;
+    }
+    if (!trimmedPassword) {
+      setPasswordError("Password is required");
+      setIsPasswordValid(false);
+      hasErrors = true;
+    }
+
+    if (hasErrors) return;
 
     setLoading(true);
-
     try {
-
-      const res = await fetch(
-        'http://localhost:5000/api/auth/login',
-        {
-          method: 'POST',
-
-          headers: {
-            'Content-Type': 'application/json',
-          },
-
-          body: JSON.stringify({
-            emailOrPhone,
-            password,
-          }),
-        }
-      );
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailOrPhone: trimmedInput,
+          password: trimmedPassword,
+        }),
+      });
 
       const data = await res.json();
 
       if (res.ok) {
+        // Save "Remember Me" credentials
+        if (rememberMe) {
+          localStorage.setItem("venus_remember_me_email", trimmedInput);
+        } else {
+          localStorage.removeItem("venus_remember_me_email");
+        }
 
         login(data);
-
-        toast.success(
-          'Login Successful'
-        );
-
-        navigate('/');
-
+        toast.success("Welcome back! Login Successful.");
+        navigate("/");
       } else {
-
-        toast.error(
-          data.message || 'Login Failed'
-        );
+        toast.error(data.message || "Invalid credentials");
       }
-
     } catch (error) {
-
       console.error(error);
-
-      toast.error(
-        'Server Error'
-      );
-
+      toast.error("Network error. Please try again.");
     } finally {
-
       setLoading(false);
     }
   };
 
-  /* ================= GOOGLE LOGIN ================= */
-
-  const handleGoogleSuccess = async (
-    credentialResponse
-  ) => {
-
+  // GOOGLE LOGIN SUCCESS CALLBACK
+  const handleGoogleSuccess = async (credentialResponse) => {
     try {
-
       setLoading(true);
-
-      const res = await axios.post(
-        'http://localhost:5000/api/auth/google-login',
-        {
-          credential:
-            credentialResponse.credential,
-        }
-      );
+      const res = await axios.post("/api/auth/google-login", {
+        credential: credentialResponse.credential,
+      });
 
       login(res.data);
-
-      toast.success(
-        'Google Login Successful'
-      );
-
-      navigate('/');
-
+      toast.success("Google Login Successful! Welcome to VENUS CARE.");
+      navigate("/");
     } catch (error) {
-
       console.error(error);
-
-      toast.error(
-        error?.response?.data?.message ||
-        'Google Login Failed'
-      );
-
+      toast.error(error?.response?.data?.message || "Google Authentication Failed");
     } finally {
-
       setLoading(false);
     }
   };
 
+  // GSI SCRIPT INITIALIZATION
   useEffect(() => {
     const loadGsiScript = () => {
       if (document.getElementById("google-gsi-client")) {
@@ -167,7 +167,7 @@ const Login = () => {
           window.google.accounts.id.renderButton(container, {
             theme: "outline",
             size: "large",
-            width: 280,
+            width: 380,
           });
         }
       }
@@ -176,98 +176,125 @@ const Login = () => {
     loadGsiScript();
   }, []);
 
-  /* ================= UI ================= */
-
   return (
-
-    <div className="auth-container">
-
-      <form
-        onSubmit={handleSubmit}
-        className="auth-form"
-      >
-
-        <h2>Login</h2>
-
-        {/* EMAIL / PHONE */}
-
-        <input
-          type="text"
-          placeholder="Email or Phone Number"
-          value={emailOrPhone}
-          onChange={(e) =>
-            setEmailOrPhone(e.target.value)
-          }
-          required
-        />
-
-        {/* PASSWORD */}
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) =>
-            setPassword(e.target.value)
-          }
-          required
-        />
-
-        {/* LOGIN BUTTON */}
-
-        <button
-          type="submit"
-          className="btn"
-          disabled={loading}
+    <>
+      <div className="auth-background-radial" />
+      <div className="auth-container">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="auth-card"
         >
-          {
-            loading
-              ? 'Loading...'
-              : 'Login'
-          }
-        </button>
+          <div className="auth-header">
+            <h1 className="auth-logo-text">Venus Care</h1>
+            <span className="auth-tagline-text">Luxury Skincare</span>
+            <h2 className="auth-title-text">Welcome Back</h2>
+            <p className="auth-subtitle-text">Sign in to your premium account</p>
+          </div>
 
-        {/* GOOGLE LOGIN */}
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column" }}>
+            {/* EMAIL / PHONE INPUT */}
+            <div className={`auth-input-wrapper ${emailError ? "error" : isEmailValid ? "success" : ""}`}>
+              <span className="auth-input-icon">
+                <FiMail />
+              </span>
+              <input
+                type="text"
+                placeholder="Email or Phone Number"
+                className="auth-input"
+                value={emailOrPhone}
+                onChange={(e) => handleEmailChange(e.target.value)}
+                autoComplete="email"
+                required
+              />
+              {emailError && <p className="auth-error-text">{emailError}</p>}
+            </div>
 
-        <div
-          style={{
-            marginTop: '20px',
-            display: 'flex',
-            justifyContent: 'center',
-          }}
-        >
-          <div id="google-signin-btn-container"></div>
-        </div>
+            {/* PASSWORD INPUT */}
+            <div className={`auth-input-wrapper ${passwordError ? "error" : isPasswordValid ? "success" : ""}`}>
+              <span className="auth-input-icon">
+                <FiLock />
+              </span>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                className="auth-input"
+                value={password}
+                onChange={(e) => handlePasswordChange(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                className="auth-input-action"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex="-1"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+              </button>
+              {passwordError && <p className="auth-error-text">{passwordError}</p>}
+            </div>
 
-        {/* FORGOT PASSWORD */}
+            {/* REMEMBER ME & FORGOT PASSWORD */}
+            <div className="auth-meta-row">
+              <label className="auth-checkbox-label">
+                <input
+                  type="checkbox"
+                  className="auth-checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                Remember Me
+              </label>
+              <Link to="/forgot-password" className="auth-link">
+                Forgot Password?
+              </Link>
+            </div>
 
-        <p style={{ marginTop: '15px' }}>
+            {/* SUBMIT BUTTON */}
+            <button
+              type="submit"
+              className="auth-btn"
+              disabled={loading}
+              style={{ width: "100%" }}
+            >
+              {loading ? (
+                <>
+                  <div className="auth-spinner" />
+                  <span>Signing In...</span>
+                </>
+              ) : (
+                "Sign In"
+              )}
+            </button>
 
-          <Link to="/forgot-password">
+            {/* OR DIVIDER */}
+            <div className="auth-divider">OR</div>
 
-            Forgot Password?
+            {/* GOOGLE SIGN IN */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginBottom: "24px",
+              }}
+            >
+              <div id="google-signin-btn-container" style={{ width: "100%" }}></div>
+            </div>
 
-          </Link>
-
-        </p>
-
-        {/* REGISTER */}
-
-        <p style={{ marginTop: '15px' }}>
-
-          Don't have an account?{' '}
-
-          <Link to="/register">
-
-            Register
-
-          </Link>
-
-        </p>
-
-      </form>
-
-    </div>
+            {/* REGISTER ROUTE LINK */}
+            <p style={{ margin: 0, textAlign: "center", fontSize: "14px", color: "#6B7280" }}>
+              Don't have an account?{" "}
+              <Link to="/register" className="auth-link">
+                Register Now
+              </Link>
+            </p>
+          </form>
+        </motion.div>
+      </div>
+    </>
   );
 };
 

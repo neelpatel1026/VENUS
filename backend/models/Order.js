@@ -152,16 +152,36 @@ const orderSchema = new mongoose.Schema(
       type: String,
       enum: [
         "Pending",
-        "Confirmed",
+        "Processing",
         "Packed",
         "Shipped",
         "Out For Delivery",
         "Delivered",
         "Cancelled",
+        "Return Requested",
+        "Return Approved",
+        "Refund Completed",
         "Returned",
       ],
       default: "Pending",
     },
+
+    orderTimeline: [
+      {
+        status: {
+          type: String,
+          required: true,
+        },
+        timestamp: {
+          type: Date,
+          default: Date.now,
+        },
+        updatedBy: {
+          type: String,
+          default: "System",
+        },
+      },
+    ],
 
     deliveredAt: {
       type: Date,
@@ -169,6 +189,31 @@ const orderSchema = new mongoose.Schema(
 
     returnAllowedTill: {
       type: Date,
+    },
+
+    reviewEligible: {
+      type: Boolean,
+      default: false,
+    },
+
+    reviewReminderSent: {
+      type: Boolean,
+      default: false,
+    },
+
+    reviewReminderCount: {
+      type: Number,
+      default: 0,
+    },
+
+    lastReviewReminderSentAt: {
+      type: Date,
+      default: null,
+    },
+
+    reviewCampaignCompleted: {
+      type: Boolean,
+      default: false,
     },
 
     refundedAt: {
@@ -192,12 +237,44 @@ const orderSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+
+    isGift: {
+      type: Boolean,
+      default: false,
+    },
+
+    giftWrap: {
+      type: Boolean,
+      default: false,
+    },
+
+    giftBox: {
+      type: Boolean,
+      default: false,
+    },
+
+    giftMessage: {
+      type: String,
+      default: "",
+    },
+
+    giftReceipt: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
   },
 );
 
-orderSchema.index({ userId: 1 });
+// Production Indexes for Order collection
+orderSchema.index({ userId: 1, createdAt: -1 });
+orderSchema.index({ status: 1, createdAt: -1 });
+orderSchema.index({ createdAt: -1 });
+orderSchema.index({ paymentStatus: 1 });
+orderSchema.index({ "items.productId": 1 });
+orderSchema.index({ customerEmail: 1 });
+orderSchema.index({ customerPhone: 1 });
 
 module.exports = mongoose.model("Order", orderSchema);

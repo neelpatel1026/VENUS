@@ -93,29 +93,28 @@ const addOrderItems = async (req, res) => {
       otpVerified: (req.body.paymentMethod || "COD") === "COD",
       paymentStatus: "Pending",
       status: "Pending",
+      orderTimeline: [
+        {
+          status: "Pending",
+          timestamp: new Date(),
+          updatedBy: "System",
+        },
+      ],
+      isGift: req.body.isGift || false,
+      giftWrap: req.body.giftWrap || false,
+      giftBox: req.body.giftBox || false,
+      giftMessage: req.body.giftMessage || "",
+      giftReceipt: req.body.giftReceipt || false,
     });
 
     // Save order
     const createdOrder = await order.save();
 
-    // Send confirmation email
-    const message = `
-      <h2>Order Confirmation</h2>
-      <p>Hello ${req.user.name},</p>
-      <p>Your order has been successfully placed!</p>
-      <p><strong>Order ID:</strong> ${createdOrder._id}</p>
-      <p><strong>Total Amount:</strong> ₹${totalAmount}</p>
-      <p><strong>Shipping Address:</strong><br/>
-         ${address.addressLine1}, ${address.city}
-      </p>
-      <p>Thank you for shopping with VENUS ❤️</p>
-    `;
-
-    sendEmail({
-      email: req.user.email,
-      subject: "VENUS CARE - Order Confirmation",
-      message,
-    }).catch(console.error);
+    // Send confirmation email asynchronously (non-blocking)
+    const { sendTimelineStatusEmailAsync } = require("../utils/notificationService.js");
+    sendTimelineStatusEmailAsync(createdOrder, "Pending").catch((err) => {
+      console.error("❌ Order Placed email notification failed:", err.message);
+    });
 
     // Send response
     res.status(201).json(createdOrder);
@@ -159,6 +158,7 @@ const getOrders = async (req, res) => {
   try {
     const orders = await Order.find({})
       .populate("userId", "name email")
+      .populate("items.productId", "category imageUrl")
       .sort({ createdAt: -1 });
 
     res.json(orders);
@@ -173,67 +173,170 @@ const getOrders = async (req, res) => {
 // @route   PUT /api/orders/:id
 // @access  Admin
 
+const validStatuses = [
+  "Pending",
+  "Confirmed",
+  "Processing",
+  "Packed",
+  "Shipped",
+  "Out For Delivery",
+  "Delivered",
+  "Cancelled",
+  "Returned",
+  "Return Requested",
+  "Return Approved",
+  "Refund Completed"
+];
+
 const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
 
-    const updateData = {
-      status,
-    };
-
-    if (status === "Delivered") {
-      updateData.deliveredAt = new Date();
-
-      updateData.returnAllowedTill = new Date(
-        Date.now() + 7 * 24 * 60 * 60 * 1000,
-      );
+    if (!status || !validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid status "${status}". Allowed values: ${validStatuses.join(", ")}`,
+      });
     }
 
-    const order = await Order.findByIdAndUpdate(req.params.id, updateData, {
-      returnDocument: "after",
-    });
-
-    await sendEmail({
-  email: order.customerEmail,
-
-  subject: `Order ${status} - VENUS CARE`,
-
-  message: `
-    <h2>Order Update</h2>
-
-    <p>Hello ${order.customerName},</p>
-
-    <p>
-      Your order status has been updated.
-    </p>
-
-    <p>
-      <strong>Status:</strong>
-      ${status}
-    </p>
-
-    <p>
-      <strong>Order ID:</strong>
-      ${order._id}
-    </p>
-
-    <p>
-      Thank you for shopping with VENUS CARE ❤️
-    </p>
-  `,
-});
-
-    if (!order) {
+    const oldOrder = await Order.findById(req.params.id);
+    if (!oldOrder) {
       return res.status(404).json({
         success: false,
         message: "Order not found",
       });
     }
 
+    const updateData = {
+      status,
+      $push: {
+        orderTimeline: {
+          status,
+          timestamp: new Date(),
+          updatedBy: req.user ? req.user.name : "Admin",
+        }
+      }
+    };
+
+    if (status === "Delivered") {
+      updateData.deliveredAt = new Date();
+      updateData.returnAllowedTill = new Date(
+        Date.now() + 7 * 24 * 60 * 60 * 1000
+      );
+      updateData.reviewEligible = true;
+    }
+
+    if (status === "Cancelled" && oldOrder.status !== "Cancelled" && oldOrder.status !== "Returned" && oldOrder.status !== "Return Approved") {
+      for (const item of oldOrder.items) {
+        if (item.productId) {
+          await Product.findByIdAndUpdate(item.productId, {
+            $inc: { stock: item.qty },
+          });
+        }
+      }
+    }
+
+    const order = await Order.findByIdAndUpdate(req.params.id, updateData, {
+      returnDocument: "after",
+    }).populate("userId", "name email");
+
+    // Send email notification asynchronously
+    if (oldOrder.status !== status) {
+      const { sendOrderStatusNotification } = require("../utils/notificationService.js");
+      sendOrderStatusNotification(order, status, oldOrder.status).catch(err => {
+        console.error("❌ Notification trigger failed:", err.message);
+      });
+    }
+
     res.status(200).json({
       success: true,
-      message: "Order status updated successfully",
       order,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// BULK UPDATE ORDER STATUS
+const bulkUpdateOrderStatus = async (req, res) => {
+  try {
+    const { orderIds, status } = req.body;
+
+    if (!Array.isArray(orderIds) || orderIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide an array of orderIds",
+      });
+    }
+
+    if (!status || !validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid status "${status}". Allowed values: ${validStatuses.join(", ")}`,
+      });
+    }
+
+    const updatedOrders = [];
+    const failedOrders = [];
+
+    for (const id of orderIds) {
+      try {
+        const oldOrder = await Order.findById(id);
+        if (!oldOrder) {
+          failedOrders.push({ id, reason: "Order not found" });
+          continue;
+        }
+
+        const updateData = {
+          status,
+          $push: {
+            orderTimeline: {
+              status,
+              timestamp: new Date(),
+              updatedBy: req.user ? req.user.name : "Admin",
+            }
+          }
+        };
+
+        if (status === "Delivered") {
+          updateData.deliveredAt = new Date();
+          updateData.returnAllowedTill = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+          updateData.reviewEligible = true;
+        }
+
+        if (status === "Cancelled" && oldOrder.status !== "Cancelled" && oldOrder.status !== "Returned" && oldOrder.status !== "Return Approved") {
+          for (const item of oldOrder.items) {
+            if (item.productId) {
+              await Product.findByIdAndUpdate(item.productId, { $inc: { stock: item.qty } });
+            }
+          }
+        }
+
+        const order = await Order.findByIdAndUpdate(id, updateData, { returnDocument: "after" }).populate("userId", "name email");
+
+        if (oldOrder.status !== status) {
+          const { sendOrderStatusNotification } = require("../utils/notificationService.js");
+          sendOrderStatusNotification(order, status, oldOrder.status).catch(err => {
+            console.error("❌ Notification trigger failed:", err.message);
+          });
+        }
+
+        updatedOrders.push(order._id);
+      } catch (err) {
+        failedOrders.push({ id, reason: err.message });
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Bulk update complete. Updated ${updatedOrders.length} orders.`,
+      updatedCount: updatedOrders.length,
+      failedCount: failedOrders.length,
+      updatedOrders,
+      failedOrders,
     });
   } catch (error) {
     res.status(500).json({
@@ -245,10 +348,9 @@ const updateOrderStatus = async (req, res) => {
 
 const getOrderById = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate(
-      "userId",
-      "name email",
-    );
+    const order = await Order.findById(req.params.id)
+      .populate("userId", "name email")
+      .populate("items.productId", "category imageUrl");
 
     if (!order) {
       return res.status(404).json({
@@ -309,6 +411,67 @@ const downloadInvoice = async (req, res) => {
   }
 };
 
+const cancelMyOrder = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Verify ownership
+    if (order.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to cancel this order",
+      });
+    }
+
+    // Check cancellation eligibility (only before Packed)
+    if (!["Pending", "Processing"].includes(order.status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Order cannot be cancelled after packaging has commenced",
+      });
+    }
+
+    // Restock items
+    for (const item of order.items) {
+      await Product.findByIdAndUpdate(item.productId, {
+        $inc: { stock: item.qty },
+      });
+    }
+
+    order.status = "Cancelled";
+    order.orderTimeline.push({
+      status: "Cancelled",
+      timestamp: new Date(),
+      updatedBy: req.user.name || "Customer",
+    });
+
+    await order.save();
+
+    // Trigger cancellation notification email asynchronously
+    const { sendTimelineStatusEmailAsync } = require("../utils/notificationService.js");
+    sendTimelineStatusEmailAsync(order, "Cancelled").catch((err) => {
+      console.error("❌ Cancel email notification failed:", err.message);
+    });
+
+    res.json({
+      success: true,
+      message: "Order has been cancelled successfully",
+      order,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 const exportOrdersExcel = async (req, res) => {
   try {
     const { search, status, paymentMethod, startDate, endDate } = req.query;
@@ -356,13 +519,58 @@ const exportOrdersExcel = async (req, res) => {
   }
 };
 
+const resendOrderEmail = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    const { sendTimelineStatusEmailAsync } = require("../utils/notificationService.js");
+    await sendTimelineStatusEmailAsync(order, order.status);
+
+    res.json({
+      success: true,
+      message: `Email notification for status "${order.status}" resent successfully!`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const deleteOrder = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    await Order.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      success: true,
+      message: "Order deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   addOrderItems,
   getMyOrders,
   getOrders,
   getMyOrderById,
   updateOrderStatus,
+  bulkUpdateOrderStatus,
   getOrderById,
   downloadInvoice,
   exportOrdersExcel,
+  resendOrderEmail,
+  cancelMyOrder,
+  deleteOrder,
 };

@@ -23,14 +23,8 @@ const sendEmailOtp = async (req, res) => {
 
     await user.save();
 
-    await sendEmail({
-      email: user.email,
-      subject: "COD Verification OTP",
-      message: `
-      <h2>Your OTP is ${otp}</h2>
-      <p>Valid for 5 minutes</p>
-      `,
-    });
+    const { sendEmailVerificationOtp } = require("../utils/notificationService.js");
+    await sendEmailVerificationOtp(user, otp);
 
     res.json({
       success: true,

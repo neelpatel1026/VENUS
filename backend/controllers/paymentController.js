@@ -2,8 +2,6 @@ const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
-const Wallet = require("../models/Wallet");
-const WalletTransaction = require("../models/WalletTransaction");
 
 const createOrder = async (req, res) => {
   try {
@@ -38,10 +36,17 @@ const verifyPayment = async (req, res) => {
 
     if (razorpay_signature === expectedSign) {
       if (req.body.orderId) {
-        await Order.findByIdAndUpdate(req.body.orderId, {
-          paymentStatus: "Paid",
-          paymentId: razorpay_payment_id,
-        });
+        const order = await Order.findById(req.body.orderId);
+        if (order) {
+          order.paymentStatus = "Paid";
+          order.paymentId = razorpay_payment_id;
+          await order.save();
+
+          const { sendPaymentSuccessEmail } = require("../utils/notificationService.js");
+          sendPaymentSuccessEmail(order, razorpay_payment_id).catch((err) => {
+            console.error("❌ Payment success email failed:", err.message);
+          });
+        }
       }
 
       // return res.status(200).json({ message: "Payment verified successfully" });
@@ -102,28 +107,18 @@ const refundPayment = async (req, res) => {
           },
         });
       }
-      // const wallet = await Wallet.findOne({
-      //   userId: order.userId,
-      // });
-      // if (wallet) {
-      //   wallet.balance += order.totalAmount;
-
-      //   await wallet.save();
-
-      //   await WalletTransaction.create({
-      //     userId: order.userId,
-      //     amount: order.totalAmount,
-      //     type: "Credit",
-      //     description: `Refund for Order ${order._id}`,
-      //   });
-      // }
       order.paymentStatus = "Refunded";
       order.refundTracking = {
         status: "Refund Completed",
         updatedAt: new Date(),
       };
 
-      order.status = "Returned";
+      order.status = "Refund Completed";
+      order.orderTimeline.push({
+        status: "Refund Completed",
+        timestamp: new Date(),
+        updatedBy: req.user ? req.user.name : "System",
+      });
 
       order.refundedAt = new Date();
 
@@ -167,7 +162,12 @@ const refundPayment = async (req, res) => {
 
     order.refundedAt = new Date();
 
-    order.status = "Returned";
+    order.status = "Refund Completed";
+    order.orderTimeline.push({
+      status: "Refund Completed",
+      timestamp: new Date(),
+      updatedBy: req.user ? req.user.name : "System",
+    });
 
     await order.save();
 

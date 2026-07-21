@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import "../styles/offerbar.css";
 
 const offers = [
@@ -23,25 +24,24 @@ const OfferBar = () => {
 
   // Auto-sliding effect
   useEffect(() => {
-    const interval = setInterval(nextOffer, 4000); // 4 seconds for better readability
+    const interval = setInterval(nextOffer, 5000); // 5 seconds for luxury speed
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="offer-bar">
       <button className="offer-arrow" onClick={prevOffer} aria-label="Previous offer">
-        ❮
+        <FiChevronLeft className="offer-arrow-icon" />
       </button>
       
       <div className="offer-content">
-        {/* The key attribute ensures the animation triggers every time the index changes */}
         <p key={index} className="offer-text">
           {offers[index]}
         </p>
       </div>
 
       <button className="offer-arrow" onClick={nextOffer} aria-label="Next offer">
-        ❯
+        <FiChevronRight className="offer-arrow-icon" />
       </button>
     </div>
   );

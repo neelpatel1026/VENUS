@@ -128,7 +128,7 @@ export const AuthProvider = ({ children }) => {
         // VERIFY USER FROM BACKEND
 
         const { data } = await axios.get(
-          'http://localhost:5000/api/auth/me',
+          '/api/auth/me',
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -137,11 +137,13 @@ export const AuthProvider = ({ children }) => {
         );
 
         // VALID USER
-
-        setUser({
+        const verifiedUser = {
           ...data.user,
           token,
-        });
+        };
+
+        setUser(verifiedUser);
+        localStorage.setItem('userInfo', JSON.stringify(verifiedUser));
 
       } catch (error) {
         console.log('Auth check failed:', error);

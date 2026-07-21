@@ -1,14 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const rateLimit = require("express-rate-limit");
 
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 15,
-  message: {
-    message: "Too many authentication requests from this IP, please try again after 15 minutes."
-  }
-});
+const authLimiter = require("../middleware/authLimiter");
 
 const {
   registerUser,
@@ -32,34 +25,25 @@ router.post('/reset-password', authLimiter, resetPassword);
 
 
 // GET CURRENT LOGGED IN USER
-// router.get('/me', authMiddleware, async (req, res) => {
-  router.get('/me', protect, async (req, res) => {
-
+router.get('/me', protect, async (req, res) => {
   try {
-
-    const user = await User.findById(req.user.id).select('-password');
-
-    if (!user) {
-      return res.status(404).json({
+    if (!req.user) {
+      return res.status(401).json({
         success: false,
         message: 'User not found',
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      user,
+      user: req.user,
     });
-
   } catch (error) {
-
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: 'Server Error',
+      message: 'Server Error: ' + error.message,
     });
-
   }
-
 });
 
 module.exports = router;

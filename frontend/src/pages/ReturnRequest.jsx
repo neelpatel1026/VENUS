@@ -60,7 +60,7 @@ const ReturnRequest = () => {
   };
 
   return (
-    <div className="return-page">
+    <div className="return-page route-fade-in">
       <div className="return-card">
         <h1>Return Request</h1>
 

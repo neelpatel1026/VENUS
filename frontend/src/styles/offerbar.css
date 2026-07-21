@@ -1,17 +1,18 @@
 /* --- Premium Offer Bar Base --- */
 .offer-bar {
-  background: #0b0b0b; /* Deep luxury rich black */
-  color: #ffffff;
-  height: 42px;
+  background: var(--luxury-dark, #111112); /* Deep luxury rich black */
+  color: var(--luxury-white, #ffffff);
+  height: 44px; /* Increased height */
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 30px;
-  padding: 0 20px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  letter-spacing: 0.8px;
+  gap: 40px; /* Comfortable breathing room */
+  padding: 0 24px;
+  font-family: var(--font-sans, 'Outfit', sans-serif);
+  letter-spacing: 2px; /* Premium tracked letter spacing */
+  text-transform: uppercase;
   overflow: hidden;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07); /* Subtle elegant divider border */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* Subtle elegant divider */
 }
 
 /* --- Content Wrapper & Text --- */
@@ -19,27 +20,26 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-width: 280px; /* Prevents layout shifting during transitions */
+  min-width: 320px; /* Prevents shifting during translations */
   text-align: center;
 }
 
 .offer-text {
   color: rgba(255, 255, 255, 0.95);
   margin: 0;
-  font-size: 13px;
+  font-size: 11px; /* Small premium size */
   font-weight: 500;
-  /* Smooth hardware-accelerated slide up & fade-in */
-  animation: premiumFadeSlide 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; 
+  letter-spacing: 2px;
+  animation: premiumFadeSlide 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; 
 }
 
 /* --- Premium Navigation Arrows --- */
 .offer-arrow {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.55);
   cursor: pointer;
-  font-size: 14px;
-  padding: 5px 10px;
+  padding: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -47,20 +47,24 @@
   user-select: none;
 }
 
+.offer-arrow-icon {
+  font-size: 16px; /* Balanced icon sizing */
+}
+
 .offer-arrow:hover {
-  color: #ffffff;
-  transform: scale(1.15);
+  color: var(--luxury-gold, #C8A96B);
+  transform: scale(1.1);
 }
 
 .offer-arrow:active {
-  transform: scale(0.95);
+  transform: scale(0.92);
 }
 
 /* --- Subtle Smooth Animation --- */
 @keyframes premiumFadeSlide {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -69,37 +73,30 @@
 }
 
 /* --- Responsive Breakpoints --- */
-
-/* Tablets (Portrait & Landscape) */
 @media (max-width: 768px) {
   .offer-bar {
-    gap: 15px;
+    gap: 20px;
     height: 40px;
+    letter-spacing: 1.5px;
   }
   .offer-text {
-    font-size: 12.5px;
-    letter-spacing: 0.5px;
+    font-size: 10px;
   }
   .offer-content {
-    min-width: 240px;
+    min-width: 260px;
   }
 }
 
-/* Mobile Devices */
 @media (max-width: 480px) {
   .offer-bar {
-    gap: 8px;
-    padding: 0 10px;
+    gap: 12px;
+    padding: 0 12px;
   }
   .offer-text {
-    font-size: 12px; /* Extremely clean & readable on small displays */
-    letter-spacing: 0.3px;
+    font-size: 9.5px;
+    letter-spacing: 1.2px;
   }
   .offer-content {
-    min-width: 210px;
-  }
-  .offer-arrow {
-    font-size: 12px;
-    padding: 5px;
+    min-width: 220px;
   }
 }

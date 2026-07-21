@@ -13,30 +13,30 @@ body,
   overflow-x:hidden;
 }
 :root{
-  --bg:#F8F5F0;
+  --bg:#FFFFFF; /* Pure White background */
 
   --card:#FFFFFF;
 
-  --text:#1F2937;
+  --text:#1C1C1C; /* Dark Charcoal text */
 
-  --muted:#6B7280;
+  --muted:#666666; /* Secondary text */
 
   --gold:#C8A96B;
 
   --gold-dark:#B89355;
 
-  --border:#ECE6DC;
+  --border:rgba(0, 0, 0, 0.06); /* Soft luxury border */
 
   --shadow:
-  0 15px 35px rgba(0,0,0,.06);
+  0 10px 40px rgba(0,0,0,0.05); /* Soft premium shadow style */
 }
 
 /* ================= BODY ================= */
 
 body{
-  background:#F8F5F0;
+  background:#FFFFFF;
 
-  color:#1F2937;
+  color:#1C1C1C;
 
   font-family:'Outfit',sans-serif;
 
@@ -48,7 +48,7 @@ body{
  .featured-section{
   padding: 90px 40px;
 
-  background:#FAF7F2;
+  background:#FFFFFF; /* Clean editorial layout */
 }
 /* ================= MAIN CONTENT ================= */
  .main-content {
@@ -195,8 +195,7 @@ h4 {
 
 p {
   line-height: 1.7;
-
-  color: #d4d4d8;
+  color: var(--muted);
 }
 
 /* ================= IMAGE ================= */
@@ -223,11 +222,11 @@ input[type="tel"],
 input[type="number"],
 select,
 textarea {
-  border: 1px solid #ECE6DC;
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 8px;
   padding: 12px 16px;
   background: #FFFFFF;
-  color: #1F2937;
+  color: #1C1C1C;
   outline: none;
   transition: all 0.2s ease;
 }
@@ -266,11 +265,11 @@ textarea:focus {
 }
 
 ::-webkit-scrollbar-track {
-  background: #FAF7F2;
+  background: #FAFAFA;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #E8DFD2;
+  background: rgba(0, 0, 0, 0.08);
   border-radius: 10px;
 }
 
@@ -281,85 +280,100 @@ textarea:focus {
 /* ================= TABLET ================= */
 
 @media (max-width: 992px) {
+  :root {
+    --section-pad: 60px;
+  }
 
   .main-content {
     padding: 30px 18px;
   }
 
   h1 {
-    font-size: 2.5rem;
+    font-size: 42px; /* Hero 42px */
   }
 
   h2 {
-    font-size: 2rem;
+    font-size: 32px; /* Section 32px */
+    margin-bottom: 30px;
   }
 
   h3 {
-    font-size: 1.6rem;
+    font-size: 22px;
+  }
+
+  p {
+    font-size: 17px; /* Body 17px */
+  }
+
+  .btn {
+    min-height: 48px;
+    font-size: 15px;
   }
 }
 
 /* ================= MOBILE ================= */
 
 @media (max-width: 768px) {
+  :root {
+    --section-pad: 40px;
+  }
 
   .main-content {
-    padding: 24px 16px;
+    padding: 20px 16px;
   }
 
   h1 {
-    font-size: 2.1rem;
+    font-size: 30px; /* Hero 30px */
   }
 
   h2 {
-    font-size: 1.8rem;
+    font-size: 24px; /* Section 24px */
+    margin-bottom: 24px;
   }
 
   h3 {
-    font-size: 1.5rem;
+    font-size: 19px;
   }
 
   h4 {
-    font-size: 1.1rem;
+    font-size: 16px;
   }
 
   p {
-    font-size: 14px;
+    font-size: 15px; /* Body 15px */
   }
 
   .btn {
     width: 100%;
-
-    padding: 14px;
-
-    font-size: 14px;
+    min-height: 48px;
+    padding: 12px;
+    font-size: 15px;
   }
 }
 
 /* ================= EXTRA SMALL DEVICES ================= */
 
 @media (max-width: 480px) {
-
   .main-content {
-    padding: 20px 14px;
+    padding: 16px 12px;
   }
 
   h1 {
-    font-size: 1.8rem;
+    font-size: 26px;
   }
 
   h2 {
-    font-size: 1.5rem;
+    font-size: 22px;
   }
 
   h3 {
-    font-size: 1.3rem;
+    font-size: 17px;
   }
 
   .btn {
-    padding: 13px;
-
-    border-radius: 7px;
+    min-height: 48px;
+    padding: 12px;
+    border-radius: 8px;
   }
 }
 
@@ -371,7 +385,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #C8A96B;
+  outline: 2px solid #C8A165;
   outline-offset: 4px;
 }
 
@@ -385,5 +399,55 @@ textarea:focus-visible {
     scroll-behavior: auto !important;
   }
 }
+
+/* ================= PRODUCTION TRANSITIONS & SHIMMER SKELETONS ================= */
+.route-fade-in {
+  animation: routeFadeInEffect 250ms ease-out forwards;
+}
+
+@keyframes routeFadeInEffect {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.shimmer-bg {
+  background: linear-gradient(
+    90deg,
+    #F3ECE0 25%,
+    #FAF6F0 50%,
+    #F3ECE0 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmerAnim 1.6s infinite;
+}
+
+@keyframes shimmerAnim {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-text-line {
+  height: 12px;
+  border-radius: 4px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+.skeleton-text-line.short {
+  width: 60%;
+}
+.skeleton-text-line.medium {
+  width: 80%;
+}
+
 
 

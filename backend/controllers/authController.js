@@ -119,14 +119,29 @@ const user = await User.create({
 });
 
     /* ================= RESPONSE ================= */
+    // Send welcome email asynchronously
+    const { sendWelcomeEmail } = require("../utils/notificationService.js");
+    sendWelcomeEmail(user).catch((err) => {
+      console.error("❌ Welcome email failed:", err.message);
+    });
+
+    const token = generateToken(user._id);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 15 * 24 * 60 * 60 * 1000,
+    });
+
     res.status(201).json({
-  _id: user._id,
-  name: user.name,
-  email: user.email,
-  phone: user.phone,
-  role: user.role,
-  token: generateToken(user._id),
-});
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      token,
+    });
 
   } catch (error) {
 
@@ -165,15 +180,24 @@ const loginUser = async (req, res) => {
       });
     }
 
-   res.json({
-  _id: user._id,
-  name: user.name,
-  email: user.email,
-  phone: user.phone,
-  role: user.role,
-  token: generateToken(user._id),
-});
-    } catch (error) {
+    const token = generateToken(user._id);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 15 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      token,
+    });
+  } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
@@ -218,14 +242,23 @@ const googleLogin = async (req, res) => {
       await user.save();
     }
 
+    const token = generateToken(user._id);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 15 * 24 * 60 * 60 * 1000,
+    });
+
     res.status(200).json({
-  _id: user._id,
-  name: user.name,
-  email: user.email,
-  phone: user.phone,
-  role: user.role,
-  token: generateToken(user._id),
-});
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      token,
+    });
 
   } catch (error) {
 
@@ -275,21 +308,14 @@ const forgotPassword = async (req, res) => {
 //   });
 // }  
 
-      const emailResult = await sendEmail({
-  email,
-  subject: 'Password Reset OTP',
-  message: `
-    <h2>Your OTP is ${otp}</h2>
-    <p>This OTP will expire in 5 minutes.</p>
-    <p>If you did not request this password reset, please ignore this email.</p>
-  `,
-});
-
-if (!emailResult.success) {
-  return res.status(500).json({
-    message: "Failed to send OTP email",
-  });
-}
+    const { sendForgotPasswordOtp } = require("../utils/notificationService.js");
+    try {
+      await sendForgotPasswordOtp(user, otp);
+    } catch (otpErr) {
+      return res.status(500).json({
+        message: "Failed to send OTP email: " + otpErr.message,
+      });
+    }
 
     res.json({
       message: 'OTP sent to email',

@@ -1,0 +1,115 @@
+/* ==========================================================================
+   SHIPPING POLICY PAGE - PREMIUM COSMETIC BRAND STYLE
+   ========================================================================== */
+
+.shipping-policy-page {
+  background-color: #FAFAFA;
+  min-height: 100vh;
+  padding: 60px 24px 100px 24px;
+}
+
+.shipping-policy-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px; /* Spacing between section cards: 40px */
+}
+
+.shipping-policy-card {
+  background: #FFFFFF;
+  border: 1px solid #EFEFEF;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.015);
+  animation: routeFadeInEffect 250ms ease-out forwards;
+}
+
+.shipping-policy-section {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.shipping-policy-section h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0 0 18px 0; /* Heading -> Paragraph: 16px-20px (using 18px) */
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.shipping-policy-section h2 span.icon-wrapper {
+  color: #C8A165; /* Gold Accent */
+  display: inline-flex;
+  align-items: center;
+  font-size: 22px; /* Icon size: 22px */
+}
+
+.shipping-policy-section p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16.5px;
+  line-height: 1.8;
+  color: #4B5563;
+  margin: 0;
+}
+
+.shipping-policy-section p + ul {
+  margin-top: 14px;
+}
+
+.shipping-policy-section ul {
+  padding-left: 24px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Bullet list item spacing: 8px */
+  list-style-type: square;
+}
+
+.shipping-policy-section li {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16.5px;
+  line-height: 1.8;
+  color: #4B5563;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1024px) {
+  .shipping-policy-card {
+    padding: 32px;
+  }
+  .shipping-policy-section h2 {
+    font-size: 28px;
+  }
+  .shipping-policy-container {
+    gap: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .shipping-policy-card {
+    padding: 24px;
+    border-radius: 16px;
+  }
+  .shipping-policy-section h2 {
+    font-size: 24px;
+    gap: 10px;
+  }
+  .shipping-policy-section h2 span.icon-wrapper {
+    font-size: 20px;
+  }
+  .shipping-policy-section p,
+  .shipping-policy-section li {
+    font-size: 15.5px;
+  }
+  .shipping-policy-page {
+    padding: 40px 16px 80px 16px;
+  }
+  .shipping-policy-container {
+    gap: 24px;
+  }
+}

@@ -10,16 +10,51 @@ const couponSchema = new mongoose.Schema(
       trim: true,
     },
 
+    discountType: {
+      type: String,
+      enum: ["percentage", "fixed"],
+      default: "percentage",
+    },
+
     discount: {
       type: Number,
       required: true,
       min: 1,
-      max: 100,
+    },
+
+    startDate: {
+      type: Date,
+      default: Date.now,
     },
 
     expiryDate: {
       type: Date,
       required: true,
+    },
+
+    minOrderValue: {
+      type: Number,
+      default: 0,
+    },
+
+    maxDiscount: {
+      type: Number,
+      default: 0, // 0 means no cap
+    },
+
+    usageLimit: {
+      type: Number,
+      default: 0, // 0 means unlimited
+    },
+
+    perUserLimit: {
+      type: Number,
+      default: 1,
+    },
+
+    totalUsage: {
+      type: Number,
+      default: 0,
     },
 
     active: {
@@ -32,7 +67,8 @@ const couponSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model(
-  "Coupon",
-  couponSchema
-);
+// Production Indexes for Coupon collection
+couponSchema.index({ active: 1, expiryDate: 1 });
+couponSchema.index({ code: 1, active: 1 });
+
+module.exports = mongoose.model("Coupon", couponSchema);

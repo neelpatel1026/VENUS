@@ -20,7 +20,7 @@ const MyComplaints = () => {
         };
         const { data } = await axios.get("/api/complaints/my", config);
         if (data.success) {
-          setComplaints(data.complaints);
+          setComplaints(data.complaints || []);
         }
       } catch (error) {
         toast.error(error.response?.data?.message || "Failed to fetch complaints");
@@ -52,28 +52,76 @@ const MyComplaints = () => {
   const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleDateString("en-IN", {
       year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
     });
   };
 
   if (loading) {
     return (
-      <div className="complaints-page" style={{ textAlign: "center", padding: "100px 0" }}>
-        <span className="spinner" style={{ display: "inline-block", borderColor: "rgba(0,0,0,0.1)", borderTopColor: "#C8A96B", width: "40px", height: "40px" }}></span>
-        <p style={{ marginTop: "20px", color: "#6B7280" }}>Loading complaints history...</p>
+      <div className="complaints-page route-fade-in" style={{ padding: "40px 20px", maxWidth: "1200px", margin: "0 auto" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "24px" }}>
+          {[1, 2].map((i) => (
+            <div key={i} style={{ border: "1px solid #ECE7DF", background: "#FFFFFF", padding: "24px", borderRadius: "16px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "16px" }}>
+                <div style={{ flex: 1 }}>
+                  <div className="shimmer-bg" style={{ height: "20px", width: "180px", borderRadius: "4px", marginBottom: "8px" }} />
+                  <div className="shimmer-bg" style={{ height: "14px", width: "120px", borderRadius: "4px" }} />
+                </div>
+                <div className="shimmer-bg" style={{ height: "28px", width: "80px", borderRadius: "20px" }} />
+              </div>
+              <div className="shimmer-bg skeleton-text-line" />
+              <div className="shimmer-bg skeleton-text-line short" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="complaints-page">
-      <h1>My Support Tickets</h1>
-
+    <div className="complaints-page route-fade-in">
       {complaints.length === 0 ? (
-        <div className="empty-state">
-          <p>You have not submitted any support complaints or tickets yet.</p>
-          <Link to="/contact">Create a Ticket / Contact Us</Link>
+        <div 
+          style={{ 
+            textAlign: 'center', 
+            padding: '60px 20px', 
+            background: '#FFFFFF', 
+            border: '1px solid #ECE7DF', 
+            borderRadius: '24px',
+            maxWidth: '500px',
+            margin: '40px auto'
+          }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="#C9A45C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '20px' }}>
+            <path d="M12 50h40l8-14H4L12 50z" />
+            <path d="M18 36V18a14 14 0 1 1 28 0v18" />
+            <circle cx="32" cy="18" r="3" />
+          </svg>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: '700', color: '#1A1A1A', margin: '0 0 10px 0' }}>
+            No Support Tickets
+          </h3>
+          <p style={{ color: '#6B7280', lineHeight: '1.6', margin: '0 0 24px 0', fontSize: '0.95rem' }}>
+            You have not submitted any customer care complaints or assistance tickets yet. Feel free to contact us with any questions.
+          </p>
+          <Link
+            to="/contact"
+            style={{
+              background: '#C8A165',
+              color: '#FFFFFF',
+              border: 'none',
+              padding: '12px 28px',
+              borderRadius: '30px',
+              fontSize: '0.95rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              textDecoration: 'none',
+              display: 'inline-block',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            Create Support Ticket
+          </Link>
         </div>
       ) : (
         <div className="complaints-grid">

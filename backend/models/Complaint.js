@@ -78,6 +78,9 @@ const complaintSchema = new mongoose.Schema(
   }
 );
 
-complaintSchema.index({ userId: 1 });
+// Production Indexes for Complaint collection
+complaintSchema.index({ userId: 1, createdAt: -1 });
+complaintSchema.index({ status: 1, createdAt: -1 });
+complaintSchema.index({ priority: 1 });
 
 module.exports = mongoose.model("Complaint", complaintSchema);
