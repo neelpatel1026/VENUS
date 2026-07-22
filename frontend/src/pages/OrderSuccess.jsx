@@ -4,6 +4,25 @@ import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import ProductCard from "../components/ProductCard";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
+import { 
+  FaCheck, 
+  FaShoppingBag, 
+  FaDownload, 
+  FaTruck, 
+  FaArrowRight, 
+  FaClipboardList, 
+  FaShieldAlt, 
+  FaRegCreditCard, 
+  FaStar, 
+  FaUndo, 
+  FaHeadphones, 
+  FaWhatsapp, 
+  FaEnvelope, 
+  FaPhone,
+  FaCalendarAlt,
+  FaInfoCircle
+} from "react-icons/fa";
 import "../styles/ordersuccess.css";
 
 const OrderSuccess = () => {
@@ -99,141 +118,154 @@ const OrderSuccess = () => {
   const totalPaid = order ? order.totalAmount : 0;
   const savings = Math.max(0, subtotal - totalPaid);
 
+  // Expected delivery range formatter helper (e.g. 25-27 July)
+  const getDeliveryRange = (dateStr) => {
+    const baseDate = dateStr ? new Date(dateStr) : new Date();
+    const start = new Date(baseDate);
+    start.setDate(baseDate.getDate() + 3);
+    const end = new Date(baseDate);
+    end.setDate(baseDate.getDate() + 5);
+
+    const startDay = start.getDate();
+    const endDay = end.getDate();
+    const month = start.toLocaleDateString("en-US", { month: "short" });
+
+    return `${startDay}–${endDay} ${month}`;
+  };
+
+  const getFormattedDate = (dateStr) => {
+    return dateStr 
+      ? new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) 
+      : new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  };
+
   return (
-    <div className="ordersuccess-page-wrapper route-fade-in">
-      {/* 1. TOP CELEBRATION HEADER */}
-      <div className="ordersuccess-hero-card">
-        <div className="confetti-holder">
-          <svg className="confetti-svg" viewBox="0 0 100 100" fill="none">
-            <circle cx="20" cy="20" r="1.5" fill="#C8A96B" />
-            <circle cx="80" cy="15" r="1" fill="#1F2937" />
-            <rect x="50" y="30" width="2" height="2" fill="#C8A96B" transform="rotate(45 50 30)" />
-            <circle cx="15" cy="70" r="2" fill="#E8DFD2" />
-            <rect x="75" y="65" width="1.5" height="3" fill="#C8A96B" transform="rotate(15 75 65)" />
-          </svg>
+    <div className="ordersuccess-page-wrapper route-fade-in font-outfit">
+      
+      {/* 1. SUCCESS CELEBRATION HEADER */}
+      <div className="ordersuccess-premium-header">
+        
+        {/* Animated Checkmark Badge */}
+        <div className="success-checkmark-animated-wrapper">
+          <motion.div
+            initial={{ scale: 0, rotate: -45 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 200, damping: 15 }}
+            style={{
+              width: "72px",
+              height: "72px",
+              borderRadius: "50%",
+              background: "#C8A165",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#FFFFFF"
+            }}
+          >
+            <FaCheck size={32} />
+          </motion.div>
         </div>
 
-        <div className="success-icon-badge">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-        </div>
+        <h1>Order Confirmed</h1>
+        <h2>Thank you for shopping with VENUS CARE</h2>
         
-        <span className="hero-status-label">Transaction Secure & Confirmed</span>
-        <h1>Thank You For Your Order!</h1>
         <p className="hero-subtext">
-          Your order has been logged in our systems. A confirmation statement has been sent to <strong>{order?.customerEmail || user?.email}</strong>.
+          We've received your order and have emailed your confirmation statements. Your parcel dispatch tracking details will follow soon.
         </p>
 
-        {/* Loyalty Reward Banner */}
-        <div className="success-loyalty-highlight-card">
-          <div className="loyalty-badge-glow">🎉 Brand Loyalty Reward</div>
-          <h4>You earned 150 VIP Reward Points!</h4>
-          <p>Thank you for choosing VENUS CARE. Use promo code <strong>VENUSLOYAL</strong> for 15% off your next purchase.</p>
+        {/* Header metrics metadata */}
+        <div className="header-metrics-row-luxury">
+          <div className="header-metric-item">
+            <span className="header-metric-label">Order Number</span>
+            <strong className="header-metric-val">#{order?._id ? `VC${order._id.slice(-6).toUpperCase()}` : `VC${orderId?.slice(-6).toUpperCase() || "102548"}`}</strong>
+          </div>
+          
+          <div className="header-metric-item">
+            <span className="header-metric-label">Payment Method</span>
+            <strong className="header-metric-val">{order?.paymentMethod || paymentMethod}</strong>
+          </div>
+
+          <div className="header-metric-item">
+            <span className="header-metric-label">Order Date</span>
+            <strong className="header-metric-val">{getFormattedDate(order?.createdAt)}</strong>
+          </div>
+
+          <div className="header-metric-item">
+            <span className="header-metric-label">Expected Delivery</span>
+            <strong className="header-metric-val" style={{ color: "#C8A165" }}>
+              {getDeliveryRange(order?.createdAt)}
+            </strong>
+          </div>
         </div>
       </div>
 
       <div className="ordersuccess-content-grid">
         
-        {/* LEFT COLUMN: Order Details & Timeline */}
+        {/* LEFT COLUMN: Addresses, Purchased Products, Payment & Timeline */}
         <div className="ordersuccess-details-col">
           
-          {/* Order Metrics Card */}
-          <div className="ordersuccess-card">
-            <h3>Order Information</h3>
-            <div className="metrics-data-grid">
-              <div className="metric-item">
-                <span className="metric-label">Order ID</span>
-                <strong className="metric-val">#{order?._id || orderId}</strong>
-              </div>
-              <div className="metric-item">
-                <span className="metric-label">Date Placed</span>
-                <strong className="metric-val">
-                  {order ? new Date(order.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : new Date().toLocaleDateString()}
-                </strong>
-              </div>
-              <div className="metric-item">
-                <span className="metric-label">Payment Method</span>
-                <strong className="metric-val">{order?.paymentMethod || paymentMethod}</strong>
-              </div>
-              <div className="metric-item">
-                <span className="metric-label">Payment Status</span>
-                <strong className={`metric-val status-${order?.paymentStatus?.toLowerCase() || paymentStatus.toLowerCase()}`}>
-                  {order?.paymentStatus || paymentStatus}
-                </strong>
-              </div>
+          {/* Connected horizontal Delivery Timeline */}
+          <div className="ordersuccess-card-luxury">
+            <h3><FaTruck /> Delivery Progress Timeline</h3>
+            <div className="progress-timeline-horizontal">
+              {[
+                { label: "Confirmed", status: "completed" },
+                { label: "Preparing", status: "completed" },
+                { label: "Packed", status: "pending" },
+                { label: "Shipped", status: "pending" },
+                { label: "Out for Delivery", status: "pending" },
+                { label: "Delivered", status: "pending" }
+              ].map((step, index) => (
+                <div 
+                  key={index} 
+                  className={`timeline-step-item ${step.status === "completed" ? "completed" : ""} ${index === 1 ? "active" : ""}`}
+                >
+                  <div className="step-indicator-dot">
+                    {step.status === "completed" ? "✓" : index + 1}
+                  </div>
+                  <span className="step-label-text">{step.label}</span>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Connected Order Timeline */}
-          <div className="ordersuccess-card">
-            <h3>Delivery Progress Tracker</h3>
-            <div className="timeline-vertical-flow">
-              
-              <div className="timeline-stage completed">
-                <div className="stage-marker">✓</div>
-                <div className="stage-content">
-                  <h4>Order Successfully Logged</h4>
-                  <p>Venus care database has logged your purchase cart items.</p>
-                </div>
-              </div>
-
-              <div className={`timeline-stage ${(order?.paymentStatus === "Paid" || paymentStatus === "Paid" || paymentMethod === "COD") ? "completed" : "pending"}`}>
-                <div className="stage-marker">
-                  {(order?.paymentStatus === "Paid" || paymentStatus === "Paid" || paymentMethod === "COD") ? "✓" : "●"}
-                </div>
-                <div className="stage-content">
-                  <h4>Payment Confirmed</h4>
-                  <p>{order?.paymentMethod === "COD" ? "Cash verification scheduled on delivery." : "Secure gateway verification completed."}</p>
-                </div>
-              </div>
-
-              <div className="timeline-stage active">
-                <div className="stage-marker">●</div>
-                <div className="stage-content">
-                  <h4>Preparing Package</h4>
-                  <p>Our warehouse team is carefully packing your cosmetic products.</p>
-                </div>
-              </div>
-
-              <div className="timeline-stage next">
-                <div className="stage-marker">○</div>
-                <div className="stage-content">
-                  <h4>Shipped via Partners</h4>
-                  <p>Package handed over to BlueDart or Delhivery logistics.</p>
-                </div>
-              </div>
-
-              <div className="timeline-stage next">
-                <div className="stage-marker">○</div>
-                <div className="stage-content">
-                  <h4>Delivered</h4>
-                  <p>Secure parcel signed at your destination.</p>
-                </div>
-              </div>
-
+          {/* Purchased Products details */}
+          <div className="ordersuccess-card-luxury">
+            <h3><FaShoppingBag /> Purchased Skincare Items</h3>
+            <div className="purchased-products-list">
+              {order?.items ? (
+                order.items.map((item) => (
+                  <Link 
+                    to={`/product/${item.productId || item._id}`} 
+                    key={item.productId || item._id} 
+                    className="purchased-item-row"
+                  >
+                    <img 
+                      src={item.productImage || item.imageUrl || item.image || "/cosmetic_1.avif"} 
+                      alt={item.productName} 
+                      className="purchased-item-thumb"
+                      onError={(e) => { e.target.src = "/cosmetic_1.avif"; }}
+                    />
+                    <div className="purchased-item-info">
+                      <h4 className="purchased-item-title">{item.productName}</h4>
+                      <span className="purchased-item-meta">
+                        Quantity: {item.qty} &bull; Base Price: ₹{item.price.toFixed(2)}
+                      </span>
+                    </div>
+                    <span className="purchased-item-price-val">
+                      ₹{(item.qty * item.price).toFixed(2)}
+                    </span>
+                  </Link>
+                ))
+              ) : (
+                <p>Order item lists are loading...</p>
+              )}
             </div>
           </div>
 
-          {/* What happens next instructions */}
-          <div className="ordersuccess-card next-instructions-card">
-            <h3>What Happens Next?</h3>
-            <ol className="next-steps-list">
-              <li>
-                <strong>Warehouse packing:</strong> We carefully wrap and pack your liquid formulas in break-proof organic boxes.
-              </li>
-              <li>
-                <strong>Transit tracking:</strong> You will receive a second email notification with Delhivery or BlueDart air waybill tracker once the package is dispatched.
-              </li>
-              <li>
-                <strong>Delivery dispatch:</strong> Our courier partners will contact you via SMS/phone before arrival to confirm dropoff timings.
-              </li>
-            </ol>
-          </div>
-
-          {/* Destination Address details */}
-          <div className="ordersuccess-card">
-            <h3>Shipping Details</h3>
+          {/* Shipping Address details */}
+          <div className="ordersuccess-card-luxury">
+            <h3><FaClipboardList /> Shipping Destination Address</h3>
             {order?.shippingAddress ? (
               <div className="shipping-details-box">
                 <h4 className="recipient-name">{order.shippingAddress.fullName}</h4>
@@ -248,112 +280,189 @@ const OrderSuccess = () => {
                 </div>
                 
                 <div className="shipping-eta-info-row">
-                  <span>Estimated Delivery Date:</span>
-                  <strong>
-                    {new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
-                  </strong>
+                  <span>Estimated Arrival window:</span>
+                  <strong>{getDeliveryRange(order.createdAt)}</strong>
                 </div>
               </div>
             ) : (
-              <p className="address-placeholder-warn">Address data will populate in your profile details.</p>
+              <p>Shipping destination details not found.</p>
             )}
+          </div>
+
+          {/* Payment Information */}
+          <div className="ordersuccess-card-luxury">
+            <h3><FaRegCreditCard /> Payment & Invoice Records</h3>
+            <div className="metrics-data-grid">
+              <div className="metric-item">
+                <span className="metric-label">Gateway Method</span>
+                <strong className="metric-val">{order?.paymentMethod || paymentMethod}</strong>
+              </div>
+              <div className="metric-item">
+                <span className="metric-label">Transaction Status</span>
+                <strong className="metric-val" style={{ color: order?.paymentStatus === "Paid" ? "#16A34A" : "#D97706" }}>
+                  {order?.paymentStatus || paymentStatus}
+                </strong>
+              </div>
+              <div className="metric-item">
+                <span className="metric-label">Transaction Reference</span>
+                <strong className="metric-val" style={{ fontSize: "12px", fontFamily: "monospace" }}>
+                  {order?._id ? `TXN-${order._id.slice(0, 12).toUpperCase()}` : "TXN-SECUREPAY"}
+                </strong>
+              </div>
+              <div className="metric-item">
+                <span className="metric-label">Invoice Number</span>
+                <strong className="metric-val">
+                  {order?._id ? `INV-${order._id.slice(-8).toUpperCase()}` : "INV-DRAFT"}
+                </strong>
+              </div>
+            </div>
           </div>
 
         </div>
 
-        {/* RIGHT COLUMN: Order Summary & Actions */}
+        {/* RIGHT COLUMN: Actions, Pricing Summary, Loyalty reward & Support */}
         <div className="ordersuccess-summary-col">
           
           {/* Action CTAs */}
-          <div className="ordersuccess-card actions-btn-card">
-            <h3>Checkout Actions</h3>
-            <div className="success-actions-stack">
+          <div className="ordersuccess-card-luxury">
+            <h3>Order Dashboard Quick Actions</h3>
+            <div className="success-actions-stack-luxury">
               {order && (
-                <button onClick={handleDownloadInvoice} className="btn-success-primary">
-                  Download Invoice (PDF)
+                <button 
+                  onClick={handleDownloadInvoice} 
+                  className="btn-success-luxury-primary"
+                  style={{ gridColumn: "span 2" }}
+                >
+                  <FaDownload /> Download Invoice
                 </button>
               )}
+              
               {order?._id && (
-                <Link to={`/order/${order._id}`} className="btn-success-secondary">
-                  Track Order Details
+                <Link to={`/order/${order._id}`} className="btn-success-luxury-secondary">
+                  Track Order
                 </Link>
               )}
-              <Link to="/shop" className="btn-success-outline">
-                Continue Shopping
+
+              <Link to="/shop" className="btn-success-luxury-secondary">
+                Continue Shop
               </Link>
-              <Link to="/profile" className="btn-success-link">
-                View All My Orders
-              </Link>
-              <Link to="/contact" className="btn-success-link">
-                Contact Customer Support
+              
+              <Link 
+                to="/profile" 
+                className="btn-success-luxury-secondary"
+                style={{ gridColumn: "span 2", borderStyle: "dashed" }}
+              >
+                Go to My Orders
               </Link>
             </div>
           </div>
 
-          {/* Checkout Totals Summary */}
-          <div className="ordersuccess-card order-items-summary-card">
-            <h3>Order Summary</h3>
-            
-            <div className="purchased-items-list-flow">
-              {order?.items ? (
-                order.items.map((item) => (
-                  <div key={item.productId || item._id} className="summary-item-row-data">
-                    <img 
-                      src={item.productImage || item.imageUrl || item.image || "/cosmetic_1.avif"} 
-                      alt={item.productName} 
-                      className="summary-item-thumb" 
-                      loading="lazy"
-                      onError={(e) => {
-                        e.target.src = "/cosmetic_1.avif";
-                      }}
-                    />
-                    <div className="summary-item-text">
-                      <h4 className="summary-item-title">{item.productName}</h4>
-                      <span className="summary-item-qty">Qty: {item.qty} × ₹{item.price.toFixed(2)}</span>
-                    </div>
-                    <span className="summary-item-row-total">₹{(item.qty * item.price).toFixed(2)}</span>
-                  </div>
-                ))
-              ) : (
-                <p className="items-list-placeholder">Order item list is being processed...</p>
-              )}
-            </div>
-
-            <div className="summary-pricing-stack">
-              <div className="pricing-line">
-                <span>Subtotal</span>
+          {/* Pricing Summary card */}
+          <div className="ordersuccess-card-luxury">
+            <h3>Payment Summary</h3>
+            <div className="summary-pricing-stack-luxury">
+              <div className="pricing-line-item">
+                <span>Subtotal ({order?.items?.length || 0} items)</span>
                 <span>₹{subtotal.toFixed(2)}</span>
               </div>
+              
               {savings > 0 && (
-                <div className="pricing-line discount-amount">
-                  <span>Total Savings</span>
+                <div className="pricing-line-item savings-row">
+                  <span>Discount Applied</span>
                   <span>-₹{savings.toFixed(2)}</span>
                 </div>
               )}
-              <div className="pricing-line">
-                <span>Shipping</span>
-                <span className="free-shipping-indicator">FREE</span>
-              </div>
-              
-              <div className="summary-divider-line" />
 
-              <div className="pricing-line final-paid-line">
-                <span>Paid Amount</span>
-                <span className="final-paid-val">₹{totalPaid.toFixed(2)}</span>
+              <div className="pricing-line-item">
+                <span>Shipping Fees</span>
+                <span style={{ color: "#16A34A", fontWeight: "700" }}>FREE</span>
+              </div>
+
+              <div className="grand-total-row">
+                <span className="grand-total-label">Grand Total</span>
+                <span className="grand-total-val">₹{totalPaid.toFixed(2)}</span>
               </div>
             </div>
           </div>
 
-          {/* Social Proof Trust Section */}
-          <div className="ordersuccess-card social-proof-card">
-            <div className="stars-review">★★★★★</div>
-            <h4>Rated by Thousands of Happy Customers</h4>
-            <p className="proof-sub">100% Genuine Products • Cruelty Free • Fast Delivery</p>
-            <div className="reassurance-checklist-grid">
-              <span>🛡 100% Secure Gateway</span>
-              <span>🚚 Safe Logistics Packing</span>
-              <span>↩ 7-Day Refund Policy</span>
-              <span>💬 24/7 Priority Support</span>
+          {/* Luxury Loyalty Card */}
+          <div className="loyalty-reward-card-gold">
+            <div className="loyalty-title-flex">
+              <span className="loyalty-badge-gold">Venus VIP Club</span>
+              <FaStar style={{ color: "#C8A165" }} />
+            </div>
+            
+            <h4 className="loyalty-points-earned">150 Reward Points Earned</h4>
+            <p className="loyalty-points-balance-sub">
+              Your points balance: <strong>540 reward points</strong>
+            </p>
+
+            <div className="loyalty-progress-container">
+              <div className="loyalty-progress-track">
+                <div className="loyalty-progress-fill" style={{ width: "54%" }} />
+              </div>
+              <div className="loyalty-milestone-text">
+                <span>Next Milestone: 1000 Points</span>
+                <span>460 more to go</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Order Tracking Preview */}
+          <div className="visual-package-tracker-box font-outfit">
+            <FaTruck className="tracker-illustration-svg" />
+            <div className="tracker-details-block">
+              <span className="tracker-status-label">Current Status</span>
+              <span className="tracker-status-val">Preparing Order</span>
+              <span className="tracker-expected-dispatch">
+                Expected dispatch: Tomorrow
+              </span>
+            </div>
+          </div>
+
+          {/* Email and Whatsapp confirmation notifications block */}
+          <div className="notification-bell-alerts-bar">
+            <FaShieldAlt className="alert-bell-icon" />
+            <div className="alert-bell-text-block">
+              <span className="alert-bell-title">Purchase Alerts Configured</span>
+              <p className="alert-bell-body">
+                Invoice copy and live courier transit updates will be pushed directly to your registered email and WhatsApp.
+              </p>
+            </div>
+          </div>
+
+          {/* Trust assurances check panel */}
+          <div className="ordersuccess-card-luxury">
+            <h3>Our Security & Service Guarantees</h3>
+            <div className="trust-badges-horizontal-grid">
+              <div className="trust-badge-item">
+                <FaShieldAlt className="trust-badge-icon" />
+                <span className="trust-badge-label">100% Authentic</span>
+              </div>
+              <div className="trust-badge-item">
+                <FaRegCreditCard className="trust-badge-icon" />
+                <span className="trust-badge-label">Secure Pay</span>
+              </div>
+              <div className="trust-badge-item">
+                <FaUndo className="trust-badge-icon" />
+                <span className="trust-badge-label">Easy Returns</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Help channels Desk card */}
+          <div className="ordersuccess-card-luxury">
+            <h3>Need Any Help?</h3>
+            <div className="help-desk-channels-list">
+              <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer" className="help-channel-btn">
+                <FaWhatsapp /> WhatsApp
+              </a>
+              <a href="mailto:support@venuscare.com" className="help-channel-btn">
+                <FaEnvelope /> Email Support
+              </a>
+              <a href="tel:+919999999999" className="help-channel-btn">
+                <FaPhone /> Direct Call
+              </a>
             </div>
           </div>
 
@@ -361,14 +470,16 @@ const OrderSuccess = () => {
 
       </div>
 
-      {/* 4. PRODUCT RECOMMENDATIONS ("You may also like") */}
+      {/* Curated Recommendations ("You may also like") */}
       {recommendedProducts.length > 0 && (
         <div className="ordersuccess-recommendations-section">
-          <h2>You May Also Like</h2>
-          <p className="section-subtitle">Specially curated premium skincare for your daily routine.</p>
+          <h2 className="recommendations-title-luxury">You May Also Like</h2>
+          <p className="recommendations-subtitle-luxury">
+            Explore customer-favorite products curated to elevate your beauty routine.
+          </p>
           <div className="recommendations-flex-grid">
-            {recommendedProducts.map((product) => (
-              <ProductCard key={product._id} product={product} />
+            {recommendedProducts.map((prod) => (
+              <ProductCard key={prod._id} product={prod} />
             ))}
           </div>
         </div>

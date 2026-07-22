@@ -449,5 +449,304 @@ textarea:focus-visible {
   width: 80%;
 }
 
+/* ================= PREMIUM INPUT COMPONENT STYLING ================= */
+.premium-input-wrapper {
+  position: relative;
+  margin-bottom: 22px;
+  width: 100%;
+}
+
+.premium-input-icon {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  color: #9CA3AF;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  transition: color 0.25s ease;
+  z-index: 2;
+}
+
+/* Base input field styling with higher specificity to avoid global overrides */
+input.premium-input[type="text"],
+input.premium-input[type="email"],
+input.premium-input[type="password"],
+input.premium-input[type="tel"],
+input.premium-input[type="number"],
+input.premium-input {
+  width: 100%;
+  height: 56px;
+  padding: 0 16px;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1A1A1A;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Padding adjustments for input with icons and actions */
+input.premium-input.has-icon {
+  padding-left: 52px !important;
+}
+
+input.premium-input.has-action {
+  padding-right: 52px !important;
+}
+
+.premium-input::placeholder {
+  color: #9CA3AF;
+}
+
+/* Hover State */
+input.premium-input:hover {
+  border-color: #D1D5DB;
+}
+
+/* Focus State */
+input.premium-input:focus {
+  border-color: #C8A165 !important;
+  box-shadow: 0 0 0 4px rgba(200, 161, 101, 0.08) !important;
+}
+
+/* Active Icon Color Transition on Focus */
+.premium-input-wrapper:focus-within .premium-input-icon {
+  color: #C8A165;
+}
+
+/* State wrappers (Error & Success) */
+.premium-input-wrapper.error input.premium-input {
+  border-color: #DC2626 !important;
+}
+
+.premium-input-wrapper.error input.premium-input:focus {
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08) !important;
+}
+
+.premium-input-wrapper.success input.premium-input {
+  border-color: #16A34A !important;
+}
+
+.premium-input-wrapper.success input.premium-input:focus {
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.08) !important;
+}
+
+/* Eye Password Toggle Action Button */
+.premium-input-action {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9CA3AF;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  outline: none;
+  transition: color 0.2s ease;
+  z-index: 2;
+}
+
+.premium-input-action:hover {
+  color: #C8A165;
+}
+
+/* Inline error styles under wrapper */
+.premium-error-text {
+  position: absolute;
+  bottom: -18px;
+  left: 4px;
+  font-size: 11px;
+  color: #DC2626;
+  margin: 0;
+  font-weight: 500;
+  z-index: 2;
+}
+
+/* ==========================================================================
+   ABOUT PAGE LUXURY FINAL CTA SECTION
+   ========================================================================== */
+
+.luxury-about-cta-section {
+  padding: 120px 24px;
+  background: #FFFFFF;
+}
+
+.luxury-about-cta-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  background: radial-gradient(circle at 75% 30%, rgba(200, 161, 101, 0.09) 0%, #1F1F1F 75%);
+  border-radius: 32px;
+  padding: 80px 60px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 60px;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.25);
+}
+
+.luxury-about-cta-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 2;
+}
+
+.luxury-badge {
+  color: #C8A165;
+  font-weight: 700;
+  letter-spacing: 3px;
+  font-size: 11px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.luxury-heading {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  font-weight: 600;
+  line-height: 1.2;
+  color: #FFFFFF;
+  margin: 0 0 24px 0;
+  letter-spacing: 0.5px;
+}
+
+.luxury-description {
+  font-size: 18px;
+  color: #D8D8D8;
+  max-width: 520px;
+  margin: 0 0 40px 0;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+.luxury-cta-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+}
+
+.luxury-btn-primary {
+  padding: 16px 36px;
+  background: #C8A165;
+  color: #FFFFFF;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  box-shadow: 0 10px 25px rgba(200, 161, 101, 0.25);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.luxury-btn-primary:hover {
+  background: #FFFFFF;
+  color: #1F1F1F;
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(255, 255, 255, 0.2);
+}
+
+.luxury-btn-secondary {
+  padding: 16px 36px;
+  background: transparent;
+  color: #C8A165;
+  border: 1px solid #C8A165;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.luxury-btn-secondary:hover {
+  background: #C8A165;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(200, 161, 101, 0.2);
+}
+
+.luxury-about-cta-right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: 100%;
+  min-height: 380px;
+  z-index: 2;
+}
+
+.luxury-product-img {
+  width: 100%;
+  max-width: 440px;
+  height: 380px;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: floatImage 6s ease-in-out infinite;
+}
+
+@keyframes floatImage {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Responsive Rules */
+@media (max-width: 1024px) {
+  .luxury-about-cta-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 60px 40px;
+  }
+  .luxury-about-cta-right {
+    min-height: 300px;
+  }
+  .luxury-product-img {
+    height: 300px;
+  }
+}
+
+@media (max-width: 600px) {
+  .luxury-about-cta-container {
+    padding: 40px 24px;
+    text-align: center;
+  }
+  .luxury-about-cta-left {
+    align-items: center;
+  }
+  .luxury-description {
+    font-size: 16px;
+  }
+  .luxury-cta-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  .luxury-btn-primary,
+  .luxury-btn-secondary {
+    width: 100%;
+  }
+}
+
 
 

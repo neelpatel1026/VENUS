@@ -1,7 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-const authLimiter = require("../middleware/authLimiter");
+const {
+  loginLimiter,
+  registerLimiter,
+  forgotPasswordLimiter,
+  resetPasswordLimiter,
+} = require("../middleware/authLimiter");
 
 const {
   registerUser,
@@ -12,17 +17,15 @@ const {
   getUsers,
 } = require('../controllers/authController.js');
 
-// const authMiddleware = require('../middleware/authMiddleware.js');
 const { protect } = require('../middleware/authMiddleware.js');
 const User = require('../models/User.js');
 
 router.get("/users", getUsers);
-router.post('/register', authLimiter, registerUser);
-router.post('/login', authLimiter, loginUser);
-router.post('/google-login', authLimiter, googleLogin);
-router.post('/forgot-password', authLimiter, forgotPassword);
-router.post('/reset-password', authLimiter, resetPassword);
-
+router.post('/register', registerLimiter, registerUser);
+router.post('/login', loginLimiter, loginUser);
+router.post('/google-login', loginLimiter, googleLogin);
+router.post('/forgot-password', forgotPasswordLimiter, forgotPassword);
+router.post('/reset-password', resetPasswordLimiter, resetPassword);
 
 // GET CURRENT LOGGED IN USER
 router.get('/me', protect, async (req, res) => {

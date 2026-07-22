@@ -1,0 +1,387 @@
+/* ==========================================================================
+   VENUS CARE PREMIUM SOLID CHARCOAL FOOTER
+   ========================================================================== */
+
+.luxury-footer {
+  background-color: #1F2430; /* Solid Charcoal #1F2430 */
+  border-top: 1px solid rgba(200, 161, 101, 0.25); /* Subtle top gold border */
+  color: #B8BEC8; /* Description color */
+  padding: 120px 0 80px; /* 120px top spacing, 80px bottom spacing */
+  font-family: 'Outfit', sans-serif;
+  position: relative;
+  z-index: 10;
+}
+
+.luxury-footer-container {
+  max-width: 1280px; /* Centered max width container (~1280px) */
+  margin: 0 auto;
+  padding: 0 40px; /* Large left/right padding */
+}
+
+/* TOP TRUST BAR - Premium trust strip */
+.footer-trust-strip-luxury {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  border-bottom: 1px solid rgba(200, 161, 101, 0.15); /* Thin divider */
+  padding-bottom: 48px;
+  margin-bottom: 64px;
+}
+
+.trust-badge-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.trust-badge-icon {
+  color: #FFFFFF; /* White icons */
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.trust-badge-card span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #B8BEC8;
+  letter-spacing: 0.5px;
+}
+
+.trust-badge-card span strong {
+  color: #C8A165; /* Gold accents */
+  font-weight: 600;
+}
+
+/* Five balanced columns */
+.luxury-footer-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr 0.9fr 1.1fr 1.3fr;
+  gap: 48px; /* Spacing gap between columns */
+  margin-bottom: 64px;
+  align-items: start;
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
+
+/* Column Headings - White, 18-20px, Bold */
+.footer-col h4 {
+  font-family: 'Cinzel', serif;
+  font-size: 18px; 
+  font-weight: 700;
+  color: #FFFFFF; 
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin: 0 0 10px 0;
+}
+
+/* Brand Section (Column 1) */
+.footer-logo-title {
+  font-family: 'Cinzel', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.footer-brand-desc {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #B8BEC8;
+  margin: 0;
+  max-width: 100%;
+}
+
+/* Certification Icons list */
+.footer-certifications-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.cert-text-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: #B8BEC8;
+}
+
+.cert-text-icon {
+  color: #C8A165; /* Gold accents */
+  font-size: 12px;
+}
+
+/* Social Media Circular Outline Icons */
+.footer-social-wrapper {
+  display: flex;
+  gap: 16px; /* Spacing 16px */
+  margin-top: 15px;
+}
+
+.social-circle-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid rgba(184, 190, 200, 0.25);
+  color: #B8BEC8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94); /* 300ms transitions */
+}
+
+.social-circle-btn:hover {
+  border-color: #C8A165; /* Gold border */
+  color: #C8A165; /* Gold icon */
+  transform: translateY(-3px); /* Lift animation */
+  box-shadow: 0 4px 12px rgba(200, 161, 101, 0.15); /* Soft shadow */
+}
+
+/* Navigation Links - Light gray, Hover gold */
+.footer-links-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.footer-link-item {
+  color: #B8BEC8; /* Light gray */
+  text-decoration: none;
+  font-size: 15px;
+  display: inline-block;
+  align-self: start;
+  position: relative;
+  transition: all 300ms ease;
+}
+
+.footer-link-item::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #C8A165;
+  transition: width 300ms ease;
+}
+
+.footer-link-item:hover {
+  color: #C8A165; /* Hover: Gold */
+  transform: translateX(2px); /* Links slide 2px */
+}
+
+.footer-link-item:hover::after {
+  width: 100%;
+}
+
+/* Contact Column (Column 4) */
+.footer-contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.contact-detail-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #B8BEC8;
+  text-align: left;
+}
+
+.contact-detail-line svg {
+  color: #C8A165; /* Gold accents */
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+/* Newsletter Column (Column 5) */
+.footer-newsletter-box {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.newsletter-subtext {
+  font-size: 14px;
+  color: #B8BEC8;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.newsletter-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.newsletter-rounded-input {
+  height: 42px;
+  border-radius: 30px;
+  border: 1px solid rgba(184, 190, 200, 0.2);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0 20px;
+  font-size: 13.5px;
+  color: #FFFFFF;
+  outline: none;
+  transition: all 300ms ease;
+}
+
+.newsletter-rounded-input:focus {
+  border-color: #C8A165;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.newsletter-submit-pill-btn {
+  height: 42px;
+  border-radius: 30px;
+  background: #C8A165; /* Gold Subscribe button */
+  color: #FFFFFF;
+  border: none;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 300ms ease;
+}
+
+.newsletter-submit-pill-btn:hover {
+  background: #D8B77B; /* Hover gold */
+  transform: scale(1.02); /* scales slightly */
+  box-shadow: 0 4px 14px rgba(200, 161, 101, 0.15); /* glows softly */
+}
+
+.newsletter-spam-notice {
+  font-size: 12px;
+  color: #8C94A0;
+  margin-top: 2px;
+}
+
+/* Payment logos strip - Monochrome text badges (No gray boxes) */
+.footer-payments-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.payment-logo-item {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8C94A0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Bottom Divider line */
+.footer-divider-line {
+  height: 1px;
+  background: rgba(200, 161, 101, 0.15); /* Thin divider */
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+/* Bottom Bar Flexbox */
+.footer-bottom-bar-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-size: 13px;
+  color: #8C94A0;
+}
+
+.bottom-credits {
+  font-weight: 500;
+}
+
+.bottom-love-flag {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.bottom-links-menu {
+  display: flex;
+  gap: 24px;
+}
+
+.bottom-menu-link {
+  color: #8C94A0;
+  text-decoration: none;
+  transition: color 300ms ease;
+}
+
+.bottom-menu-link:hover {
+  color: #C8A165;
+}
+
+/* Responsive Viewports mapping */
+@media (max-width: 1024px) {
+  .luxury-footer {
+    padding: 80px 0; /* Tablet spacing override */
+  }
+  .luxury-footer-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on Tablet */
+    gap: 36px;
+  }
+  .footer-col-newsletter {
+    grid-column: span 2; /* Newsletter becomes full width */
+  }
+  .footer-trust-strip-luxury {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .luxury-footer {
+    padding: 60px 0; /* Mobile spacing override */
+  }
+  .luxury-footer-container {
+    padding: 0 24px;
+  }
+  .luxury-footer-grid {
+    grid-template-columns: 1fr; /* Single column on Mobile */
+    gap: 32px;
+  }
+  .footer-col-newsletter {
+    grid-column: span 1;
+  }
+  .footer-col-brand {
+    align-items: center;
+    text-align: center;
+  }
+  .footer-logo-title {
+    text-align: center;
+  }
+  .footer-brand-desc {
+    text-align: center;
+  }
+  .footer-certifications-strip {
+    align-items: center;
+  }
+  .footer-links-stack {
+    align-items: flex-start;
+  }
+  .footer-contact-details {
+    align-items: flex-start;
+  }
+  .footer-trust-strip-luxury {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}

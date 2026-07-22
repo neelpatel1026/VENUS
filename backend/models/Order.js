@@ -238,6 +238,49 @@ const orderSchema = new mongoose.Schema(
       default: "",
     },
 
+    adminNotesLog: [
+      {
+        noteText: String,
+        adminName: { type: String, default: "Admin" },
+        timestamp: { type: Date, default: Date.now },
+      },
+    ],
+
+    priority: {
+      type: String,
+      enum: ["High", "Medium", "Low"],
+      default: "Medium",
+    },
+
+    tags: [
+      {
+        type: String,
+      },
+    ],
+
+    courier: {
+      type: String,
+      default: "",
+    },
+
+    trackingNumber: {
+      type: String,
+      default: "",
+    },
+
+    expectedDeliveryDate: {
+      type: Date,
+    },
+
+    dispatchDate: {
+      type: Date,
+    },
+
+    shippingCost: {
+      type: Number,
+      default: 0,
+    },
+
     isGift: {
       type: Boolean,
       default: false,

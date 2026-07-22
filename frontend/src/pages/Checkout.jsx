@@ -17,7 +17,10 @@ import {
   LuTrash2, 
   LuCheck 
 } from "react-icons/lu";
+import AddressCard from "../components/AddressCard";
+import { useGoogleMaps } from "../components/GoogleMapLoader";
 import "../styles/checkout.css";
+import "../styles/myAddresses.css";
 
 const Checkout = () => {
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
@@ -54,6 +57,12 @@ const Checkout = () => {
   const [sendingOtp, setSendingOtp] = useState(false);
   const [verifyingOtp, setVerifyingOtp] = useState(false);
 
+  const { isLoaded, isMock, apiKey, mockPlaces, reverseGeocodeMock } = useGoogleMaps();
+  const [checkoutSearchQuery, setCheckoutSearchQuery] = useState("");
+  const [checkoutSuggestions, setCheckoutSuggestions] = useState([]);
+  const [detectingCheckoutLocation, setDetectingCheckoutLocation] = useState(false);
+  const [showCheckoutAdvanced, setShowCheckoutAdvanced] = useState(false);
+
   // Inline address form states
   const [showAddForm, setShowAddForm] = useState(false);
   const [newAddr, setNewAddr] = useState({
@@ -66,6 +75,11 @@ const Checkout = () => {
     state: "",
     pincode: "",
     country: "India",
+    placeId: "",
+    lat: 23.0496,
+    lng: 72.6734,
+    formattedAddress: "",
+    isDefault: false,
   });
 
   const fetchAddresses = async () => {
@@ -86,8 +100,10 @@ const Checkout = () => {
         if (stillValid) {
           setAddress(stillValid);
         } else {
-          setSelectedAddress(userAddresses[0]._id);
-          setAddress(userAddresses[0]);
+          const defaultAddr = userAddresses.find(a => a.isDefault);
+          const selectTarget = defaultAddr || userAddresses[0];
+          setSelectedAddress(selectTarget._id);
+          setAddress(selectTarget);
         }
       } else {
         setSelectedAddress("");
@@ -112,6 +128,165 @@ const Checkout = () => {
   useEffect(() => {
     fetchAddresses();
   }, [user]);
+
+  // Handle suggestion filtering in mock mode
+  useEffect(() => {
+    if (!isMock || !checkoutSearchQuery) {
+      setCheckoutSuggestions([]);
+      return;
+    }
+    const q = checkoutSearchQuery.toLowerCase();
+    const filtered = mockPlaces.filter(p => p.description.toLowerCase().includes(q));
+    setCheckoutSuggestions(filtered);
+  }, [checkoutSearchQuery, isMock]);
+
+  // Handle select suggestion in mock mode
+  const handleSelectCheckoutMockSuggestion = (suggestion) => {
+    const details = suggestion.details;
+    setNewAddr(prev => ({
+      ...prev,
+      addressLine1: `${details.houseNumber} ${details.buildingName}`,
+      addressLine2: details.landmark || details.street,
+      city: details.city,
+      state: details.state,
+      pincode: details.pincode,
+      country: details.country,
+      placeId: suggestion.placeId,
+      lat: details.lat,
+      lng: details.lng,
+      formattedAddress: details.formattedAddress
+    }));
+    setCheckoutSearchQuery("");
+    setCheckoutSuggestions([]);
+    toast.success("Checkout shipping address filled! ⚡");
+  };
+
+  // Reverse geocoding for GPS coordinate input in checkout
+  const handleCheckoutReverseGeocode = async (lat, lng) => {
+    if (isMock) {
+      const details = reverseGeocodeMock(lat, lng);
+      setNewAddr(prev => ({
+        ...prev,
+        city: details.city,
+        state: details.state,
+        pincode: details.pincode,
+        country: details.country,
+        lat,
+        lng,
+        placeId: details.placeId || "mock-geo-marker-checkout",
+        formattedAddress: details.formattedAddress,
+        addressLine2: details.landmark || details.area || ""
+      }));
+      return;
+    }
+
+    try {
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+        if (status === "OK" && results[0]) {
+          const place = results[0];
+          const components = place.address_components || [];
+          let city = "", state = "", pincode = "", country = "";
+
+          components.forEach(comp => {
+            const types = comp.types;
+            if (types.includes("locality")) city = comp.long_name;
+            else if (types.includes("administrative_area_level_1")) state = comp.long_name;
+            else if (types.includes("postal_code")) pincode = comp.long_name;
+            else if (types.includes("country")) country = comp.long_name;
+          });
+
+          setNewAddr(prev => ({
+            ...prev,
+            city: city || prev.city,
+            state: state || prev.state,
+            pincode: pincode || prev.pincode,
+            country: country || prev.country,
+            lat,
+            lng,
+            placeId: place.place_id,
+            formattedAddress: place.formatted_address
+          }));
+        }
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // GPS current location detection for checkout shipping addition
+  const handleCheckoutUseCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+
+    setDetectingCheckoutLocation(true);
+    toast.loading("Locating coordinate points...", { id: "checkout-gps" });
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        await handleCheckoutReverseGeocode(lat, lng);
+        setDetectingCheckoutLocation(false);
+        toast.dismiss("checkout-gps");
+        toast.success("GPS locked! Destination address filled.");
+      },
+      (error) => {
+        console.error(error);
+        setDetectingCheckoutLocation(false);
+        toast.dismiss("checkout-gps");
+        toast.error("Failed to detect location. Grant browser permissions.");
+      },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  };
+
+  // Live Autocomplete for Checkout page
+  const handleLiveCheckoutAutocompleteFocus = () => {
+    if (isMock || !window.google) return;
+    const inputEl = document.getElementById("checkout-search-autocomplete-input");
+    if (!inputEl) return;
+
+    const autocomplete = new window.google.maps.places.Autocomplete(inputEl, {
+      types: ["address"],
+    });
+
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+      if (!place.geometry) return;
+
+      const components = place.address_components || [];
+      let houseNumber = "", street = "", area = "", city = "", state = "", country = "", pincode = "";
+
+      components.forEach(comp => {
+        const types = comp.types;
+        if (types.includes("street_number")) houseNumber = comp.long_name;
+        else if (types.includes("route")) street = comp.long_name;
+        else if (types.includes("sublocality_level_1")) area = comp.long_name;
+        else if (types.includes("locality")) city = comp.long_name;
+        else if (types.includes("administrative_area_level_1")) state = comp.long_name;
+        else if (types.includes("country")) country = comp.long_name;
+        else if (types.includes("postal_code")) pincode = comp.long_name;
+      });
+
+      setNewAddr(prev => ({
+        ...prev,
+        addressLine1: `${houseNumber} ${street}`.trim() || place.name || "",
+        addressLine2: area || "",
+        city: city || "",
+        state: state || "",
+        pincode: pincode || "",
+        country: country || "India",
+        placeId: place.place_id || "",
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+        formattedAddress: place.formatted_address || ""
+      }));
+      toast.success("Address autocompleted!");
+    });
+  };
 
   const sendOtp = async () => {
     setSendingOtp(true);
@@ -497,52 +672,36 @@ const Checkout = () => {
               </div>
               <p className="section-desc-subtext">Choose a destination address for your premium delivery.</p>
 
-              <div className="address-cards-stack">
+              <div className="address-cards-stack-luxury font-outfit">
                 {addresses.length === 0 ? (
-                  <div className="empty-addresses-box">
-                    <LuMapPin className="empty-addr-icon" />
+                  <div className="empty-addresses-box-luxury">
+                    <span className="empty-icon">📍</span>
                     <p>No shipping addresses saved to your profile yet.</p>
                   </div>
                 ) : (
-                  addresses.map((addr) => (
-                    <div 
-                      key={addr._id}
-                      className={`luxury-address-card ${selectedAddress === addr._id ? "selected" : ""}`}
-                      onClick={() => {
-                        setSelectedAddress(addr._id);
-                        setAddress(addr);
-                      }}
-                    >
-                      <div className="address-card-header">
-                        <div className="address-badge-tag">{addr.label || "Home"}</div>
-                        {selectedAddress === addr._id && (
-                          <div className="address-selected-check">
-                            <LuCheck className="check-icon" />
-                          </div>
-                        )}
-                      </div>
-                      
-                      <h4 className="receiver-name">{addr.fullName}</h4>
-                      <p className="receiver-phone">{addr.phone}</p>
-                      <p className="receiver-address">
-                        {addr.addressLine1}
-                        {addr.addressLine2 && `, ${addr.addressLine2}`}
-                        <br />
-                        {addr.city}, {addr.state} - {addr.pincode}
-                      </p>
-
-                      <div className="address-card-actions">
-                        <button 
-                          type="button" 
-                          className="delete-address-action-btn"
-                          onClick={(e) => handleDeleteAddress(addr._id, e)}
-                          title="Remove address"
-                        >
-                          <LuTrash2 className="action-icon" /> Delete Address
-                        </button>
-                      </div>
-                    </div>
-                  ))
+                  <div className="checkout-address-cards-grid">
+                    {addresses.map((addr) => (
+                      <AddressCard
+                        key={addr._id}
+                        address={addr}
+                        onEdit={() => navigate("/profile?tab=addresses")}
+                        onDelete={async (id) => {
+                          await axios.delete(`/api/address/${id}`, {
+                            headers: { Authorization: `Bearer ${user.token}` }
+                          });
+                          toast.success("Address deleted!");
+                          fetchAddresses();
+                        }}
+                        onSelect={(selected) => {
+                          setSelectedAddress(selected._id);
+                          setAddress(selected);
+                          toast.success("Delivery destination locked! 🚚");
+                        }}
+                        isSelected={selectedAddress === addr._id}
+                        apiKey={apiKey}
+                      />
+                    ))}
+                  </div>
                 )}
               </div>
 
@@ -550,116 +709,197 @@ const Checkout = () => {
               {!showAddForm ? (
                 <button 
                   type="button" 
-                  className="add-address-trigger-btn"
+                  className="add-address-trigger-btn-luxury"
                   onClick={() => setShowAddForm(true)}
                 >
                   <LuPlus className="btn-icon" /> Add New Address
                 </button>
               ) : (
-                <div className="inline-add-address-form-box">
-                  <h4>New Shipping Details</h4>
+                <div className="inline-add-address-form-box-luxury">
+                  <h4 className="inline-form-title">New Shipping Details</h4>
                   
-                  <div className="form-inputs-grid">
-                    <div className="input-group-row">
-                      <div className="form-group-item">
-                        <label>Address Label*</label>
-                        <select name="label" value={newAddr.label} onChange={handleNewAddrChange}>
-                          <option value="Home">Home</option>
-                          <option value="Office">Office</option>
-                          <option value="Other">Other</option>
-                        </select>
-                      </div>
-                      <div className="form-group-item">
-                        <label>Full Name*</label>
-                        <input 
-                          type="text" 
-                          name="fullName" 
-                          value={newAddr.fullName} 
-                          onChange={handleNewAddrChange} 
-                          placeholder="Receiver Name" 
-                          required 
+                  {/* Google Autocomplete input */}
+                  <div className="form-group-item full-width relative" style={{ marginBottom: "12px" }}>
+                    <label className="form-label-luxury">Search Address (Google Places Lookup)</label>
+                    <div className="luxury-search-input-field">
+                      <FaSearch className="field-icon" style={{ marginRight: "8px", color: "#9CA3AF" }} />
+                      {isMock ? (
+                        <input
+                          type="text"
+                          placeholder="Search address (e.g. Nikol, CP, BKC)..."
+                          value={checkoutSearchQuery}
+                          onChange={(e) => setCheckoutSearchQuery(e.target.value)}
+                          className="luxury-search-input-field-input"
                         />
-                      </div>
+                      ) : (
+                        <input
+                          id="checkout-search-autocomplete-input"
+                          type="text"
+                          placeholder="Search location globally..."
+                          onFocus={handleLiveCheckoutAutocompleteFocus}
+                          className="luxury-search-input-field-input"
+                        />
+                      )}
                     </div>
 
-                    <div className="input-group-row">
-                      <div className="form-group-item">
-                        <label>Phone Number*</label>
-                        <input 
-                          type="tel" 
-                          name="phone" 
-                          value={newAddr.phone} 
-                          onChange={handleNewAddrChange} 
-                          placeholder="10-digit number" 
-                          required 
-                        />
+                    {/* Autocomplete suggestion popovers */}
+                    {isMock && checkoutSuggestions.length > 0 && (
+                      <div className="autocomplete-suggestions-list-luxury">
+                        {checkoutSuggestions.map((s) => (
+                          <div 
+                            key={s.placeId} 
+                            className="suggestion-item-luxury"
+                            onClick={() => handleSelectCheckoutMockSuggestion(s)}
+                          >
+                            <FaMapMarkerAlt className="marker-icon" />
+                            <span>{s.description}</span>
+                          </div>
+                        ))}
                       </div>
-                      <div className="form-group-item">
-                        <label>Address Line 1*</label>
-                        <input 
-                          type="text" 
-                          name="addressLine1" 
-                          value={newAddr.addressLine1} 
-                          onChange={handleNewAddrChange} 
-                          placeholder="Flat, House no., Building, Street" 
-                          required 
-                        />
-                      </div>
-                    </div>
+                    )}
+                  </div>
 
-                    <div className="input-group-row">
-                      <div className="form-group-item">
-                        <label>Address Line 2 (Optional)</label>
-                        <input 
-                          type="text" 
-                          name="addressLine2" 
-                          value={newAddr.addressLine2} 
-                          onChange={handleNewAddrChange} 
-                          placeholder="Colony, Area, Sector" 
-                        />
-                      </div>
-                      <div className="form-group-item">
-                        <label>City*</label>
-                        <input 
-                          type="text" 
-                          name="city" 
-                          value={newAddr.city} 
-                          onChange={handleNewAddrChange} 
-                          placeholder="City Name" 
-                          required 
-                        />
-                      </div>
-                    </div>
+                  {/* GPS Locator button */}
+                  <button 
+                    type="button" 
+                    className="gps-locator-btn font-outfit"
+                    style={{ width: "100%", marginBottom: "16px" }}
+                    onClick={handleCheckoutUseCurrentLocation}
+                    disabled={detectingCheckoutLocation}
+                  >
+                    <FaLocationArrow className="arrow-icon" />
+                    {detectingCheckoutLocation ? "Locating position..." : "Use Current Location via GPS"}
+                  </button>
 
-                    <div className="input-group-row">
-                      <div className="form-group-item">
-                        <label>State*</label>
-                        <input 
-                          type="text" 
-                          name="state" 
-                          value={newAddr.state} 
-                          onChange={handleNewAddrChange} 
-                          placeholder="State Name" 
-                          required 
-                        />
-                      </div>
-                      <div className="form-group-item">
-                        <label>Pincode*</label>
-                        <input 
-                          type="text" 
-                          name="pincode" 
-                          value={newAddr.pincode} 
-                          onChange={handleNewAddrChange} 
-                          placeholder="6-digit ZIP code" 
-                          required 
-                        />
-                      </div>
+                  <div className="form-inputs-grid-luxury" style={{ gap: "12px" }}>
+                    <div className="form-input-block">
+                      <label>Full Name*</label>
+                      <input 
+                        type="text" 
+                        name="fullName" 
+                        value={newAddr.fullName} 
+                        onChange={(e) => setNewAddr({ ...newAddr, fullName: e.target.value })}
+                        placeholder="Receiver Name" 
+                        required 
+                      />
+                    </div>
+                    <div className="form-input-block">
+                      <label>Phone Number*</label>
+                      <input 
+                        type="tel" 
+                        name="phone" 
+                        value={newAddr.phone} 
+                        onChange={(e) => setNewAddr({ ...newAddr, phone: e.target.value })}
+                        placeholder="10-digit contact number" 
+                        required 
+                      />
+                    </div>
+                    <div className="form-input-block">
+                      <label>Flat / House No. / Building*</label>
+                      <input 
+                        type="text" 
+                        name="addressLine1" 
+                        value={newAddr.addressLine1} 
+                        onChange={(e) => setNewAddr({ ...newAddr, addressLine1: e.target.value })}
+                        placeholder="Flat no., Floor..." 
+                        required 
+                      />
+                    </div>
+                    <div className="form-input-block">
+                      <label>Street / Area / Landmark</label>
+                      <input 
+                        type="text" 
+                        name="addressLine2" 
+                        value={newAddr.addressLine2} 
+                        onChange={(e) => setNewAddr({ ...newAddr, addressLine2: e.target.value })}
+                        placeholder="e.g. Near Metro Hub" 
+                      />
                     </div>
                   </div>
 
-                  <div className="form-buttons-row">
-                    <button type="button" className="cancel-address-btn" onClick={() => setShowAddForm(false)}>Cancel</button>
-                    <button type="button" className="save-address-btn" onClick={handleAddNewAddressSubmit}>Save Address</button>
+                  {/* Collapsible advanced address drawers */}
+                  <div className="advanced-fields-drawer-block" style={{ marginTop: "12px" }}>
+                    <button 
+                      type="button" 
+                      className="drawer-toggle-btn font-outfit"
+                      onClick={() => setShowCheckoutAdvanced(!showCheckoutAdvanced)}
+                    >
+                      {showCheckoutAdvanced ? "Hide Location Details" : "View Auto-Filled Location Details"}
+                      {showCheckoutAdvanced ? <FaChevronUp /> : <FaChevronDown />}
+                    </button>
+
+                    {showCheckoutAdvanced && (
+                      <div className="drawer-collapsed-inputs font-outfit" style={{ border: "1px solid #ECE7DF", background: "#FAF9F6" }}>
+                        <div className="form-inputs-grid-luxury" style={{ gap: "10px" }}>
+                          <div className="form-input-block">
+                            <label>City</label>
+                            <input 
+                              type="text" 
+                              value={newAddr.city} 
+                              onChange={(e) => setNewAddr({ ...newAddr, city: e.target.value })}
+                              required 
+                            />
+                          </div>
+                          <div className="form-input-block">
+                            <label>State</label>
+                            <input 
+                              type="text" 
+                              value={newAddr.state} 
+                              onChange={(e) => setNewAddr({ ...newAddr, state: e.target.value })}
+                              required 
+                            />
+                          </div>
+                          <div className="form-input-block">
+                            <label>Pincode</label>
+                            <input 
+                              type="text" 
+                              value={newAddr.pincode} 
+                              onChange={(e) => setNewAddr({ ...newAddr, pincode: e.target.value })}
+                              required 
+                            />
+                          </div>
+                          <div className="form-input-block">
+                            <label>Country</label>
+                            <input 
+                              type="text" 
+                              value={newAddr.country} 
+                              onChange={(e) => setNewAddr({ ...newAddr, country: e.target.value })}
+                              required 
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Chips Selection for Address Type label */}
+                  <div className="address-type-selection-block font-outfit" style={{ marginTop: "14px" }}>
+                    <label style={{ fontSize: "11px", fontWeight: "700", color: "#4B5563" }}>Select Address Label</label>
+                    <div className="chips-list-selection" style={{ marginTop: "6px" }}>
+                      {[
+                        { value: "Home", icon: <FaHome /> },
+                        { value: "Work", icon: <FaBriefcase /> },
+                        { value: "Office", icon: <FaBuilding /> },
+                        { value: "Hotel", icon: <FaHotel /> },
+                        { value: "Other", icon: <FaMapMarkerAlt /> }
+                      ].map((chip) => (
+                        <button
+                          type="button"
+                          key={chip.value}
+                          onClick={() => setNewAddr({ ...newAddr, label: chip.value })}
+                          className={`type-chip-btn ${newAddr.label === chip.value ? "active" : ""}`}
+                          style={{ padding: "6px 12px", fontSize: "11px" }}
+                        >
+                          {chip.icon} {chip.value}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Submit actions */}
+                  <div className="form-buttons-row" style={{ display: "flex", gap: "10px", marginTop: "18px" }}>
+                    <button type="button" className="btn-luxury-cancel" style={{ flex: 1 }} onClick={() => setShowAddForm(false)}>Cancel</button>
+                    <button type="button" className="btn-luxury-submit-gold" style={{ flex: 1 }} onClick={handleAddNewAddressSubmit}>Save & Deliver</button>
                   </div>
                 </div>
               )}

@@ -43,7 +43,7 @@ const updateProductRatingStats = async (productId) => {
  */
 const createReview = async (req, res) => {
   try {
-    const { productId, orderId, rating, title, review } = req.body;
+    const { productId, orderId, rating, title, review, images, video, location, variant, recommend, isAnonymous, skinType, ageGroup, pros, cons } = req.body;
     const userId = req.user._id;
 
     // 1. Validation
@@ -70,10 +70,10 @@ const createReview = async (req, res) => {
     }
 
     // 3. Verify Product is in the order items
-    const hasProduct = order.items.some(
+    const matchingItem = order.items.find(
       (item) => item.productId.toString() === productId.toString()
     );
-    if (!hasProduct) {
+    if (!matchingItem) {
       return res.status(400).json({ message: "Product is not part of this order" });
     }
 
@@ -84,15 +84,27 @@ const createReview = async (req, res) => {
     }
 
     // 5. Create Review
+    const finalVariant = variant || matchingItem.variant || "Standard Edition";
+    const displayName = isAnonymous ? "Anonymous" : req.user.name;
     const newReview = new Review({
       productId,
       userId,
       orderId,
-      customerName: req.user.name,
+      customerName: displayName,
       rating,
       title: title.trim(),
       review: review.trim(),
       isVerifiedPurchase: true,
+      images: Array.isArray(images) ? images : [],
+      video: typeof video === "string" ? video : "",
+      location: typeof location === "string" ? location : "",
+      variant: finalVariant,
+      recommend: recommend !== false,
+      isAnonymous: isAnonymous === true,
+      skinType: typeof skinType === "string" ? skinType : "",
+      ageGroup: typeof ageGroup === "string" ? ageGroup : "",
+      pros: typeof pros === "string" ? pros : "",
+      cons: typeof cons === "string" ? cons : "",
       isHidden: false,
     });
 
@@ -132,7 +144,7 @@ const createReview = async (req, res) => {
  */
 const editReview = async (req, res) => {
   try {
-    const { rating, title, review } = req.body;
+    const { rating, title, review, images, video, location, variant, recommend, isAnonymous, skinType, ageGroup, pros, cons } = req.body;
     const reviewId = req.params.id;
     const userId = req.user._id;
 
@@ -159,6 +171,21 @@ const editReview = async (req, res) => {
     if (rating) reviewObj.rating = rating;
     if (title) reviewObj.title = title.trim();
     if (review) reviewObj.review = review.trim();
+    if (Array.isArray(images)) reviewObj.images = images;
+    if (typeof video === "string") reviewObj.video = video;
+    if (typeof location === "string") reviewObj.location = location;
+    if (typeof variant === "string") reviewObj.variant = variant;
+    if (typeof recommend === "boolean") reviewObj.recommend = recommend;
+    if (typeof isAnonymous === "boolean") {
+      reviewObj.isAnonymous = isAnonymous;
+      reviewObj.customerName = isAnonymous ? "Anonymous" : req.user.name;
+    }
+    if (typeof skinType === "string") reviewObj.skinType = skinType;
+    if (typeof ageGroup === "string") reviewObj.ageGroup = ageGroup;
+    if (typeof pros === "string") reviewObj.pros = pros;
+    if (typeof cons === "string") reviewObj.cons = cons;
+    
+    reviewObj.edited = true;
 
     const updatedReview = await reviewObj.save();
 
@@ -182,12 +209,65 @@ const editReview = async (req, res) => {
  */
 const getProductReviews = async (req, res) => {
   try {
-    const { productId } = req.params;
+        const { productId } = req.params;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
     const sort = req.query.sort || "newest";
+    const ratingFilter = req.query.rating; // e.g., "5", "4" etc.
+    const mediaFilter = req.query.media; // "photos", "videos", "any"
+    const verifiedFilter = req.query.verified; // "true"
+    const searchFilter = req.query.search; // search query string
+    const skinTypeFilter = req.query.skinType;
+    const ageGroupFilter = req.query.ageGroup;
 
     const skipIndex = (page - 1) * limit;
+
+    // 1. Build Query Filters
+    const query = { productId, isHidden: false };
+
+    if (ratingFilter) {
+      query.rating = parseInt(ratingFilter);
+    }
+
+    if (verifiedFilter === "true") {
+      query.isVerifiedPurchase = true;
+    }
+
+    if (skinTypeFilter) {
+      query.skinType = skinTypeFilter;
+    }
+
+    if (ageGroupFilter) {
+      query.ageGroup = ageGroupFilter;
+    }
+
+    if (mediaFilter === "photos") {
+      query.images = { $exists: true, $not: { $size: 0 } };
+    } else if (mediaFilter === "videos") {
+      query.video = { $exists: true, $ne: "" };
+    } else if (mediaFilter === "any") {
+      query.$or = [
+        { images: { $exists: true, $not: { $size: 0 } } },
+        { video: { $exists: true, $ne: "" } }
+      ];
+    }
+
+    if (searchFilter) {
+      const searchRegex = { $regex: searchFilter, $options: "i" };
+      if (query.$or) {
+        // combine media filter and search filter
+        query.$and = [
+          { $or: query.$or },
+          { $or: [ { title: searchRegex }, { review: searchRegex } ] }
+        ];
+        delete query.$or;
+      } else {
+        query.$or = [
+          { title: searchRegex },
+          { review: searchRegex }
+        ];
+      }
+    }
 
     // Define sort rules
     let sortQuery = { createdAt: -1 };
@@ -197,17 +277,19 @@ const getProductReviews = async (req, res) => {
       sortQuery = { rating: 1, createdAt: -1 };
     } else if (sort === "helpful") {
       sortQuery = { helpfulCount: -1, createdAt: -1 };
+    } else if (sort === "oldest") {
+      sortQuery = { createdAt: 1 };
     }
 
-    // Fetch reviews
-    const reviews = await Review.find({ productId, isHidden: false })
+    // Fetch reviews with query filter
+    const reviews = await Review.find(query)
       .sort(sortQuery)
       .limit(limit)
       .skip(skipIndex);
 
-    const totalReviews = await Review.countDocuments({ productId, isHidden: false });
+    const totalReviews = await Review.countDocuments(query);
 
-    // Calculate rating breakdowns
+    // Calculate rating breakdowns (always calculate on all reviews of product, ignoring active page filters for summary)
     const breakdown = await Review.aggregate([
       { $match: { productId: new mongoose.Types.ObjectId(productId), isHidden: false } },
       { $group: { _id: "$rating", count: { $sum: 1 } } },
@@ -215,12 +297,72 @@ const getProductReviews = async (req, res) => {
 
     const starsBreakdown = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
     let sumRatings = 0;
+    let allReviewsCount = 0;
     breakdown.forEach((item) => {
       starsBreakdown[item._id] = item.count;
       sumRatings += item._id * item.count;
+      allReviewsCount += item.count;
     });
 
-    const averageRating = totalReviews > 0 ? Math.round((sumRatings / totalReviews) * 10) / 10 : 0;
+    const averageRating = allReviewsCount > 0 ? Math.round((sumRatings / allReviewsCount) * 10) / 10 : 0;
+
+    // Calculate recommendation percentage and verified buyer counts
+    const recommendCount = await Review.countDocuments({ productId, isHidden: false, recommend: true });
+    const recommendRate = allReviewsCount > 0 ? Math.round((recommendCount / allReviewsCount) * 100) : 0;
+    const verifiedCount = await Review.countDocuments({ productId, isHidden: false, isVerifiedPurchase: true });
+
+    // Fetch Featured Reviews (Positive, Critical, Latest)
+    const topPositiveReview = await Review.findOne({ productId, isHidden: false, rating: { $gte: 4 } })
+      .sort({ helpfulCount: -1, rating: -1 })
+      .limit(1);
+    
+    const topCriticalReview = await Review.findOne({ productId, isHidden: false, rating: { $lte: 2 } })
+      .sort({ helpfulCount: -1, rating: 1 })
+      .limit(1);
+
+    const latestReview = await Review.findOne({ productId, isHidden: false })
+      .sort({ createdAt: -1 })
+      .limit(1);
+
+    // Fetch Customer Photo Gallery (up to 10 latest photos/videos)
+    const customerGallery = await Review.find({
+      productId,
+      isHidden: false,
+      $or: [
+        { images: { $exists: true, $not: { $size: 0 } } },
+        { video: { $exists: true, $ne: "" } }
+      ]
+    })
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .select("images video customerName rating title review createdAt");
+
+    // Dynamic Review Highlight Chips Count
+    const allReviewsText = await Review.find({ productId, isHidden: false }).select("review");
+    const chipsConfig = [
+      { label: "Long Lasting", keywords: ["long", "last", "hour", "day"] },
+      { label: "Great Packaging", keywords: ["packag", "box", "bottle", "premium"] },
+      { label: "Worth Buying", keywords: ["worth", "buy", "value", "price", "money"] },
+      { label: "Premium Fragrance", keywords: ["fragran", "smell", "scent", "aroma"] },
+      { label: "Fast Delivery", keywords: ["deliv", "fast", "quick", "ship"] },
+      { label: "Hydrating Cleanse", keywords: ["hydrat", "clean", "wash", "moistur"] },
+      { label: "Highly Recommend", keywords: ["recommend", "love", "best", "great"] },
+    ];
+
+    const computedChips = chipsConfig
+      .map(c => {
+        let count = 0;
+        allReviewsText.forEach(r => {
+          const text = (r.review || "").toLowerCase();
+          if (c.keywords.some(k => text.includes(k))) {
+            count++;
+          }
+        });
+        return { label: c.label, count };
+      })
+      .filter(c => c.count > 0)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5); // top 5 highlights
 
     res.status(200).json({
       success: true,
@@ -233,9 +375,18 @@ const getProductReviews = async (req, res) => {
       },
       stats: {
         averageRating,
-        totalReviews,
+        totalReviews: allReviewsCount,
         breakdown: starsBreakdown,
+        recommendRate,
+        verifiedCount,
       },
+      customerGallery,
+      highlights: computedChips,
+      featured: {
+        topPositiveReview,
+        topCriticalReview,
+        latestReview,
+      }
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -265,11 +416,61 @@ const voteHelpful = async (req, res) => {
 
     review.helpfulUsers.push(userId);
     review.helpfulCount += 1;
+    
+    // Remove from unhelpful if they had voted unhelpful before
+    if (review.unhelpfulUsers.includes(userId)) {
+      review.unhelpfulUsers = review.unhelpfulUsers.filter(id => id.toString() !== userId.toString());
+      review.unhelpfulCount = Math.max(0, review.unhelpfulCount - 1);
+    }
+    
     await review.save();
 
     res.status(200).json({
       success: true,
       helpfulCount: review.helpfulCount,
+      unhelpfulCount: review.unhelpfulCount,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ * @desc    Vote a review as unhelpful
+ * @route   POST /api/reviews/:id/unhelpful
+ * @access  Private
+ */
+const voteUnhelpful = async (req, res) => {
+  try {
+    const reviewId = req.params.id;
+    const userId = req.user._id;
+
+    const review = await Review.findById(reviewId);
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    // Check if user already voted unhelpful
+    const hasVoted = review.unhelpfulUsers.includes(userId);
+    if (hasVoted) {
+      return res.status(400).json({ message: "You have already voted this review as unhelpful" });
+    }
+
+    review.unhelpfulUsers.push(userId);
+    review.unhelpfulCount += 1;
+
+    // Remove from helpful if they had voted helpful before
+    if (review.helpfulUsers.includes(userId)) {
+      review.helpfulUsers = review.helpfulUsers.filter(id => id.toString() !== userId.toString());
+      review.helpfulCount = Math.max(0, review.helpfulCount - 1);
+    }
+
+    await review.save();
+
+    res.status(200).json({
+      success: true,
+      helpfulCount: review.helpfulCount,
+      unhelpfulCount: review.unhelpfulCount,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -383,6 +584,10 @@ const adminGetReviews = async (req, res) => {
       filterQuery.productId = productId;
     }
 
+    if (req.query.reported === "true") {
+      filterQuery.reported = true;
+    }
+
     const reviews = await Review.find(filterQuery)
       .populate("productId", "name category imageUrl")
       .sort({ createdAt: -1 })
@@ -435,7 +640,7 @@ const adminToggleVisibility = async (req, res) => {
 };
 
 /**
- * @desc    Delete a review
+ * @desc    Delete a review (Admin)
  * @route   DELETE /api/reviews/admin/:id
  * @access  Private/Admin
  */
@@ -455,6 +660,96 @@ const adminDeleteReview = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Review deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ * @desc    Delete a review (Customer self)
+ * @route   DELETE /api/reviews/:id
+ * @access  Private
+ */
+const deleteReview = async (req, res) => {
+  try {
+    const reviewId = req.params.id;
+    const userId = req.user._id;
+
+    const review = await Review.findOne({ _id: reviewId, userId });
+    if (!review) {
+      return res.status(404).json({ message: "Review not found or unauthorized" });
+    }
+
+    const productId = review.productId;
+    await Review.findByIdAndDelete(reviewId);
+
+    // Recalculate rating aggregates on the Product
+    await updateProductRatingStats(productId);
+
+    res.status(200).json({
+      success: true,
+      message: "Review deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ * @desc    Report a review
+ * @route   POST /api/reviews/:id/report
+ * @access  Public
+ */
+const reportReview = async (req, res) => {
+  try {
+    const reviewId = req.params.id;
+    const review = await Review.findById(reviewId);
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    review.reported = true;
+    await review.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Review reported successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ * @desc    Merchant Reply to a review
+ * @route   POST /api/reviews/admin/:id/reply
+ * @access  Private/Admin
+ */
+const adminReplyReview = async (req, res) => {
+  try {
+    const reviewId = req.params.id;
+    const { replyText } = req.body;
+
+    if (!replyText || !replyText.trim()) {
+      return res.status(400).json({ message: "Reply text is required" });
+    }
+
+    const review = await Review.findById(reviewId);
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    review.merchantReply = {
+      replyText: replyText.trim(),
+      repliedAt: new Date(),
+    };
+    await review.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Merchant reply posted successfully",
+      review,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -503,12 +798,16 @@ const getReviewCampaignStats = async (req, res) => {
 module.exports = {
   createReview,
   editReview,
+  deleteReview,
   getProductReviews,
   voteHelpful,
+  voteUnhelpful,
+  reportReview,
   checkEligibility,
   adminGetReviews,
   adminToggleVisibility,
   adminDeleteReview,
+  adminReplyReview,
   getMyReviews,
   getReviewCampaignStats,
 };

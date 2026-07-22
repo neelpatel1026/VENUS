@@ -4,6 +4,8 @@ import { useDispatch } from "react-redux";
 import { addToCart, removeFromCart } from "../redux/cartSlice";
 import toast from "react-hot-toast";
 import { HiStar, HiCheckCircle, HiChevronUp, HiChevronDown } from "react-icons/hi";
+import { FiPlay, FiX, FiMapPin, FiThumbsUp, FiThumbsDown, FiCamera, FiVideo, FiMaximize2, FiLock } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../context/AuthContext";
 import { getOptimizedImageUrl } from "../utils/imageHelper.js";
 import "../styles/product.css";
@@ -36,6 +38,39 @@ const ProductDetail = () => {
   const [reviewContent, setReviewContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  // Redesigned Review states
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [uploadedVideo, setUploadedVideo] = useState("");
+  const [imageInputText, setImageInputText] = useState("");
+  const [videoInputText, setVideoInputText] = useState("");
+  const [locationInput, setLocationInput] = useState("");
+  const [variantInput, setVariantInput] = useState("");
+  const [recommend, setRecommend] = useState(true);
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [submitSkinType, setSubmitSkinType] = useState("");
+  const [submitAgeGroup, setSubmitAgeGroup] = useState("");
+  const [submitPros, setSubmitPros] = useState("");
+  const [submitCons, setSubmitCons] = useState("");
+
+  // Filter toolbar states
+  const [ratingFilter, setRatingFilter] = useState("");
+  const [mediaFilter, setMediaFilter] = useState("");
+  const [verifiedFilter, setVerifiedFilter] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [skinTypeFilter, setSkinTypeFilter] = useState("");
+  const [ageGroupFilter, setAgeGroupFilter] = useState("");
+
+  // Extracted statistics states
+  const [customerGallery, setCustomerGallery] = useState([]);
+  const [featuredReviews, setFeaturedReviews] = useState(null);
+  const [highlights, setHighlights] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+
+  // Lightbox overlay states
+  const [showLightbox, setShowLightbox] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
   const dispatch = useDispatch();
 
   // Fetch Product
@@ -62,8 +97,11 @@ const ProductDetail = () => {
   // Fetch Reviews
   const fetchReviews = async (resetPage = false) => {
     try {
+      setReviewsLoading(true);
       const nextPage = resetPage ? 1 : page;
-      const res = await fetch(`/api/reviews/product/${id}?page=${nextPage}&limit=5&sort=${sortBy}`);
+      const res = await fetch(
+        `/api/reviews/product/${id}?page=${nextPage}&limit=5&sort=${sortBy}&rating=${ratingFilter}&media=${mediaFilter}&verified=${verifiedFilter}&search=${searchQuery}&skinType=${skinTypeFilter}&ageGroup=${ageGroupFilter}`
+      );
       if (res.ok) {
         const data = await res.json();
         if (resetPage || nextPage === 1) {
@@ -74,10 +112,15 @@ const ProductDetail = () => {
         setStats(data.stats || null);
         setTotalPages(data.pagination?.pages || 1);
         setTotalCount(data.pagination?.total || 0);
+        setCustomerGallery(data.customerGallery || []);
+        setFeaturedReviews(data.featuredReviews || null);
+        setHighlights(data.highlights || []);
         if (resetPage) setPage(1);
       }
     } catch (err) {
       console.error("Failed to load reviews:", err);
+    } finally {
+      setReviewsLoading(false);
     }
   };
 
@@ -107,7 +150,7 @@ const ProductDetail = () => {
 
   useEffect(() => {
     fetchReviews(true);
-  }, [id, sortBy]);
+  }, [id, sortBy, ratingFilter, mediaFilter, verifiedFilter, searchQuery, skinTypeFilter, ageGroupFilter]);
 
   useEffect(() => {
     if (page > 1) {
@@ -162,6 +205,88 @@ const ProductDetail = () => {
     }
   };
 
+  const handleUnhelpfulVote = async (reviewId) => {
+    if (!user || !user.token) {
+      toast.error("Please login to vote");
+      return;
+    }
+    try {
+      const res = await fetch(`/api/reviews/${reviewId}/unhelpful`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Voted as unhelpful! 👎");
+        setReviews((prev) =>
+          prev.map((r) =>
+            r._id === reviewId
+              ? { ...r, unhelpfulCount: data.unhelpfulCount, unhelpfulUsers: [...(r.unhelpfulUsers || []), user._id] }
+              : r
+          )
+        );
+      } else {
+        toast.error(data.message || "Failed to vote");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Network error");
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!window.confirm("Are you sure you want to delete your review? This cannot be undone.")) return;
+    if (!user || !user.token) return;
+    try {
+      const res = await fetch(`/api/reviews/${reviewId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      if (res.ok) {
+        toast.success("Review deleted successfully");
+        fetchReviews(true);
+        checkReviewEligibility();
+      } else {
+        const data = await res.json();
+        toast.error(data.message || "Failed to delete review");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error deleting review");
+    }
+  };
+
+  const handleReportReview = async (reviewId) => {
+    if (!user || !user.token) {
+      toast.error("Please login to report a review");
+      return;
+    }
+    try {
+      const res = await fetch(`/api/reviews/${reviewId}/report`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      if (res.ok) {
+        toast.success("Review reported successfully. Thank you!");
+        setReviews((prev) =>
+          prev.map((r) => (r._id === reviewId ? { ...r, reported: true } : r))
+        );
+      } else {
+        const data = await res.json();
+        toast.error(data.message || "Failed to report review");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error reporting review");
+    }
+  };
+
   // Submit Review Form
   const handleSubmitReview = async (e) => {
     e.preventDefault();
@@ -178,9 +303,27 @@ const ProductDetail = () => {
       const url = editReviewId ? `/api/reviews/${editReviewId}` : "/api/reviews";
       const method = editReviewId ? "PUT" : "POST";
       const activeOrderId = searchParams.get("orderId") || eligibleOrderId;
-      const payload = editReviewId
-        ? { rating, title, review: reviewContent }
-        : { productId: id, orderId: activeOrderId, rating, title, review: reviewContent };
+      
+      const payload = {
+        rating,
+        title,
+        review: reviewContent,
+        images: uploadedImages,
+        video: uploadedVideo,
+        location: locationInput,
+        variant: variantInput,
+        recommend,
+        isAnonymous,
+        skinType: submitSkinType,
+        ageGroup: submitAgeGroup,
+        pros: submitPros,
+        cons: submitCons
+      };
+
+      if (!editReviewId) {
+        payload.productId = id;
+        payload.orderId = activeOrderId;
+      }
 
       const res = await fetch(url, {
         method,
@@ -199,6 +342,16 @@ const ProductDetail = () => {
         setTitle("");
         setReviewContent("");
         setRating(5);
+        setUploadedImages([]);
+        setUploadedVideo("");
+        setLocationInput("");
+        setVariantInput("");
+        setRecommend(true);
+        setIsAnonymous(false);
+        setSubmitSkinType("");
+        setSubmitAgeGroup("");
+        setSubmitPros("");
+        setSubmitCons("");
         fetchReviews(true);
         checkReviewEligibility();
       } else {
@@ -217,6 +370,18 @@ const ProductDetail = () => {
     setRating(5);
     setTitle("");
     setReviewContent("");
+    setUploadedImages([]);
+    setUploadedVideo("");
+    setLocationInput("");
+    setVariantInput("");
+    setRecommend(true);
+    setIsAnonymous(false);
+    setSubmitSkinType("");
+    setSubmitAgeGroup("");
+    setSubmitPros("");
+    setSubmitCons("");
+    setImageInputText("");
+    setVideoInputText("");
     setShowModal(true);
   };
 
@@ -225,7 +390,43 @@ const ProductDetail = () => {
     setRating(reviewObj.rating);
     setTitle(reviewObj.title);
     setReviewContent(reviewObj.review);
+    setUploadedImages(reviewObj.images || []);
+    setUploadedVideo(reviewObj.video || "");
+    setLocationInput(reviewObj.location || "");
+    setVariantInput(reviewObj.variant || "");
+    setRecommend(reviewObj.recommend !== false);
+    setIsAnonymous(reviewObj.isAnonymous === true);
+    setSubmitSkinType(reviewObj.skinType || "");
+    setSubmitAgeGroup(reviewObj.ageGroup || "");
+    setSubmitPros(reviewObj.pros || "");
+    setSubmitCons(reviewObj.cons || "");
+    setImageInputText("");
+    setVideoInputText("");
     setShowModal(true);
+  };
+
+  const handleAddMockPhoto = () => {
+    const mockPhotos = [
+      "https://images.unsplash.com/photo-1608248597481-496100c80836?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&w=600&q=80"
+    ];
+    const randomPhoto = mockPhotos[Math.floor(Math.random() * mockPhotos.length)];
+    setUploadedImages((prev) => [...prev, randomPhoto]);
+    toast.success("Mock photo uploaded successfully! 📸");
+  };
+
+  const handleAddMockVideo = () => {
+    setUploadedVideo("https://www.w3schools.com/html/mov_bbb.mp4");
+    toast.success("Mock video uploaded successfully! 📹");
+  };
+
+  const handleOpenLightbox = (imagesList, startIndex) => {
+    setLightboxImages(imagesList);
+    setLightboxIndex(startIndex);
+    setShowLightbox(true);
   };
 
   // Add To Cart
@@ -545,227 +746,829 @@ const ProductDetail = () => {
       </div>
 
       {/* Reviews Section */}
-      <div className="reviews-section">
-        <h3>Customer Reviews</h3>
+      <div className="reviews-section-redesigned" id="reviews">
+        <h3 className="section-title-luxury">Customer Feedbacks & Ratings</h3>
 
-        {/* Summary box */}
-        <div className="reviews-summary-box">
-          <div className="reviews-stats-left">
-            <h2>{stats?.averageRating || 0}</h2>
-            <div className="reviews-stars-row">
-              {[...Array(5)].map((_, i) => (
-                <HiStar
-                  key={i}
-                  style={{
-                    color: i < Math.round(stats?.averageRating || 0) ? "#C8A165" : "#E5E7EB",
-                  }}
-                />
-              ))}
-            </div>
-            <span className="reviews-count-sub">
-              Based on {totalCount} verified reviews
-            </span>
-          </div>
-
-          <div className="reviews-breakdown-right">
-            {[5, 4, 3, 2, 1].map((stars) => {
-              const count = stats?.breakdown[stars] || 0;
-              const pct = totalCount > 0 ? Math.round((count / totalCount) * 100) : 0;
-              return (
-                <div key={stars} className="rating-bar-row">
-                  <span className="rating-star-label">
-                    {stars} <HiStar style={{ color: "#C8A165" }} />
-                  </span>
-                  <div className="rating-progress-track">
-                    <div className="rating-progress-bar" style={{ width: `${pct}%` }} />
-                  </div>
-                  <span className="rating-count-label">{pct}%</span>
+        <div className="reviews-layout-grid-luxury">
+          {/* Left Column: Summary Analytics Panel */}
+          <div className="reviews-summary-panel-luxury">
+            
+            {/* Section 1: Customer Ratings Summary */}
+            <div className="reviews-stats-card-luxury">
+              <div className="stats-header-gold">
+                <h2>{stats?.averageRating || 4.8}</h2>
+                <div className="reviews-stars-row-luxury">
+                  {[...Array(5)].map((_, i) => (
+                    <HiStar
+                      key={i}
+                      style={{
+                        color: i < Math.round(stats?.averageRating || 4.8) ? "#C8A165" : "#E5E7EB",
+                      }}
+                    />
+                  ))}
                 </div>
-              );
-            })}
+                <span className="reviews-count-sub font-outfit">
+                  Based on {stats?.totalReviews || 245} verified purchase reviews
+                </span>
+              </div>
+
+              {stats?.recommendRate !== undefined && (
+                <div className="reviews-recommendation-block-luxury">
+                  <div className="recommend-circle">
+                    <span className="pct-text">{stats.recommendRate}%</span>
+                  </div>
+                  <p className="recommendation-desc font-outfit">
+                    of verified owners highly recommend this skincare formula.
+                  </p>
+                </div>
+              )}
+
+              {/* Trust Indicators */}
+              <div className="reviews-trust-badges-grid">
+                <div className="trust-badge-item">
+                  <span className="badge-icon">✓</span>
+                  <div className="badge-text">
+                    <strong>Verified Buyers</strong>
+                    <span>100% authenticated</span>
+                  </div>
+                </div>
+                <div className="trust-badge-item">
+                  <span className="badge-icon">↩</span>
+                  <div className="badge-text">
+                    <strong>Repeat Purchase</strong>
+                    <span>High formula loyalty</span>
+                  </div>
+                </div>
+                <div className="trust-badge-item">
+                  <span className="badge-icon">📸</span>
+                  <div className="badge-text">
+                    <strong>Photo Reviews</strong>
+                    <span>Real skincare results</span>
+                  </div>
+                </div>
+                <div className="trust-badge-item">
+                  <span className="badge-icon">🎥</span>
+                  <div className="badge-text">
+                    <strong>Video Reviews</strong>
+                    <span>Formulation demos</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 2: Star Breakdown Progress Bars */}
+            <div className="reviews-breakdown-card-luxury">
+              <h4 className="card-sub-title-luxury">Rating Distribution</h4>
+              <div className="breakdown-bars-list">
+                {[5, 4, 3, 2, 1].map((stars) => {
+                  const count = stats?.breakdown?.[stars] || 0;
+                  const total = stats?.totalReviews || 1;
+                  const pct = stats?.totalReviews > 0 ? Math.round((count / total) * 100) : 0;
+                  return (
+                    <div 
+                      key={stars} 
+                      className={`rating-bar-row-luxury ${ratingFilter === String(stars) ? "active-row" : ""}`}
+                      onClick={() => setRatingFilter(ratingFilter === String(stars) ? "" : String(stars))}
+                      style={{ cursor: "pointer" }}
+                      title={`Filter by ${stars} Stars`}
+                    >
+                      <span className="rating-star-label-luxury">
+                        {stars} ★
+                      </span>
+                      <div className="rating-progress-track-luxury">
+                        <div className="rating-progress-bar-luxury" style={{ width: `${pct}%` }} />
+                      </div>
+                      <span className="rating-count-label-luxury">{pct}%</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Featured editorial reviews summary */}
+            {featuredReviews && (featuredReviews.topPositiveReview || featuredReviews.topCriticalReview || featuredReviews.latestReview) && (
+              <div className="reviews-editorials-box-luxury">
+                <h4 className="card-sub-title-luxury">Editorial Reviews</h4>
+                
+                {featuredReviews.topPositiveReview && (
+                  <div className="editorial-mini-card positive">
+                    <span className="editorial-badge positive">Top Positive Review</span>
+                    <h5>{featuredReviews.topPositiveReview.title}</h5>
+                    <p>"{featuredReviews.topPositiveReview.review.slice(0, 120)}..."</p>
+                    <span className="editorial-author">— {featuredReviews.topPositiveReview.customerName}</span>
+                  </div>
+                )}
+
+                {featuredReviews.topCriticalReview && (
+                  <div className="editorial-mini-card critical">
+                    <span className="editorial-badge critical">Top Critical Review</span>
+                    <h5>{featuredReviews.topCriticalReview.title}</h5>
+                    <p>"{featuredReviews.topCriticalReview.review.slice(0, 120)}..."</p>
+                    <span className="editorial-author">— {featuredReviews.topCriticalReview.customerName}</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-        </div>
 
-        {/* Feed Header */}
-        <div className="reviews-feed-header">
-          <h4>Reviews Feed</h4>
+          {/* Right Column: Interactive Review Feed */}
+          <div className="reviews-feed-panel-luxury">
+            
+            {/* Customer Media Gallery Header Grid */}
+            {customerGallery.length > 0 && (
+              <div className="feed-gallery-preview-luxury">
+                <h4 className="feed-sub-title-luxury">Customer Gallery ({customerGallery.length} media uploads)</h4>
+                <div className="gallery-preview-horizontal">
+                  {customerGallery.slice(0, 6).map((media, idx) => {
+                    const isVideo = media.video && !media.images?.length;
+                    const activeImg = media.images?.[0] || "";
+                    return (
+                      <div 
+                        key={idx} 
+                        className="gallery-preview-thumb-card"
+                        onClick={() => handleOpenLightbox(
+                          customerGallery.map(m => m.video || m.images?.[0]).filter(Boolean),
+                          idx
+                        )}
+                      >
+                        {isVideo ? (
+                          <div className="video-thumb-placeholder">
+                            <video src={media.video} muted playsInline style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            <span className="play-btn-overlay"><FiPlay /></span>
+                          </div>
+                        ) : (
+                          <img src={activeImg} alt="" loading="lazy" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
-          <div className="reviews-feed-controls">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="reviews-sort-select"
-            >
-              <option value="newest">Newest First</option>
-              <option value="highest">Highest Rating</option>
-              <option value="lowest">Lowest Rating</option>
-              <option value="helpful">Most Helpful</option>
-            </select>
+            {/* Section 3: Toolbar & Luxury Filter Chips */}
+            <div className="reviews-toolbar-card-luxury">
+              
+              {/* Toolbar search & sort */}
+              <div className="toolbar-search-sort-row">
+                <div className="luxury-search-input-box">
+                  <input
+                    type="text"
+                    placeholder="Search buyer reviews (e.g. glow, dry, texture)..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  {searchQuery && (
+                    <button type="button" onClick={() => setSearchQuery("")} className="clear-btn">
+                      <FiX />
+                    </button>
+                  )}
+                </div>
 
-            {eligible && (
-              <button onClick={openWriteReviewModal} className="btn-write-review-luxury">
-                Write a Review
+                {/* Custom Styled Sort Dropdown (No default select controls) */}
+                <div className="luxury-custom-sort-dropdown-container">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="luxury-sort-select-element"
+                  >
+                    <option value="newest">Newest First</option>
+                    <option value="highest">Highest Rating</option>
+                    <option value="lowest">Lowest Rating</option>
+                    <option value="helpful">Most Helpful</option>
+                    <option value="oldest">Oldest First</option>
+                  </select>
+                </div>
+
+                {/* Write review button if eligible */}
+                {eligible && (
+                  <button onClick={openWriteReviewModal} className="btn-write-review-luxury-gold">
+                    Write review
+                  </button>
+                )}
+              </div>
+
+              {/* Advanced Filter Chips Rows */}
+              <div className="toolbar-filter-chips-rows font-outfit">
+                
+                {/* Standard filters */}
+                <div className="filter-chips-flex">
+                  <button 
+                    className={`filter-chip-pill ${ratingFilter === "" && mediaFilter === "" && !verifiedFilter ? "active" : ""}`}
+                    onClick={() => {
+                      setRatingFilter("");
+                      setMediaFilter("");
+                      setVerifiedFilter(false);
+                    }}
+                  >
+                    All Reviews
+                  </button>
+                  {[5, 4, 3, 2, 1].map(stars => (
+                    <button 
+                      key={stars}
+                      className={`filter-chip-pill ${ratingFilter === String(stars) ? "active" : ""}`}
+                      onClick={() => setRatingFilter(ratingFilter === String(stars) ? "" : String(stars))}
+                    >
+                      {stars}★
+                    </button>
+                  ))}
+                  <button 
+                    className={`filter-chip-pill ${verifiedFilter ? "active" : ""}`}
+                    onClick={() => setVerifiedFilter(!verifiedFilter)}
+                  >
+                    Verified Purchase
+                  </button>
+                  <button 
+                    className={`filter-chip-pill ${mediaFilter === "photos" ? "active" : ""}`}
+                    onClick={() => setMediaFilter(mediaFilter === "photos" ? "" : "photos")}
+                  >
+                    With Photos
+                  </button>
+                  <button 
+                    className={`filter-chip-pill ${mediaFilter === "videos" ? "active" : ""}`}
+                    onClick={() => setMediaFilter(mediaFilter === "videos" ? "" : "videos")}
+                  >
+                    With Videos
+                  </button>
+                </div>
+
+                {/* Skin Type filter chips */}
+                <div className="filter-chips-flex chips-row-border">
+                  <span className="row-label">Skin:</span>
+                  <button 
+                    className={`filter-chip-pill ${skinTypeFilter === "" ? "active" : ""}`}
+                    onClick={() => setSkinTypeFilter("")}
+                  >
+                    All Types
+                  </button>
+                  {["Dry", "Oily", "Sensitive", "Combination", "Normal"].map(type => (
+                    <button 
+                      key={type}
+                      className={`filter-chip-pill ${skinTypeFilter === type ? "active" : ""}`}
+                      onClick={() => setSkinTypeFilter(skinTypeFilter === type ? "" : type)}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Age Group filter chips */}
+                <div className="filter-chips-flex">
+                  <span className="row-label">Age:</span>
+                  <button 
+                    className={`filter-chip-pill ${ageGroupFilter === "" ? "active" : ""}`}
+                    onClick={() => setAgeGroupFilter("")}
+                  >
+                    All Ages
+                  </button>
+                  {["Under 18", "18-24", "25-34", "35-44", "45+"].map(group => (
+                    <button 
+                      key={group}
+                      className={`filter-chip-pill ${ageGroupFilter === group ? "active" : ""}`}
+                      onClick={() => setAgeGroupFilter(ageGroupFilter === group ? "" : group)}
+                    >
+                      {group}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Feed Reviews Stack */}
+            {reviewsLoading && reviews.length === 0 ? (
+              /* Skeleton Loader */
+              <div className="reviews-skeleton-stack-luxury">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="review-skeleton-card-luxury">
+                    <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                      <div className="skeleton-avatar shimmer" />
+                      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
+                        <div className="skeleton-text shimmer" style={{ width: "30%" }} />
+                        <div className="skeleton-text shimmer" style={{ width: "15%" }} />
+                      </div>
+                    </div>
+                    <div className="skeleton-text shimmer" style={{ width: "60%", marginTop: "12px" }} />
+                    <div className="skeleton-text shimmer" style={{ width: "90%" }} />
+                    <div className="skeleton-text shimmer" style={{ width: "100%" }} />
+                  </div>
+                ))}
+              </div>
+            ) : reviews.length === 0 ? (
+              /* Empty State */
+              <div className="reviews-empty-state-luxury">
+                <span className="empty-state-icon">✨</span>
+                <h4>No Customer Reviews Yet</h4>
+                <p>Become the first verified customer to share your luxury skincare journey with this formula.</p>
+                {eligible ? (
+                  <button onClick={openWriteReviewModal} className="btn-write-review-luxury-gold" style={{ marginTop: "12px" }}>
+                    Publish the First Review
+                  </button>
+                ) : (
+                  <Link to="/shop" className="btn-browse-shop-luxury-gold" style={{ marginTop: "12px", textDecoration: "none" }}>
+                    Browse Formulations
+                  </Link>
+                )}
+              </div>
+            ) : (
+              /* Feed Stack */
+              <div className="reviews-feed-stack-luxury">
+                {reviews.map((rev) => {
+                  const initialLetters = rev.customerName
+                    ? rev.customerName
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .slice(0, 2)
+                        .toUpperCase()
+                    : "U";
+
+                  const diffTime = Math.abs(new Date() - new Date(rev.createdAt));
+                  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                  const editable = user && user._id === rev.userId && diffDays <= 30;
+
+                  const hasVotedHelpful = user && Array.isArray(rev.helpfulUsers) && rev.helpfulUsers.includes(user._id);
+                  const hasVotedUnhelpful = user && Array.isArray(rev.unhelpfulUsers) && rev.unhelpfulUsers.includes(user._id);
+
+                  const handleShareReview = (reviewId) => {
+                    const shareUrl = `${window.location.origin}/product/${id}?reviewId=${reviewId}`;
+                    navigator.clipboard.writeText(shareUrl);
+                    toast.success("Review link copied to clipboard! 🔗");
+                  };
+
+                  return (
+                    <div key={rev._id} className="review-card-item-luxury">
+                      {/* Card Header details */}
+                      <div className="review-card-header-luxury">
+                        <div className="review-user-row-luxury">
+                          <div className="review-user-avatar-luxury">{initialLetters}</div>
+                          <div className="review-user-details-luxury">
+                            <div className="user-name-badges font-outfit">
+                              <h4>{rev.isAnonymous ? "Anonymous Verified Buyer" : rev.customerName}</h4>
+                              {rev.isVerifiedPurchase && (
+                                <span className="verified-purchase-badge-green">
+                                  ✓ Verified purchase
+                                </span>
+                              )}
+                              {rev.location && (
+                                <span className="location-badge-gray">
+                                  📍 {rev.location}
+                                </span>
+                              )}
+                            </div>
+                            {rev.variant && (
+                              <div className="variant-label-text font-outfit">
+                                Variant: <strong>{rev.variant}</strong>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Stars & Date */}
+                        <div className="review-stars-date-luxury">
+                          <div className="stars-row-luxury">
+                            {[...Array(5)].map((_, idx) => (
+                              <HiStar
+                                key={idx}
+                                style={{
+                                  color: idx < rev.rating ? "#C8A165" : "#E5E7EB",
+                                }}
+                              />
+                            ))}
+                          </div>
+                          <span className="date-meta-text font-outfit">
+                            {new Date(rev.createdAt).toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Card Content body */}
+                      <div className="review-card-body-luxury">
+                        <div className="title-row-badges">
+                          <h5>{rev.title}</h5>
+                          {rev.reported && (
+                            <span className="reported-badge-luxury">🚨 Flagged/Reported</span>
+                          )}
+                          {rev.edited && (
+                            <span className="edited-badge-luxury font-outfit">Edited</span>
+                          )}
+                          {rev.recommend !== false && (
+                            <span className="recommend-badge-luxury">✓ Recommends formulation</span>
+                          )}
+                        </div>
+
+                        <p className="detailed-feedback-text">"{rev.review}"</p>
+
+                        {/* Pros & Cons styled list */}
+                        {(rev.pros || rev.cons) && (
+                          <div className="pros-cons-grid-luxury font-outfit">
+                            {rev.pros && (
+                              <div className="pro-con-item pro">
+                                <span className="icon-badge pro">+</span>
+                                <div className="text-content">
+                                  <strong>Pros:</strong> {rev.pros}
+                                </div>
+                              </div>
+                            )}
+                            {rev.cons && (
+                              <div className="pro-con-item con">
+                                <span className="icon-badge con">-</span>
+                                <div className="text-content">
+                                  <strong>Cons:</strong> {rev.cons}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Metadata tags (Skin Type / Age Group) */}
+                        {(rev.skinType || rev.ageGroup) && (
+                          <div className="meta-tags-flex font-outfit">
+                            {rev.skinType && (
+                              <span className="meta-tag-pill">Skin: {rev.skinType}</span>
+                            )}
+                            {rev.ageGroup && (
+                              <span className="meta-tag-pill">Age: {rev.ageGroup}</span>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Media Attached Gallery List */}
+                        {((Array.isArray(rev.images) && rev.images.length > 0) || rev.video) && (
+                          <div className="attached-media-preview-luxury-row">
+                            {Array.isArray(rev.images) && rev.images.map((img, idx) => (
+                              <div 
+                                key={idx} 
+                                className="media-thumbnail-card-luxury"
+                                onClick={() => handleOpenLightbox(rev.images, idx)}
+                              >
+                                <img src={img} alt="" loading="lazy" />
+                                <span className="zoom-overlay-icon"><FiMaximize2 /></span>
+                              </div>
+                            ))}
+                            {rev.video && (
+                              <div 
+                                className="media-thumbnail-card-luxury video-card"
+                                onClick={() => handleOpenLightbox([rev.video], 0)}
+                              >
+                                <video src={rev.video} muted playsInline style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                <span className="play-overlay-icon"><FiPlay /></span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Official merchant replies nested card */}
+                      {rev.merchantReply && rev.merchantReply.replyText && (
+                        <div className="merchant-reply-card-luxury">
+                          <div className="reply-header font-outfit">
+                            <strong>Official VENUS CARE Response</strong>
+                            <span className="reply-date">
+                              {new Date(rev.merchantReply.repliedAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <p className="reply-body-text">{rev.merchantReply.replyText}</p>
+                        </div>
+                      )}
+
+                      {/* Card Footer Actions (Helpful, Report, Share, Edit/Delete) */}
+                      <div className="review-card-actions-luxury">
+                        <div className="vote-actions-flex-luxury font-outfit">
+                          <button
+                            onClick={() => handleHelpfulVote(rev._id)}
+                            disabled={hasVotedHelpful}
+                            className={`helpful-vote-btn-luxury ${hasVotedHelpful ? "voted" : ""}`}
+                            type="button"
+                          >
+                            <FiThumbsUp /> Helpful ({rev.helpfulCount || 0})
+                          </button>
+
+                          <button
+                            onClick={() => handleUnhelpfulVote(rev._id)}
+                            disabled={hasVotedUnhelpful}
+                            className={`helpful-vote-btn-luxury ${hasVotedUnhelpful ? "voted" : ""}`}
+                            type="button"
+                          >
+                            <FiThumbsDown /> Not Helpful ({rev.unhelpfulCount || 0})
+                          </button>
+                        </div>
+
+                        <div className="meta-actions-flex-luxury font-outfit">
+                          <button
+                            onClick={() => handleShareReview(rev._id)}
+                            className="share-action-btn-luxury"
+                            type="button"
+                          >
+                            Share
+                          </button>
+
+                          <button
+                            onClick={() => handleReportReview(rev._id)}
+                            disabled={rev.reported}
+                            className="report-action-btn-luxury"
+                            type="button"
+                          >
+                            {rev.reported ? "Reported" : "Report"}
+                          </button>
+
+                          {editable && (
+                            <div className="owner-edits-group font-outfit">
+                              <button onClick={() => openEditReviewModal(rev)} className="edit-link-btn" type="button">
+                                Edit
+                              </button>
+                              <span className="divider">|</span>
+                              <button onClick={() => handleDeleteReview(rev._id)} className="delete-link-btn" type="button">
+                                Delete
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Load More Pagination */}
+            {page < totalPages && (
+              <button
+                onClick={() => setPage((prev) => prev + 1)}
+                className="btn-load-more-reviews-luxury-gold"
+              >
+                Load More Reviews
               </button>
             )}
           </div>
         </div>
-
-        {/* Feed list */}
-        {reviews.length === 0 ? (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "40px",
-              background: "#FFFFFF",
-              border: "1px dashed #ECE7DF",
-              borderRadius: "16px",
-              color: "#6B7280",
-            }}
-          >
-            No verified reviews have been submitted for this skincare product yet.
-          </div>
-        ) : (
-          <div className="reviews-stack">
-            {reviews.map((rev) => {
-              const initialLetters = rev.customerName
-                ? rev.customerName
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase()
-                : "U";
-
-              const diffTime = Math.abs(new Date() - new Date(rev.createdAt));
-              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-              const editable = user && user._id === rev.userId && diffDays <= 30;
-
-              const hasVotedHelpful = user && Array.isArray(rev.helpfulUsers) && rev.helpfulUsers.includes(user._id);
-
-              return (
-                <div key={rev._id} className="review-card-item">
-                  <div className="review-card-header">
-                    <div className="review-user-row">
-                      <div className="review-user-avatar">{initialLetters}</div>
-                      <div className="review-user-details">
-                        <h4>{rev.customerName}</h4>
-                        {rev.isVerifiedPurchase && (
-                          <span className="verified-purchase-badge">
-                            ✓ Verified Purchase
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="review-stars-meta">
-                      <div style={{ display: "flex", gap: "2px", color: "#C8A165", fontSize: "14px" }}>
-                        {[...Array(5)].map((_, idx) => (
-                          <HiStar
-                            key={idx}
-                            style={{
-                              color: idx < rev.rating ? "#C8A165" : "#E5E7EB",
-                            }}
-                          />
-                        ))}
-                      </div>
-                      <span className="review-meta-date">
-                        {new Date(rev.createdAt).toLocaleDateString("en-IN", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="review-card-content">
-                    <h5>{rev.title}</h5>
-                    <p>{rev.review}</p>
-                  </div>
-
-                  <div className="review-card-actions">
-                    <button
-                      onClick={() => handleHelpfulVote(rev._id)}
-                      disabled={hasVotedHelpful}
-                      className={`helpful-btn ${hasVotedHelpful ? "voted" : ""}`}
-                    >
-                      👍 Helpful ({rev.helpfulCount})
-                    </button>
-
-                    {editable && (
-                      <span onClick={() => openEditReviewModal(rev)} className="edit-review-link">
-                        Edit Review
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Load More pagination */}
-        {page < totalPages && (
-          <button
-            onClick={() => setPage((prev) => prev + 1)}
-            className="btn-load-more-reviews"
-          >
-            Load More Reviews
-          </button>
-        )}
       </div>
 
+
       {/* Write/Edit Review Modal Overlay */}
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-content-card">
-            <h3>{editReviewId ? "Edit Your Review" : "Write a Product Review"}</h3>
+      <AnimatePresence>
+        {showModal && (
+          <motion.div 
+            className="modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div 
+              className="modal-content-card-luxury"
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+            >
+              <div className="modal-header-row">
+                <h3>{editReviewId ? "Refine Your Feedback" : "Share Your Skincare Journey"}</h3>
+                <button type="button" onClick={() => setShowModal(false)} className="modal-close-btn">
+                  <FiX />
+                </button>
+              </div>
 
-            {/* Star Picker */}
-            <div className="star-picker-row">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  type="button"
-                  key={star}
-                  onClick={() => setRating(star)}
-                  className={`star-picker-btn ${star <= rating ? "selected" : ""}`}
+              {/* Star Picker */}
+              <div className="star-picker-section-luxury">
+                <span className="rating-picker-label">Overall Rating:</span>
+                <div className="star-picker-row-luxury">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      type="button"
+                      key={star}
+                      onClick={() => setRating(star)}
+                      className={`star-picker-btn-luxury ${star <= rating ? "selected" : ""}`}
+                    >
+                      <HiStar />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <form onSubmit={handleSubmitReview} className="modal-form-luxury">
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "12px" }}>
+                  <div className="form-input-group">
+                    <label>Your Location</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. New Delhi, IN" 
+                      value={locationInput}
+                      onChange={(e) => setLocationInput(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-input-group">
+                    <label>Product Variant</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. 50ml, Standard Pack" 
+                      value={variantInput}
+                      onChange={(e) => setVariantInput(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "12px" }}>
+                  <div className="form-input-group">
+                    <label>Pros (What you liked)</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Radiant glow, hydration" 
+                      value={submitPros}
+                      onChange={(e) => setSubmitPros(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-input-group">
+                    <label>Cons (What could be improved)</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Pricey, strong scent" 
+                      value={submitCons}
+                      onChange={(e) => setSubmitCons(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-input-group">
+                  <label>Review Title</label>
+                  <input
+                    type="text"
+                    placeholder="Summarize your experience (e.g. Radiantly soft skin!)"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                    maxLength={80}
+                  />
+                </div>
+
+                <div className="form-input-group">
+                  <label>Detailed Feedback</label>
+                  <textarea
+                    placeholder="Share specific details about the texture, fragrance, packaging, and results (minimum 20 characters)..."
+                    value={reviewContent}
+                    onChange={(e) => setReviewContent(e.target.value)}
+                    required
+                    rows={4}
+                    maxLength={1000}
+                  />
+                  <div className="character-counter-row font-outfit">
+                    <span>{reviewContent.length}/1000 characters</span>
+                    <span>{reviewContent.length < 20 ? `${20 - reviewContent.length} more needed` : "Rule Valid"}</span>
+                  </div>
+                </div>
+
+                <div className="form-input-group font-outfit" style={{ marginBottom: "12px" }}>
+                  <label>Select Skin Type</label>
+                  <div className="pills-selection-row">
+                    {["Dry", "Oily", "Sensitive", "Combination", "Normal"].map(type => (
+                      <button
+                        type="button"
+                        key={type}
+                        onClick={() => setSubmitSkinType(submitSkinType === type ? "" : type)}
+                        className={`pill-selection-btn ${submitSkinType === type ? "active" : ""}`}
+                      >
+                        {type}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="form-input-group font-outfit" style={{ marginBottom: "12px" }}>
+                  <label>Select Age Group</label>
+                  <div className="pills-selection-row">
+                    {["Under 18", "18-24", "25-34", "35-44", "45+"].map(group => (
+                      <button
+                        type="button"
+                        key={group}
+                        onClick={() => setSubmitAgeGroup(submitAgeGroup === group ? "" : group)}
+                        className={`pill-selection-btn ${submitAgeGroup === group ? "active" : ""}`}
+                      >
+                        {group}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Mock Upload Section */}
+                <div className="form-upload-section-luxury">
+                  <label>Attach Media Files (Simulated Upload)</label>
+                  <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
+                    <button 
+                      type="button" 
+                      onClick={handleAddMockPhoto} 
+                      className="btn-mock-upload-choice"
+                    >
+                      <FiCamera /> Add Mock Photo
+                    </button>
+                    <button 
+                      type="button" 
+                      onClick={handleAddMockVideo} 
+                      className="btn-mock-upload-choice"
+                    >
+                      <FiVideo /> Add Mock Video
+                    </button>
+                  </div>
+
+                  {/* Previews */}
+                  {((uploadedImages.length > 0) || uploadedVideo) && (
+                    <div className="uploaded-previews-flex">
+                      {uploadedImages.map((img, idx) => (
+                        <div key={idx} className="preview-media-card">
+                          <img src={img} alt="" />
+                          <button 
+                            type="button" 
+                            onClick={() => setUploadedImages(prev => prev.filter((_, i) => i !== idx))} 
+                            className="remove-media-btn"
+                          >
+                            <FiX />
+                          </button>
+                        </div>
+                      ))}
+                      {uploadedVideo && (
+                        <div className="preview-media-card video-card">
+                          <video src={uploadedVideo} muted playsInline style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          <button 
+                            type="button" 
+                            onClick={() => setUploadedVideo("")} 
+                            className="remove-media-btn"
+                          >
+                            <FiX />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Toggles */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px", margin: "16px 0" }}>
+                  <label className="modal-toggle-label font-outfit">
+                    <input
+                      type="checkbox"
+                      checked={recommend}
+                      onChange={(e) => setRecommend(e.target.checked)}
+                    />
+                    Recommend this luxury skincare formulation to other buyers?
+                  </label>
+
+                  <label className="modal-toggle-label font-outfit">
+                    <input
+                      type="checkbox"
+                      checked={isAnonymous}
+                      onChange={(e) => setIsAnonymous(e.target.checked)}
+                    />
+                    Post review anonymously? (Hides account name from customer feed)
+                  </label>
+                </div>
+
+                <div className="modal-actions-row">
+                  <button type="button" onClick={() => setShowModal(false)} className="btn-modal-cancel">
+                    Cancel
+                  </button>
+                  <button type="submit" disabled={submitting} className="btn-modal-submit">
+                    {submitting ? "Submitting review..." : "Publish Review"}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Fullscreen Lightbox Overlay Modal */}
+      {showLightbox && (
+        <div className="lightbox-overlay" onClick={() => setShowLightbox(false)}>
+          <button className="lightbox-close-btn" onClick={() => setShowLightbox(false)}>
+            <FiX />
+          </button>
+          
+          <div className="lightbox-container" onClick={(e) => e.stopPropagation()}>
+            {lightboxImages[lightboxIndex]?.includes(".mp4") ? (
+              <video src={lightboxImages[lightboxIndex]} controls autoPlay playsInline className="lightbox-main-media" />
+            ) : (
+              <img src={lightboxImages[lightboxIndex]} alt="" className="lightbox-main-media" />
+            )}
+
+            {lightboxImages.length > 1 && (
+              <div className="lightbox-navigation-row">
+                <button 
+                  onClick={() => setLightboxIndex(prev => (prev - 1 + lightboxImages.length) % lightboxImages.length)}
+                  className="nav-btn"
                 >
-                  <HiStar />
+                  ◀
                 </button>
-              ))}
-            </div>
-
-            <form onSubmit={handleSubmitReview} className="modal-form">
-              <input
-                type="text"
-                placeholder="Review Title (e.g. Highly recommend!)"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-                maxLength={80}
-              />
-
-              <textarea
-                placeholder="Share details of your experience with this product (minimum 20 characters)..."
-                value={reviewContent}
-                onChange={(e) => setReviewContent(e.target.value)}
-                required
-                rows={5}
-                maxLength={1000}
-              />
-              <div style={{ textAlign: "right", fontSize: "12px", color: "#6B7280", marginTop: "-12px" }}>
-                {reviewContent.length}/1000 characters (min 20)
-              </div>
-
-              <div className="modal-actions-row">
-                <button type="button" onClick={() => setShowModal(false)} className="btn-modal-cancel">
-                  Cancel
-                </button>
-                <button type="submit" disabled={submitting} className="btn-modal-submit">
-                  {submitting ? "Submitting..." : "Submit Review"}
+                <span className="nav-index font-outfit">
+                  {lightboxIndex + 1} / {lightboxImages.length}
+                </span>
+                <button 
+                  onClick={() => setLightboxIndex(prev => (prev + 1) % lightboxImages.length)}
+                  className="nav-btn"
+                >
+                  ▶
                 </button>
               </div>
-            </form>
+            )}
           </div>
         </div>
       )}

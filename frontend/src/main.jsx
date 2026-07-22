@@ -9,6 +9,8 @@ import "./styles/global.css";
 import "./styles/notifications.css";
 import "./styles/admin.css";
 
+import { GoogleMapLoaderProvider } from "./components/GoogleMapLoader.jsx";
+
 /* ================= ROOT ================= */
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -19,6 +21,7 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <AuthProvider>
+        <GoogleMapLoaderProvider>
           {/* MAIN APP */}
 
           <App />
@@ -55,6 +58,7 @@ root.render(
               }
             }}
           />
+        </GoogleMapLoaderProvider>
       </AuthProvider>
     </Provider>
   </React.StrictMode>,

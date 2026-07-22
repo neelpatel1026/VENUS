@@ -406,65 +406,46 @@ const About = () => {
       </section>
 
       {/* 8. FINAL CTA BANNER */}
-      <section style={{ padding: "0 20px 100px 20px" }}>
+      <section className="luxury-about-cta-section">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeInUp}
-          style={{
-            maxWidth: "1280px",
-            margin: "0 auto",
-            background: "linear-gradient(135deg, #1A1A1A 0%, #2D251E 100%)",
-            borderRadius: "32px",
-            padding: "80px 30px",
-            textAlign: "center",
-            color: "#FFFFFF",
-            boxShadow: "0 20px 50px rgba(0,0,0,0.15)",
-          }}
+          className="luxury-about-cta-container"
         >
-          <span style={{ color: "#C8A165", fontWeight: "700", letterSpacing: "2px", fontSize: "12px", textTransform: "uppercase" }}>ELEVATE YOUR DAILY RITUAL</span>
-          
-          <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontFamily: "'Cinzel', 'Georgia', serif", fontWeight: "700", margin: "16px 0 24px 0" }}>
-            Discover Beauty That Inspires Unshakeable Confidence
-          </h2>
-          
-          <p style={{ fontSize: "1.1rem", color: "#D1D5DB", maxWidth: "600px", margin: "0 auto 36px auto", lineHeight: "1.7" }}>
-            Experience our pure botanical formulations handcrafted for radiant, healthy skin.
-          </p>
+          {/* Left Column: Text Content and Buttons */}
+          <div className="luxury-about-cta-left">
+            <span className="luxury-badge">
+              <span className="gold-accent-dot" style={{ display: "inline-block", width: "6px", height: "6px", background: "#C8A165", borderRadius: "50%" }} />
+              Elevate Your Daily Ritual
+            </span>
+            
+            <h2 className="luxury-heading">
+              Reveal Your Natural Glow
+            </h2>
+            
+            <p className="luxury-description">
+              Experience our pure botanical formulations handcrafted for radiant, healthy skin. Luxury skincare crafted for everyday confidence.
+            </p>
 
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "16px" }}>
-            <Link
-              to="/shop"
-              style={{
-                padding: "16px 38px",
-                background: "#C8A165",
-                color: "#FFFFFF",
-                borderRadius: "50px",
-                fontWeight: "700",
-                fontSize: "14px",
-                textDecoration: "none",
-                letterSpacing: "0.5px",
-                boxShadow: "0 8px 24px rgba(200, 161, 101, 0.3)",
-              }}
-            >
-              Shop Collection Now
-            </Link>
-            <Link
-              to="/contact"
-              style={{
-                padding: "16px 32px",
-                background: "transparent",
-                color: "#FFFFFF",
-                borderRadius: "50px",
-                fontWeight: "600",
-                fontSize: "14px",
-                textDecoration: "none",
-                border: "1px solid rgba(255,255,255,0.3)",
-              }}
-            >
-              Consult Beauty Desk
-            </Link>
+            <div className="luxury-cta-buttons">
+              <Link to="/shop" className="luxury-btn-primary">
+                Shop Collection
+              </Link>
+              <Link to="/contact" className="luxury-btn-secondary">
+                Contact Beauty Experts
+              </Link>
+            </div>
+          </div>
+
+          {/* Right Column: Premium Skincare Arrangement Image */}
+          <div className="luxury-about-cta-right">
+            <img 
+              src="https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=600&auto=format&fit=crop" 
+              alt="Premium Venus Care skincare arrangement" 
+              className="luxury-product-img"
+            />
           </div>
         </motion.div>
       </section>

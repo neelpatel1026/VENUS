@@ -2,9 +2,10 @@ import { useState, useContext, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { motion } from "framer-motion";
-import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
+import { FiMail, FiLock } from "react-icons/fi";
 import axios from "axios";
 import toast from "react-hot-toast";
+import Input from "../components/Input";
 import "../styles/auth.css";
 
 const Login = () => {
@@ -195,47 +196,30 @@ const Login = () => {
 
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column" }}>
             {/* EMAIL / PHONE INPUT */}
-            <div className={`auth-input-wrapper ${emailError ? "error" : isEmailValid ? "success" : ""}`}>
-              <span className="auth-input-icon">
-                <FiMail />
-              </span>
-              <input
-                type="text"
-                placeholder="Email or Phone Number"
-                className="auth-input"
-                value={emailOrPhone}
-                onChange={(e) => handleEmailChange(e.target.value)}
-                autoComplete="email"
-                required
-              />
-              {emailError && <p className="auth-error-text">{emailError}</p>}
-            </div>
+            <Input
+              type="text"
+              placeholder="Email or Phone Number"
+              icon={FiMail}
+              value={emailOrPhone}
+              onChange={(e) => handleEmailChange(e.target.value)}
+              error={emailError}
+              isValid={isEmailValid}
+              autoComplete="email"
+              required
+            />
 
             {/* PASSWORD INPUT */}
-            <div className={`auth-input-wrapper ${passwordError ? "error" : isPasswordValid ? "success" : ""}`}>
-              <span className="auth-input-icon">
-                <FiLock />
-              </span>
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                className="auth-input"
-                value={password}
-                onChange={(e) => handlePasswordChange(e.target.value)}
-                autoComplete="current-password"
-                required
-              />
-              <button
-                type="button"
-                className="auth-input-action"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex="-1"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-              </button>
-              {passwordError && <p className="auth-error-text">{passwordError}</p>}
-            </div>
+            <Input
+              type="password"
+              placeholder="Password"
+              icon={FiLock}
+              value={password}
+              onChange={(e) => handlePasswordChange(e.target.value)}
+              error={passwordError}
+              isValid={isPasswordValid}
+              autoComplete="current-password"
+              required
+            />
 
             {/* REMEMBER ME & FORGOT PASSWORD */}
             <div className="auth-meta-row">

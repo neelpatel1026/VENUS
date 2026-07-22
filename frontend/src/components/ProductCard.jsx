@@ -2,14 +2,45 @@ import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/cartSlice";
 import toast from "react-hot-toast";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { getOptimizedImageUrl } from "../utils/imageHelper.js";
+import { FaHeart, FaRegHeart, FaStar, FaEye } from "react-icons/fa";
 import "../styles/product.css";
 
 const ProductCard = ({ product }) => {
   const { user } = useContext(AuthContext);
   const dispatch = useDispatch();
+
+  // Wishlist persistence hook
+  const [isWishlisted, setIsWishlisted] = useState(() => {
+    try {
+      const list = JSON.parse(localStorage.getItem("venus_care_wishlist") || "[]");
+      return list.includes(product._id);
+    } catch (e) {
+      return false;
+    }
+  });
+
+  const toggleWishlist = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const list = JSON.parse(localStorage.getItem("venus_care_wishlist") || "[]");
+      let newList;
+      if (isWishlisted) {
+        newList = list.filter((id) => id !== product._id);
+        toast.success("Removed from Wishlist 🖤");
+      } else {
+        newList = [...list, product._id];
+        toast.success("Added to Wishlist! 💖");
+      }
+      localStorage.setItem("venus_care_wishlist", JSON.stringify(newList));
+      setIsWishlisted(!isWishlisted);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const discount =
     product.originalPrice > product.price
@@ -22,64 +53,107 @@ const ProductCard = ({ product }) => {
   const rawImage = product.imageUrl || product.image || "/cosmetic_1.avif";
   const optimizedImage = getOptimizedImageUrl(rawImage, 600);
 
-  return (
-    <div className="product-card">
-      <Link to={`/product/${product._id}`} className="product-card-link">
-        {/* Product Image Wrapper (Occupies 75% height) */}
-        <div className="product-image-wrapper">
-          {discount > 0 && <span className="discount-badge">-{discount}%</span>}
+  const savingsAmount = product.originalPrice - product.price;
 
+  return (
+    <div className="product-card-luxury font-outfit">
+      
+      {/* 1. Image and Badge container */}
+      <div className="product-image-container-luxury">
+        
+        {/* Discount Badge (Shown once here) */}
+        {discount > 0 && (
+          <span className="luxury-discount-pill">
+            -{discount}%
+          </span>
+        )}
+
+        {/* Wishlist Toggle Action */}
+        <button 
+          type="button"
+          onClick={toggleWishlist}
+          className="luxury-wishlist-heart-btn"
+          aria-label="Add to Wishlist"
+        >
+          {isWishlisted ? (
+            <FaHeart className="wishlist-icon filled" style={{ color: "#C8A165" }} />
+          ) : (
+            <FaRegHeart className="wishlist-icon outline" style={{ color: "#1F1F1F" }} />
+          )}
+        </button>
+
+        {/* Link wraps image for navigation */}
+        <Link to={`/product/${product._id}`} className="product-image-click-block">
           <img
             src={optimizedImage}
             alt={product.name}
-            className="product-image"
+            className="product-image-img-luxury"
             loading="lazy"
             onError={(e) => {
               e.target.src = "/cosmetic_1.avif";
             }}
           />
+        </Link>
+
+        {/* Quick View Hover overlay banner */}
+        <Link to={`/product/${product._id}`} className="luxury-quick-view-overlay-btn font-serif">
+          <FaEye /> Quick View
+        </Link>
+      </div>
+
+      {/* 2. Product Metadata Content */}
+      <div className="product-details-content-luxury">
+        
+        {/* Category Label */}
+        {product.category && (
+          <span className="luxury-category-label">
+            {product.category.toUpperCase()}
+          </span>
+        )}
+
+        {/* Product Title */}
+        <h3 className="luxury-product-title">
+          <Link to={`/product/${product._id}`}>{product.name}</Link>
+        </h3>
+
+        {/* Rating and Reviews block */}
+        <div className="luxury-card-rating-block">
+          <div className="stars-list-gold">
+            {[...Array(5)].map((_, i) => (
+              <FaStar 
+                key={i} 
+                className="star-element"
+                style={{ 
+                  color: i < Math.round(product.rating || 4.8) ? "#C8A165" : "#E5E7EB" 
+                }} 
+              />
+            ))}
+          </div>
+          <span className="rating-score-val">{product.rating || 4.8}</span>
+          <span className="reviews-total-tag">
+            ({product.reviewCount || 124} Verified Reviews)
+          </span>
         </div>
 
-        {/* Product Info */}
-        <div className="product-info">
-          {product.category && (
-            <p className="product-category">{product.category}</p>
+        {/* Prices block */}
+        <div className="luxury-card-prices-block">
+          <span className="luxury-sale-price">₹{product.price}</span>
+          
+          {discount > 0 && (
+            <>
+              <span className="luxury-old-price">₹{product.originalPrice}</span>
+              <span className="luxury-savings-tag">Save ₹{savingsAmount}</span>
+            </>
           )}
-
-          <h3 className="product-title">{product.name}</h3>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "0.85rem", color: "#F59E0B", marginBottom: "8px" }}>
-            <span style={{ display: "flex", gap: "1px" }}>
-              {[...Array(5)].map((_, i) => (
-                <svg key={i} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style={{ width: "13px", height: "13px", color: i < Math.round(product.rating || 4.8) ? "#C8A165" : "#E5E7EB" }}>
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
-            </span>
-            <span style={{ color: "#1A1A1A", fontWeight: "600", fontSize: "12px", marginLeft: "2px" }}>({product.rating || 4.8})</span>
-            <span style={{ color: "#6B7280", fontSize: "12px" }}>• {product.reviewCount || 0} reviews</span>
-          </div>
-
-          {/* Clean Price Row */}
-          <div className="product-price-row">
-            <span className="sale-price">₹{product.price}</span>
-
-            {discount > 0 && (
-              <span className="old-price">₹{product.originalPrice}</span>
-            )}
-            
-            {discount > 0 && (
-              <span className="discount-tag">{discount}% OFF</span>
-            )}
-          </div>
         </div>
-      </Link>
+      </div>
 
-      {/* Single elegant button */}
-      <div className="product-actions">
+      {/* 3. Action Buttons */}
+      <div className="product-action-footer-luxury">
         {user?.role !== "admin" ? (
           <button
-            className="cart-btn"
+            type="button"
+            className="luxury-add-to-cart-btn font-serif"
             disabled={product.stock === 0}
             onClick={(e) => {
               e.preventDefault();
@@ -96,14 +170,18 @@ const ProductCard = ({ product }) => {
                 }),
               );
 
-              toast.success(`${product.name} added to cart`);
+              toast.success(`${product.name} added to cart! 🛍️`);
             }}
           >
-            <span>{product.stock > 0 ? "Add To Cart" : "Out Of Stock"}</span>
+            {product.stock > 0 ? "Add To Cart" : "Out Of Stock"}
           </button>
         ) : (
-          <Link to={`/product/${product._id}`} className="cart-btn">
-            <span>View Product</span>
+          <Link 
+            to={`/product/${product._id}`} 
+            className="luxury-add-to-cart-btn font-serif"
+            style={{ textAlign: "center", textDecoration: "none" }}
+          >
+            View Details
           </Link>
         )}
       </div>

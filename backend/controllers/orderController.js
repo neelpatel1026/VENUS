@@ -190,14 +190,17 @@ const validStatuses = [
 
 const updateOrderStatus = async (req, res) => {
   try {
-    const { status } = req.body;
-
-    if (!status || !validStatuses.includes(status)) {
-      return res.status(400).json({
-        success: false,
-        message: `Invalid status "${status}". Allowed values: ${validStatuses.join(", ")}`,
-      });
-    }
+    const { 
+      status, 
+      priority, 
+      tags, 
+      adminNote, 
+      courier, 
+      trackingNumber, 
+      expectedDeliveryDate, 
+      dispatchDate, 
+      shippingCost 
+    } = req.body;
 
     const oldOrder = await Order.findById(req.params.id);
     if (!oldOrder) {
@@ -207,41 +210,76 @@ const updateOrderStatus = async (req, res) => {
       });
     }
 
-    const updateData = {
-      status,
-      $push: {
-        orderTimeline: {
-          status,
-          timestamp: new Date(),
-          updatedBy: req.user ? req.user.name : "Admin",
+    const updateData = {};
+
+    if (status) {
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid status "${status}". Allowed values: ${validStatuses.join(", ")}`,
+        });
+      }
+      updateData.status = status;
+
+      if (oldOrder.status !== status) {
+        updateData.$push = {
+          orderTimeline: {
+            status,
+            timestamp: new Date(),
+            updatedBy: req.user ? req.user.name : "Admin",
+          }
+        };
+
+        if (status === "Delivered") {
+          updateData.deliveredAt = new Date();
+          updateData.returnAllowedTill = new Date(
+            Date.now() + 7 * 24 * 60 * 60 * 1000
+          );
+          updateData.reviewEligible = true;
+        }
+
+        if (status === "Cancelled" && oldOrder.status !== "Cancelled" && oldOrder.status !== "Returned" && oldOrder.status !== "Return Approved") {
+          for (const item of oldOrder.items) {
+            if (item.productId) {
+              await Product.findByIdAndUpdate(item.productId, {
+                $inc: { stock: item.qty },
+              });
+            }
+          }
         }
       }
-    };
-
-    if (status === "Delivered") {
-      updateData.deliveredAt = new Date();
-      updateData.returnAllowedTill = new Date(
-        Date.now() + 7 * 24 * 60 * 60 * 1000
-      );
-      updateData.reviewEligible = true;
     }
 
-    if (status === "Cancelled" && oldOrder.status !== "Cancelled" && oldOrder.status !== "Returned" && oldOrder.status !== "Return Approved") {
-      for (const item of oldOrder.items) {
-        if (item.productId) {
-          await Product.findByIdAndUpdate(item.productId, {
-            $inc: { stock: item.qty },
-          });
-        }
-      }
+    if (priority) {
+      updateData.priority = priority;
     }
+
+    if (Array.isArray(tags)) {
+      updateData.tags = tags;
+    }
+
+    if (adminNote) {
+      updateData.adminNotes = adminNote;
+      if (!updateData.$push) updateData.$push = {};
+      updateData.$push.adminNotesLog = {
+        noteText: adminNote,
+        adminName: req.user ? req.user.name : "Admin",
+        timestamp: new Date(),
+      };
+    }
+
+    if (courier !== undefined) updateData.courier = courier;
+    if (trackingNumber !== undefined) updateData.trackingNumber = trackingNumber;
+    if (expectedDeliveryDate !== undefined) updateData.expectedDeliveryDate = expectedDeliveryDate;
+    if (dispatchDate !== undefined) updateData.dispatchDate = dispatchDate;
+    if (shippingCost !== undefined) updateData.shippingCost = Number(shippingCost) || 0;
 
     const order = await Order.findByIdAndUpdate(req.params.id, updateData, {
       returnDocument: "after",
     }).populate("userId", "name email");
 
     // Send email notification asynchronously
-    if (oldOrder.status !== status) {
+    if (status && oldOrder.status !== status) {
       const { sendOrderStatusNotification } = require("../utils/notificationService.js");
       sendOrderStatusNotification(order, status, oldOrder.status).catch(err => {
         console.error("❌ Notification trigger failed:", err.message);
@@ -391,7 +429,7 @@ const downloadInvoice = async (req, res) => {
   try {
     console.log("Invoice route hit");
 
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findById(req.params.id).populate("items.productId");
 
     if (!order) {
       return res.status(404).json({
@@ -399,7 +437,7 @@ const downloadInvoice = async (req, res) => {
       });
     }
 
-    console.log("Order found:", order._id);
+    console.log("Order found and populated:", order._id);
 
     await generateInvoice(order, res);
   } catch (error) {

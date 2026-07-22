@@ -49,6 +49,16 @@ const reviewSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    unhelpfulCount: {
+      type: Number,
+      default: 0,
+    },
+    unhelpfulUsers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     isVerifiedPurchase: {
       type: Boolean,
       default: true,
@@ -61,9 +71,53 @@ const reviewSchema = new mongoose.Schema(
     video: {
       type: String,
     },
+    location: {
+      type: String,
+      default: "",
+    },
+    variant: {
+      type: String,
+      default: "",
+    },
+    edited: {
+      type: Boolean,
+      default: false,
+    },
+    recommend: {
+      type: Boolean,
+      default: true,
+    },
+    isAnonymous: {
+      type: Boolean,
+      default: false,
+    },
+    reported: {
+      type: Boolean,
+      default: false,
+    },
+    merchantReply: {
+      replyText: { type: String, default: "" },
+      repliedAt: { type: Date }
+    },
     isHidden: {
       type: Boolean,
       default: false,
+    },
+    skinType: {
+      type: String,
+      default: "",
+    },
+    ageGroup: {
+      type: String,
+      default: "",
+    },
+    pros: {
+      type: String,
+      default: "",
+    },
+    cons: {
+      type: String,
+      default: "",
     },
   },
   {

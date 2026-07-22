@@ -84,17 +84,24 @@ const userSchema = new mongoose.Schema(
       {
         label: {
           type: String,
-          enum: ["Home", "Office", "Other"],
+          enum: ["Home", "Work", "Office", "Hotel", "Other"],
+          default: "Home"
         },
-
-        fullName: String,
-        phone: String,
-        addressLine1: String,
+        fullName: { type: String, required: true },
+        phone: { type: String, required: true },
+        addressLine1: { type: String, required: true },
         addressLine2: String,
-        city: String,
-        state: String,
-        pincode: String,
-        country: String,
+        city: { type: String, required: true },
+        state: { type: String, required: true },
+        pincode: { type: String, required: true },
+        country: { type: String, required: true, default: "India" },
+        placeId: String,
+        lat: Number,
+        lng: Number,
+        formattedAddress: String,
+        deliveryZone: String,
+        isDefault: { type: Boolean, default: false },
+        isVerified: { type: Boolean, default: false }
       },
     ],
   },

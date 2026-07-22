@@ -2,8 +2,9 @@ import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { motion } from "framer-motion";
-import { FiUser, FiMail, FiPhone, FiLock, FiEye, FiEyeOff, FiCheck, FiX } from "react-icons/fi";
+import { FiUser, FiMail, FiPhone, FiLock, FiCheck, FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
+import Input from "../components/Input";
 import "../styles/auth.css";
 
 const Register = () => {
@@ -246,109 +247,72 @@ const Register = () => {
 
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column" }}>
             {/* FULL NAME */}
-            <div className={`auth-input-wrapper ${nameError ? "error" : isNameValid ? "success" : ""}`}>
-              <span className="auth-input-icon">
-                <FiUser />
-              </span>
-              <input
-                type="text"
-                placeholder="Full Name"
-                className="auth-input"
-                value={name}
-                onChange={(e) => handleNameChange(e.target.value)}
-                autoComplete="name"
-                required
-              />
-              {nameError && <p className="auth-error-text">{nameError}</p>}
-            </div>
+            <Input
+              type="text"
+              placeholder="Full Name"
+              icon={FiUser}
+              value={name}
+              onChange={(e) => handleNameChange(e.target.value)}
+              error={nameError}
+              isValid={isNameValid}
+              autoComplete="name"
+              required
+            />
 
             {/* EMAIL */}
-            <div className={`auth-input-wrapper ${emailError ? "error" : isEmailValid ? "success" : ""}`}>
-              <span className="auth-input-icon">
-                <FiMail />
-              </span>
-              <input
-                type="email"
-                placeholder="Email Address"
-                className="auth-input"
-                value={email}
-                onChange={(e) => handleEmailChange(e.target.value)}
-                autoComplete="email"
-                required
-              />
-              {emailError && <p className="auth-error-text">{emailError}</p>}
-            </div>
+            <Input
+              type="email"
+              placeholder="Email Address"
+              icon={FiMail}
+              value={email}
+              onChange={(e) => handleEmailChange(e.target.value)}
+              error={emailError}
+              isValid={isEmailValid}
+              autoComplete="email"
+              required
+            />
 
             {/* PHONE */}
-            <div className={`auth-input-wrapper ${phoneError ? "error" : isPhoneValid ? "success" : ""}`}>
-              <span className="auth-input-icon">
-                <FiPhone />
-              </span>
-              <input
-                type="tel"
-                placeholder="Phone Number (10 digits)"
-                className="auth-input"
-                value={phone}
-                onChange={(e) => handlePhoneChange(e.target.value)}
-                pattern="[0-9]{10}"
-                maxLength="10"
-                autoComplete="tel"
-                required
-              />
-              {phoneError && <p className="auth-error-text">{phoneError}</p>}
-            </div>
+            <Input
+              type="tel"
+              placeholder="Phone Number (10 digits)"
+              icon={FiPhone}
+              value={phone}
+              onChange={(e) => handlePhoneChange(e.target.value)}
+              error={phoneError}
+              isValid={isPhoneValid}
+              pattern="[0-9]{10}"
+              maxLength="10"
+              autoComplete="tel"
+              required
+            />
 
             {/* PASSWORD */}
-            <div className={`auth-input-wrapper ${passwordError ? "error" : isPasswordValid ? "success" : ""}`}>
-              <span className="auth-input-icon">
-                <FiLock />
-              </span>
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                className="auth-input"
-                value={password}
-                onChange={(e) => handlePasswordChange(e.target.value)}
-                autoComplete="new-password"
-                required
-              />
-              <button
-                type="button"
-                className="auth-input-action"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex="-1"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-              </button>
-              {passwordError && <p className="auth-error-text">{passwordError}</p>}
-            </div>
+            <Input
+              type="password"
+              placeholder="Password"
+              icon={FiLock}
+              value={password}
+              onChange={(e) => handlePasswordChange(e.target.value)}
+              error={passwordError}
+              isValid={isPasswordValid}
+              autoComplete="new-password"
+              required
+            />
 
             {/* CONFIRM PASSWORD */}
-            <div className={`auth-input-wrapper ${confirmPasswordError ? "error" : isConfirmPasswordValid ? "success" : ""}`} style={{ marginBottom: "24px" }}>
-              <span className="auth-input-icon">
-                <FiLock />
-              </span>
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirm Password"
-                className="auth-input"
-                value={confirmPassword}
-                onChange={(e) => handleConfirmPasswordChange(e.target.value)}
-                autoComplete="new-password"
-                required
-              />
-              <button
-                type="button"
-                className="auth-input-action"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                tabIndex="-1"
-                aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
-              >
-                {showConfirmPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-              </button>
-              {confirmPasswordError && <p className="auth-error-text">{confirmPasswordError}</p>}
-            </div>
+            <Input
+              type="password"
+              placeholder="Confirm Password"
+              icon={FiLock}
+              value={confirmPassword}
+              onChange={(e) => handleConfirmPasswordChange(e.target.value)}
+              error={confirmPasswordError}
+              isValid={isConfirmPasswordValid}
+              autoComplete="new-password"
+              required
+              style={{ marginBottom: "24px" }}
+            />
 
             {/* PASSWORD LIVE VALIDATION CHECKLIST */}
             {password.length > 0 && (

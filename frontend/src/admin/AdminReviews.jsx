@@ -22,6 +22,11 @@ const AdminReviews = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  // Reply Modal states
+  const [showReplyModal, setShowReplyModal] = useState(false);
+  const [replyText, setReplyText] = useState("");
+  const [replyingReviewId, setReplyingReviewId] = useState("");
+
   useEffect(() => {
     const fetchCampaignStats = async () => {
       if (!user?.token) return;
@@ -49,7 +54,8 @@ const AdminReviews = () => {
         limit: 10,
         search: searchTerm,
         rating: ratingFilter,
-        status: statusFilter,
+        status: statusFilter === "reported" ? "" : statusFilter,
+        reported: statusFilter === "reported" ? "true" : "",
       });
 
       const res = await fetch(`/api/reviews/admin?${query.toString()}`, {
@@ -175,6 +181,48 @@ const AdminReviews = () => {
     });
   };
 
+  const handlePostReply = async (e) => {
+    e.preventDefault();
+    if (!replyText.trim() || !replyingReviewId) return;
+
+    try {
+      const res = await fetch(`/api/reviews/admin/${replyingReviewId}/reply`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({ replyText: replyText.trim() }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Merchant reply posted successfully");
+        setReviews((prev) =>
+          prev.map((r) =>
+            r._id === replyingReviewId
+              ? {
+                  ...r,
+                  merchantReply: {
+                    replyText: replyText.trim(),
+                    repliedAt: new Date(),
+                  },
+                }
+              : r
+          )
+        );
+        setShowReplyModal(false);
+        setReplyText("");
+        setReplyingReviewId("");
+      } else {
+        toast.error(data.message || "Failed to post merchant reply");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error posting reply");
+    }
+  };
+
   return (
     <div className="admin-layout-wrapper route-fade-in">
       <AdminSidebar />
@@ -255,6 +303,7 @@ const AdminReviews = () => {
               <option value="">All Statuses</option>
               <option value="visible">Visible</option>
               <option value="hidden">Hidden</option>
+              <option value="reported">Reported Only</option>
             </select>
           </div>
 
@@ -307,10 +356,49 @@ const AdminReviews = () => {
                         </div>
                       </td>
                       <td style={{ maxWidth: "300px" }}>
-                        <div style={{ fontWeight: "600", fontSize: "13.5px" }}>{rev.title}</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", marginBottom: "4px" }}>
+                          <span style={{ fontWeight: "600", fontSize: "13.5px" }}>{rev.title}</span>
+                          {rev.reported && (
+                            <span style={{ fontSize: "10px", padding: "2px 6px", background: "#FEE2E2", color: "#DC2626", borderRadius: "4px", fontWeight: "700", textTransform: "uppercase" }}>
+                              🚨 Reported
+                            </span>
+                          )}
+                          {rev.edited && (
+                            <span style={{ fontSize: "10px", padding: "2px 6px", background: "#FEF3C7", color: "#D97706", borderRadius: "4px", fontWeight: "600" }}>
+                              Edited
+                            </span>
+                          )}
+                        </div>
                         <div style={{ fontSize: "12.5px", color: "#6B7280", whiteSpace: "pre-wrap", marginTop: "4px" }}>
                           {rev.review}
                         </div>
+                        
+                        {/* Merchant Reply preview */}
+                        {rev.merchantReply && rev.merchantReply.replyText && (
+                          <div style={{ background: "#FAF9F6", borderLeft: "3px solid #C8A165", padding: "8px 12px", borderRadius: "6px", marginTop: "8px", fontSize: "12px" }}>
+                            <div style={{ fontWeight: "700", color: "#1A1A1A" }}>Merchant Response:</div>
+                            <div style={{ color: "#4B5563", marginTop: "2px" }}>{rev.merchantReply.replyText}</div>
+                          </div>
+                        )}
+
+                        {/* Photo/Video Moderation list */}
+                        {Array.isArray(rev.images) && rev.images.length > 0 && (
+                          <div style={{ display: "flex", gap: "6px", marginTop: "8px" }}>
+                            {rev.images.map((img, i) => (
+                              <img
+                                key={i}
+                                src={img}
+                                alt=""
+                                style={{ width: "36px", height: "36px", borderRadius: "4px", objectFit: "cover", border: "1px solid #ECE7DF" }}
+                              />
+                            ))}
+                          </div>
+                        )}
+                        {rev.video && (
+                          <div style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginTop: "6px", fontSize: "11px", color: "#C8A165", fontWeight: "600" }}>
+                            📹 Video review attached
+                          </div>
+                        )}
                       </td>
                       <td>
                         <span style={{ 
@@ -337,7 +425,25 @@ const AdminReviews = () => {
                         </span>
                       </td>
                       <td>
-                        <div style={{ display: "flex", gap: "8px" }}>
+                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                          <button
+                            onClick={() => {
+                              setReplyingReviewId(rev._id);
+                              setReplyText(rev.merchantReply?.replyText || "");
+                              setShowReplyModal(true);
+                            }}
+                            className="edit-btn"
+                            style={{ 
+                              background: "#C8A165", 
+                              padding: "6px 12px", 
+                              fontSize: "12px",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "4px"
+                            }}
+                          >
+                            Reply
+                          </button>
                           <button
                             onClick={() => toggleVisibility(rev._id, rev.isHidden)}
                             className="edit-btn"
@@ -403,6 +509,47 @@ const AdminReviews = () => {
           )}
         </div>
       </div>
+
+      {/* Merchant Reply Modal Overlay */}
+      {showReplyModal && (
+        <div className="modal-overlay">
+          <div className="modal-content-card" style={{ maxWidth: "500px" }}>
+            <h3>Write Merchant Reply</h3>
+            <p style={{ fontSize: "13px", color: "#6B7280", marginBottom: "16px" }}>
+              Provide a professional, consumer-facing reply to this customer's feedback.
+            </p>
+
+            <form onSubmit={handlePostReply} className="modal-form">
+              <textarea
+                placeholder="Write your merchant reply here (e.g. Thank you for your feedback. We are thrilled to hear that!)..."
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                required
+                rows={5}
+                maxLength={1000}
+                style={{ width: "100%", padding: "12px", border: "1px solid #ECE7DF", borderRadius: "10px", outline: "none", fontSize: "14px" }}
+              />
+
+              <div className="modal-actions-row" style={{ marginTop: "16px" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowReplyModal(false);
+                    setReplyText("");
+                    setReplyingReviewId("");
+                  }}
+                  className="btn-modal-cancel"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn-modal-submit">
+                  Submit Response
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
