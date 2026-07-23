@@ -4,6 +4,7 @@ import { AuthContext } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import { FiUser, FiMail, FiPhone, FiLock, FiCheck, FiX } from "react-icons/fi";
 import toast from "react-hot-toast";
+import axios from "axios";
 import Input from "../components/Input";
 import "../styles/auth.css";
 
@@ -197,31 +198,19 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: trimmedName,
-          email: trimmedEmail,
-          phone: trimmedPhone,
-          password,
-        }),
+      const res = await axios.post("/api/auth/register", {
+        name: trimmedName,
+        email: trimmedEmail,
+        phone: trimmedPhone,
+        password,
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        toast.success("Welcome! Account created successfully.");
-        login(data);
-        navigate("/");
-      } else {
-        toast.error(data.message || "Registration failed");
-      }
+      toast.success("Welcome! Account created successfully.");
+      login(res.data);
+      navigate("/");
     } catch (error) {
       console.error(error);
-      toast.error("Connection error. Please try again.");
+      toast.error(error.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }

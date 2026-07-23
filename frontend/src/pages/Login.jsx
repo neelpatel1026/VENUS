@@ -83,36 +83,26 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          emailOrPhone: trimmedInput,
-          password: trimmedPassword,
-        }),
+      const res = await axios.post("/api/auth/login", {
+        emailOrPhone: trimmedInput,
+        password: trimmedPassword,
       });
 
-      const data = await res.json();
+      const data = res.data;
 
-      if (res.ok) {
-        // Save "Remember Me" credentials
-        if (rememberMe) {
-          localStorage.setItem("venus_remember_me_email", trimmedInput);
-        } else {
-          localStorage.removeItem("venus_remember_me_email");
-        }
-
-        login(data);
-        toast.success("Welcome back! Login Successful.");
-        navigate("/");
+      // Save "Remember Me" credentials
+      if (rememberMe) {
+        localStorage.setItem("venus_remember_me_email", trimmedInput);
       } else {
-        toast.error(data.message || "Invalid credentials");
+        localStorage.removeItem("venus_remember_me_email");
       }
+
+      login(data);
+      toast.success("Welcome back! Login Successful.");
+      navigate("/");
     } catch (error) {
       console.error(error);
-      toast.error("Network error. Please try again.");
+      toast.error(error.response?.data?.message || "Invalid credentials");
     } finally {
       setLoading(false);
     }

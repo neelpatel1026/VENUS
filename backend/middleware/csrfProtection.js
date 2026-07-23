@@ -19,6 +19,18 @@ const csrfProtection = (req, res, next) => {
     return next();
   }
 
+  // 2. Exclude public auth endpoints from CSRF
+  const excludedPaths = [
+    "/api/auth/login",
+    "/api/auth/register",
+    "/api/auth/google-login",
+    "/api/auth/forgot-password",
+    "/api/auth/reset-password"
+  ];
+  if (excludedPaths.includes(req.path)) {
+    return next();
+  }
+
   // 2. Parse Cookies and retrieve token headers
   const cookies = parseCookies(req.headers.cookie);
   const cookieHash = cookies["_csrf_hash"];

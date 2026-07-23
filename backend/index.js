@@ -26,7 +26,8 @@ app.use(globalLimiter);
 const allowedOrigins = [
   "http://localhost:5173",
   "https://venus-f3m6zcesh-neelpatel1026s-projects.vercel.app",
-  "https://venus-woad-alpha.vercel.app"
+  "https://venus-woad-alpha.vercel.app",
+  "https://venus-wood-alpha.vercel.app"
 ];
 if (process.env.FRONTEND_URL) {
   allowedOrigins.push(process.env.FRONTEND_URL);
