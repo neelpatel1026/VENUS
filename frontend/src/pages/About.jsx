@@ -158,9 +158,11 @@ const About = () => {
           <motion.div variants={fadeInUp} style={{ position: "relative" }}>
             <div style={{ borderRadius: "24px", overflow: "hidden", boxShadow: "0 20px 40px rgba(0,0,0,0.06)", border: "1px solid #ECE7DF" }}>
               <img
-                src="https://images.unsplash.com/photo-1556228578-8c89e6adf883?q=80&w=1200&auto=format&fit=crop"
+                src="/about_hero.jpg"
                 alt="Venus Care Hero Botanical"
                 style={{ width: "100%", height: "520px", objectFit: "cover", display: "block" }}
+                loading="lazy"
+                onError={(e) => { e.target.onerror = null; e.target.src = "/cosmetic_1.avif"; }}
               />
             </div>
 
@@ -226,9 +228,11 @@ const About = () => {
 
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}>
               <img
-                src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?q=80&w=1000&auto=format&fit=crop"
+                src="/about_lab.jpg"
                 alt="Apothecary Lab"
                 style={{ width: "100%", height: "400px", objectFit: "cover", borderRadius: "20px", boxShadow: "0 10px 30px rgba(0,0,0,0.04)" }}
+                loading="lazy"
+                onError={(e) => { e.target.onerror = null; e.target.src = "/cosmetic_1.avif"; }}
               />
             </motion.div>
           </div>
@@ -237,9 +241,11 @@ const About = () => {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "60px", alignItems: "center" }}>
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} style={{ order: window.innerWidth > 768 ? 1 : 2 }}>
               <img
-                src="https://images.unsplash.com/photo-1608248597261-e4d990f30d08?q=80&w=1000&auto=format&fit=crop"
+                src="/about_formulation.jpg"
                 alt="Clean Formulations"
                 style={{ width: "100%", height: "400px", objectFit: "cover", borderRadius: "20px", boxShadow: "0 10px 30px rgba(0,0,0,0.04)" }}
+                loading="lazy"
+                onError={(e) => { e.target.onerror = null; e.target.src = "/cosmetic_1.avif"; }}
               />
             </motion.div>
 
@@ -392,11 +398,13 @@ const About = () => {
           </blockquote>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "14px" }}>
-            <img
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
-              alt="Client Avatar"
-              style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover", border: "2px solid #C8A165" }}
-            />
+             <img
+               src="/about_avatar.jpg"
+               alt="Client Avatar"
+               style={{ width: "50px", height: "50px", borderRadius: "50%", objectFit: "cover", border: "2px solid #C8A165" }}
+               loading="lazy"
+               onError={(e) => { e.target.onerror = null; e.target.src = "/cosmetic_1.avif"; }}
+             />
             <div style={{ textAlign: "left" }}>
               <div style={{ fontWeight: "700", color: "#1A1A1A", fontSize: "15px" }}>Ananya Roy</div>
               <div style={{ fontSize: "12px", color: "#6B7280" }}>Verified Client • Mumbai</div>
@@ -442,9 +450,11 @@ const About = () => {
           {/* Right Column: Premium Skincare Arrangement Image */}
           <div className="luxury-about-cta-right">
             <img 
-              src="https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=600&auto=format&fit=crop" 
+              src="/about_cta.jpg" 
               alt="Premium Venus Care skincare arrangement" 
               className="luxury-product-img"
+              loading="lazy"
+              onError={(e) => { e.target.onerror = null; e.target.src = "/cosmetic_1.avif"; }}
             />
           </div>
         </motion.div>

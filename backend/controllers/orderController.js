@@ -185,7 +185,8 @@ const validStatuses = [
   "Returned",
   "Return Requested",
   "Return Approved",
-  "Refund Completed"
+  "Refund Completed",
+  "Cancellation Requested"
 ];
 
 const updateOrderStatus = async (req, res) => {
@@ -451,6 +452,22 @@ const downloadInvoice = async (req, res) => {
 
 const cancelMyOrder = async (req, res) => {
   try {
+    const { cancellationReason, cancellationComments } = req.body;
+    
+    if (!cancellationReason) {
+      return res.status(400).json({
+        success: false,
+        message: "Cancellation reason is required",
+      });
+    }
+
+    if (cancellationReason === "Other" && (!cancellationComments || cancellationComments.trim().length < 10 || cancellationComments.trim().length > 500)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please tell us why you want to cancel this order (minimum 10 characters, maximum 500).",
+      });
+    }
+
     const order = await Order.findById(req.params.id);
     if (!order) {
       return res.status(404).json({
@@ -467,39 +484,55 @@ const cancelMyOrder = async (req, res) => {
       });
     }
 
-    // Check cancellation eligibility (only before Packed)
+    // Check cancellation eligibility (only before Packed/Shipped)
     if (!["Pending", "Processing"].includes(order.status)) {
       return res.status(400).json({
         success: false,
-        message: "Order cannot be cancelled after packaging has commenced",
+        message: "Order has already been prepared/shipped and cannot be cancelled",
       });
     }
 
-    // Restock items
-    for (const item of order.items) {
-      await Product.findByIdAndUpdate(item.productId, {
-        $inc: { stock: item.qty },
-      });
+    order.status = "Cancellation Requested";
+    order.cancellationReason = cancellationReason;
+    order.cancellationComments = cancellationComments || "";
+    order.cancelledAt = new Date();
+    order.cancelledBy = "User";
+
+    // Setup refund details dynamically
+    const isPrepaid = ["Razorpay", "UPI", "Credit Card", "Debit Card"].includes(order.paymentMethod);
+    if (isPrepaid) {
+      order.refundStatus = "Pending";
+      order.refundAmount = order.totalAmount;
+      order.refundMethod = order.paymentMethod;
+
+      // Estimate expected refund date
+      const daysToAdd = order.paymentMethod === "UPI" ? 5 : (order.paymentMethod === "Razorpay" ? 5 : 7);
+      const expectedDate = new Date();
+      expectedDate.setDate(expectedDate.getDate() + daysToAdd);
+      order.refundExpectedDate = expectedDate;
+    } else {
+      order.refundStatus = "";
+      order.refundAmount = 0;
+      order.refundMethod = "N/A";
     }
 
-    order.status = "Cancelled";
     order.orderTimeline.push({
-      status: "Cancelled",
+      status: "Cancellation Requested",
       timestamp: new Date(),
       updatedBy: req.user.name || "Customer",
     });
 
     await order.save();
 
-    // Trigger cancellation notification email asynchronously
+    // Trigger cancellation request notification email asynchronously
     const { sendTimelineStatusEmailAsync } = require("../utils/notificationService.js");
-    sendTimelineStatusEmailAsync(order, "Cancelled").catch((err) => {
-      console.error("❌ Cancel email notification failed:", err.message);
+    sendTimelineStatusEmailAsync(order, "Cancellation Requested").catch((err) => {
+      console.error("❌ Cancellation request email notification failed:", err.message);
     });
 
     res.json({
       success: true,
-      message: "Order has been cancelled successfully",
+      message: "Cancellation request submitted successfully",
       order,
     });
   } catch (error) {
@@ -598,6 +631,235 @@ const deleteOrder = async (req, res) => {
   }
 };
 
+// @desc    Approve Order Cancellation (Admin)
+// @route   PUT /api/orders/:id/approve-cancellation
+// @access  Private/Admin
+const approveOrderCancellation = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    if (order.status !== "Cancellation Requested") {
+      return res.status(400).json({
+        success: false,
+        message: "Cancellation request is not active for this order",
+      });
+    }
+
+    // 1. Restock items
+    for (const item of order.items) {
+      if (item.productId) {
+        await Product.findByIdAndUpdate(item.productId, {
+          $inc: { stock: item.qty },
+        });
+      }
+    }
+
+    // 2. Update status and log approvals
+    order.status = "Cancelled";
+    order.cancelledBy = "Admin";
+    order.cancelledAt = new Date();
+    
+    // Add timeline nodes
+    order.orderTimeline.push({
+      status: "Cancellation Approved",
+      timestamp: new Date(),
+      updatedBy: req.user ? req.user.name : "Admin",
+    });
+
+    const isPrepaid = ["Razorpay", "UPI", "Credit Card", "Debit Card"].includes(order.paymentMethod);
+    if (isPrepaid) {
+      order.refundStatus = "Initiated";
+      order.orderTimeline.push({
+        status: "Refund Initiated",
+        timestamp: new Date(),
+        updatedBy: req.user ? req.user.name : "Admin",
+      });
+    }
+
+    // Log admin note
+    const approveMsg = "Cancellation Request Approved by Administrator.";
+    order.adminNotes = approveMsg;
+    order.adminNotesLog.push({
+      noteText: approveMsg,
+      adminName: req.user ? req.user.name : "Admin",
+      timestamp: new Date(),
+    });
+
+    await order.save();
+
+    // Trigger emails asynchronously
+    const { sendTimelineStatusEmailAsync } = require("../utils/notificationService.js");
+    sendTimelineStatusEmailAsync(order, "Cancellation Approved").catch((err) => {
+      console.error("❌ Approval email failed:", err.message);
+    });
+
+    if (isPrepaid) {
+      sendTimelineStatusEmailAsync(order, "Refund Initiated").catch((err) => {
+        console.error("❌ Refund initiation email failed:", err.message);
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Order cancellation approved successfully",
+      order,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// @desc    Reject Order Cancellation (Admin)
+// @route   PUT /api/orders/:id/reject-cancellation
+// @access  Private/Admin
+const rejectOrderCancellation = async (req, res) => {
+  try {
+    const { refundRemarks } = req.body;
+    if (!refundRemarks || refundRemarks.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Rejection reason is required",
+      });
+    }
+
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    if (order.status !== "Cancellation Requested") {
+      return res.status(400).json({
+        success: false,
+        message: "Cancellation request is not active for this order",
+      });
+    }
+
+    // Revert status to Processing
+    order.status = "Processing";
+    order.refundStatus = "";
+    order.refundRemarks = refundRemarks;
+
+    // Add timeline node
+    order.orderTimeline.push({
+      status: "Cancellation Rejected",
+      timestamp: new Date(),
+      updatedBy: req.user ? req.user.name : "Admin",
+    });
+
+    // Log admin note
+    const rejectMsg = `Cancellation Request Declined. Reason: ${refundRemarks}`;
+    order.adminNotes = rejectMsg;
+    order.adminNotesLog.push({
+      noteText: rejectMsg,
+      adminName: req.user ? req.user.name : "Admin",
+      timestamp: new Date(),
+    });
+
+    await order.save();
+
+    // Send email asynchronously
+    const { sendTimelineStatusEmailAsync } = require("../utils/notificationService.js");
+    sendTimelineStatusEmailAsync(order, "Cancellation Rejected").catch((err) => {
+      console.error("❌ Rejection email failed:", err.message);
+    });
+
+    res.json({
+      success: true,
+      message: "Order cancellation request rejected successfully",
+      order,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// @desc    Update Refund Details / Mark Refunded (Admin)
+// @route   PUT /api/orders/:id/refund
+// @access  Private/Admin
+const updateOrderRefundDetails = async (req, res) => {
+  try {
+    const { refundStatus, refundTransactionId, refundRemarks } = req.body;
+    
+    if (!refundStatus) {
+      return res.status(400).json({
+        success: false,
+        message: "refundStatus is required",
+      });
+    }
+
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    order.refundStatus = refundStatus;
+    if (refundTransactionId) order.refundTransactionId = refundTransactionId;
+    if (refundRemarks) order.refundRemarks = refundRemarks;
+
+    if (refundStatus === "Refunded") {
+      order.refundDate = new Date();
+      order.paymentStatus = "Refunded";
+      
+      const hasCompletedNode = order.orderTimeline.some(t => t.status === "Refund Completed");
+      if (!hasCompletedNode) {
+        order.orderTimeline.push({
+          status: "Refund Completed",
+          timestamp: new Date(),
+          updatedBy: req.user ? req.user.name : "Admin",
+        });
+      }
+    }
+
+    // Log admin note
+    const refundMsg = `Refund status updated to: ${refundStatus}. Remarks: ${refundRemarks || "None"}`;
+    order.adminNotes = refundMsg;
+    order.adminNotesLog.push({
+      noteText: refundMsg,
+      adminName: req.user ? req.user.name : "Admin",
+      timestamp: new Date(),
+    });
+
+    await order.save();
+
+    // Trigger Refund Completed email if status became Refunded
+    if (refundStatus === "Refunded") {
+      const { sendTimelineStatusEmailAsync } = require("../utils/notificationService.js");
+      sendTimelineStatusEmailAsync(order, "Refund Completed").catch((err) => {
+        console.error("❌ Refund completed email failed:", err.message);
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Refund details updated successfully",
+      order,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   addOrderItems,
   getMyOrders,
@@ -611,4 +873,7 @@ module.exports = {
   resendOrderEmail,
   cancelMyOrder,
   deleteOrder,
+  approveOrderCancellation,
+  rejectOrderCancellation,
+  updateOrderRefundDetails,
 };

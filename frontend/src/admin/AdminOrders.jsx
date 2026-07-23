@@ -57,6 +57,12 @@ const AdminOrders = () => {
   const [editingTracking, setEditingTracking] = useState(false);
   const [newNote, setNewNote] = useState("");
   const [newTag, setNewTag] = useState("");
+
+  // Cancellation Rejection & Refund States
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [showRejectionForm, setShowRejectionForm] = useState(false);
+  const [refundTxId, setRefundTxId] = useState("");
+  const [showRefundForm, setShowRefundForm] = useState(false);
   
   // Tracking form inputs
   const [trackingForm, setTrackingForm] = useState({
@@ -239,6 +245,97 @@ const AdminOrders = () => {
     } catch (error) {
       toast.dismiss("order-update");
       toast.error(error.response?.data?.message || "Failed to update order");
+    }
+  };
+
+  // ADMIN APPROVE ORDER CANCELLATION
+  const handleApproveCancellation = async (orderId) => {
+    if (!window.confirm("Are you sure you want to APPROVE this cancellation request? This will cancel the order, restock items, and initiate refund status.")) return;
+    toast.loading("Approving cancellation...", { id: "c-approve" });
+    try {
+      const res = await axios.put(
+        `/api/orders/${orderId}/approve-cancellation`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+      toast.dismiss("c-approve");
+      if (res.data.success) {
+        toast.success("Cancellation approved successfully!");
+        setOrders(prev => prev.map(o => o._id === orderId ? res.data.order : o));
+        setActiveOrder(res.data.order);
+      }
+    } catch (err) {
+      toast.dismiss("c-approve");
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to approve cancellation");
+    }
+  };
+
+  // ADMIN REJECT ORDER CANCELLATION
+  const handleRejectCancellation = async (orderId) => {
+    if (!rejectionReason.trim()) {
+      toast.error("Please enter a rejection reason");
+      return;
+    }
+    toast.loading("Rejecting cancellation...", { id: "c-reject" });
+    try {
+      const res = await axios.put(
+        `/api/orders/${orderId}/reject-cancellation`,
+        { refundRemarks: rejectionReason },
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+      toast.dismiss("c-reject");
+      if (res.data.success) {
+        toast.success("Cancellation request rejected!");
+        setOrders(prev => prev.map(o => o._id === orderId ? res.data.order : o));
+        setActiveOrder(res.data.order);
+        setShowRejectionForm(false);
+        setRejectionReason("");
+      }
+    } catch (err) {
+      toast.dismiss("c-reject");
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to reject cancellation");
+    }
+  };
+
+  // ADMIN UPDATE REFUND STATUS
+  const handleUpdateRefund = async (orderId, refundStatus, remarks = "") => {
+    toast.loading("Updating refund status...", { id: "ref-update" });
+    try {
+      const res = await axios.put(
+        `/api/orders/${orderId}/refund`,
+        {
+          refundStatus,
+          refundTransactionId: refundStatus === "Refunded" ? refundTxId : "",
+          refundRemarks: remarks || "Updated by Admin",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+      toast.dismiss("ref-update");
+      if (res.data.success) {
+        toast.success(`Refund marked as ${refundStatus}!`);
+        setOrders(prev => prev.map(o => o._id === orderId ? res.data.order : o));
+        setActiveOrder(res.data.order);
+        setShowRefundForm(false);
+        setRefundTxId("");
+      }
+    } catch (err) {
+      toast.dismiss("ref-update");
+      console.error(err);
+      toast.error(err.response?.data?.message || "Failed to update refund status");
     }
   };
 
@@ -550,6 +647,7 @@ const AdminOrders = () => {
       case "SHIPPED": return orders.filter(o => o.status === "Shipped").length;
       case "DELIVERED": return orders.filter(o => o.status === "Delivered").length;
       case "CANCELLED": return orders.filter(o => o.status === "Cancelled").length;
+      case "CANCELLATION_REQUESTED": return orders.filter(o => o.status === "Cancellation Requested").length;
       case "RETURNS": return orders.filter(o => o.status === "Returned" || o.status === "Return Requested" || o.status === "Return Approved").length;
       default: return 0;
     }
@@ -637,6 +735,7 @@ const AdminOrders = () => {
             { title: "Shipped", key: "SHIPPED", filter: "Shipped" },
             { title: "Delivered", key: "DELIVERED", filter: "Delivered" },
             { title: "Cancelled", key: "CANCELLED", filter: "Cancelled" },
+            { title: "Cancellation Requested", key: "CANCELLATION_REQUESTED", filter: "Cancellation Requested" },
             { title: "Returns/Refunds", key: "RETURNS", filter: "Returned" },
           ].map((card, idx) => (
             <div 
@@ -701,6 +800,7 @@ const AdminOrders = () => {
                 <option value="Out For Delivery">Out For Delivery</option>
                 <option value="Delivered">Delivered</option>
                 <option value="Cancelled">Cancelled</option>
+                <option value="Cancellation Requested">Cancellation Requested</option>
                 <option value="Returned">Returned</option>
               </select>
             </div>
@@ -1045,6 +1145,138 @@ const AdminOrders = () => {
               </div>
 
               <div className="drawer-scroll-body">
+
+                {/* CANCELLATION REQUEST DETAILS & ACTION WORKFLOW */}
+                {(activeOrder.status === "Cancellation Requested" || activeOrder.status === "Cancelled" || activeOrder.refundStatus) && (
+                  <div className="drawer-info-section-card" style={{ border: "2px solid #C8A165", background: "rgba(200, 161, 101, 0.03)" }}>
+                    <h4 style={{ color: "#8B7355", display: "flex", justifyContent: "space-between" }}>
+                      <span>Order Cancellation Details</span>
+                      <span className="badge-payment pending" style={{ textTransform: "uppercase", fontSize: "10px" }}>
+                        {activeOrder.status}
+                      </span>
+                    </h4>
+                    
+                    <div style={{ fontSize: "13px", lineHeight: "1.6", display: "flex", flexDirection: "column", gap: "8px", marginTop: "10px" }}>
+                      <p><strong>Reason:</strong> {activeOrder.cancellationReason || "Not specified"}</p>
+                      {activeOrder.cancellationComments && (
+                        <p><strong>Comments:</strong> <em style={{ color: "#6B7280" }}>"{activeOrder.cancellationComments}"</em></p>
+                      )}
+                      
+                      {activeOrder.cancelledAt && (
+                        <p><strong>Requested At:</strong> {new Date(activeOrder.cancelledAt).toLocaleString()}</p>
+                      )}
+
+                      <hr style={{ border: "0", borderTop: "1px dashed #ECE7DF", margin: "8px 0" }} />
+
+                      <p><strong>Payment Method:</strong> {activeOrder.paymentMethod}</p>
+                      <p><strong>Refund Amount:</strong> <strong style={{ color: "#C8A165" }}>₹{activeOrder.refundAmount || activeOrder.totalAmount}</strong></p>
+                      <p><strong>Refund Status:</strong> <strong style={{ textTransform: "uppercase" }}>{activeOrder.refundStatus || "None"}</strong></p>
+                      
+                      {activeOrder.refundTransactionId && (
+                        <p><strong>Refund Tx ID:</strong> <code>{activeOrder.refundTransactionId}</code></p>
+                      )}
+                      {activeOrder.refundDate && (
+                        <p><strong>Refund Date:</strong> {new Date(activeOrder.refundDate).toLocaleString()}</p>
+                      )}
+                      {activeOrder.refundRemarks && (
+                        <p><strong>Refund Remarks:</strong> {activeOrder.refundRemarks}</p>
+                      )}
+
+                      {/* Admin Actions */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "14px" }}>
+                        {activeOrder.status === "Cancellation Requested" && (
+                          <>
+                            <button 
+                              onClick={() => handleApproveCancellation(activeOrder._id)}
+                              className="btn-admin-secondary"
+                              style={{ width: "100%", height: "36px" }}
+                            >
+                              Approve Cancellation
+                            </button>
+                            
+                            {!showRejectionForm ? (
+                              <button 
+                                onClick={() => setShowRejectionForm(true)}
+                                className="btn-admin-outline"
+                                style={{ width: "100%", height: "36px", borderColor: "#DC2626", color: "#DC2626" }}
+                              >
+                                Reject Cancellation
+                              </button>
+                            ) : (
+                              <div style={{ display: "flex", flexDirection: "column", gap: "8px", padding: "12px", border: "1px solid #ECE7DF", borderRadius: "12px", background: "#FFFFFF" }}>
+                                <label style={{ fontSize: "11px", fontWeight: "700" }}>Reason for Rejection</label>
+                                <textarea 
+                                  placeholder="Enter reason (e.g. Package already shipped)..."
+                                  value={rejectionReason}
+                                  onChange={(e) => setRejectionReason(e.target.value)}
+                                  rows={2}
+                                  style={{ width: "100%", padding: "8px", fontSize: "12.5px", borderRadius: "6px", border: "1px solid #ECE7DF" }}
+                                />
+                                <div style={{ display: "flex", gap: "8px" }}>
+                                  <button 
+                                    onClick={() => handleRejectCancellation(activeOrder._id)}
+                                    className="btn-admin-secondary"
+                                    style={{ flex: 1, height: "30px", fontSize: "11px" }}
+                                  >
+                                    Submit Reject
+                                  </button>
+                                  <button 
+                                    onClick={() => setShowRejectionForm(false)}
+                                    className="btn-admin-outline"
+                                    style={{ flex: 1, height: "30px", fontSize: "11px" }}
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
+
+                        {activeOrder.status === "Cancelled" && activeOrder.refundStatus === "Initiated" && (
+                          <>
+                            {!showRefundForm ? (
+                              <button 
+                                onClick={() => setShowRefundForm(true)}
+                                className="btn-admin-secondary"
+                                style={{ width: "100%", height: "36px" }}
+                              >
+                                Mark Refund Completed
+                              </button>
+                            ) : (
+                              <div style={{ display: "flex", flexDirection: "column", gap: "8px", padding: "12px", border: "1px solid #ECE7DF", borderRadius: "12px", background: "#FFFFFF" }}>
+                                <label style={{ fontSize: "11px", fontWeight: "700" }}>Refund Transaction ID</label>
+                                <input 
+                                  type="text"
+                                  placeholder="Txn ID reference..."
+                                  value={refundTxId}
+                                  onChange={(e) => setRefundTxId(e.target.value)}
+                                  style={{ width: "100%", padding: "8px", fontSize: "12.5px", borderRadius: "6px", border: "1px solid #ECE7DF" }}
+                                />
+                                <div style={{ display: "flex", gap: "8px" }}>
+                                  <button 
+                                    onClick={() => handleUpdateRefund(activeOrder._id, "Refunded")}
+                                    className="btn-admin-secondary"
+                                    style={{ flex: 1, height: "30px", fontSize: "11px" }}
+                                  >
+                                    Save Completed
+                                  </button>
+                                  <button 
+                                    onClick={() => setShowRefundForm(false)}
+                                    className="btn-admin-outline"
+                                    style={{ flex: 1, height: "30px", fontSize: "11px" }}
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
                 
                 {/* 1. CUSTOMER INFO CARD */}
                 <div className="drawer-info-section-card">

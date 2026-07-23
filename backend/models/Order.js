@@ -162,6 +162,7 @@ const orderSchema = new mongoose.Schema(
         "Return Approved",
         "Refund Completed",
         "Returned",
+        "Cancellation Requested",
       ],
       default: "Pending",
     },
@@ -304,6 +305,49 @@ const orderSchema = new mongoose.Schema(
     giftReceipt: {
       type: Boolean,
       default: false,
+    },
+    cancellationReason: {
+      type: String,
+      default: "",
+    },
+    cancellationComments: {
+      type: String,
+      default: "",
+    },
+    cancelledAt: {
+      type: Date,
+    },
+    cancelledBy: {
+      type: String,
+      enum: ["User", "Admin", "System", ""],
+      default: "",
+    },
+    refundStatus: {
+      type: String,
+      enum: ["", "Pending", "Initiated", "Refunded", "Failed"],
+      default: "",
+    },
+    refundMethod: {
+      type: String,
+      default: "",
+    },
+    refundAmount: {
+      type: Number,
+      default: 0,
+    },
+    refundExpectedDate: {
+      type: Date,
+    },
+    refundTransactionId: {
+      type: String,
+      default: "",
+    },
+    refundDate: {
+      type: Date,
+    },
+    refundRemarks: {
+      type: String,
+      default: "",
     },
   },
   {

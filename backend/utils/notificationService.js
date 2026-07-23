@@ -391,11 +391,31 @@ const sendTimelineStatusEmailAsync = async (order, status) => {
     timelineHtml = "";
   } else if (status === "Refund Completed") {
     emailTitle = "Refund Successfully Processed 💸";
-    statusText = `Your refund of <strong>₹${totalAmount.toFixed(2)}</strong> has been successfully processed back to your original payment account. It typically takes 3-5 bank clearing days to reflect.`;
+    const txMsg = order.refundTransactionId ? `<br/>Transaction ID: <strong>${order.refundTransactionId}</strong>` : "";
+    statusText = `We have successfully completed your refund of <strong>₹${totalAmount.toFixed(2)}</strong>. Please check your bank statement. ${txMsg}`;
     timelineHtml = "";
   } else if (status === "Cancelled") {
     emailTitle = "Order Cancelled";
-    statusText = "This transaction order has been cancelled by our systems/administrator. If any payments were processed, refunds will initiate immediately.";
+    statusText = "Your order has been cancelled. If any payments were processed, refunds will initiate immediately.";
+    timelineHtml = "";
+  } else if (status === "Cancellation Requested") {
+    emailTitle = "Order Cancellation Request Received";
+    const reasonText = order.cancellationReason ? `<br/>Reason: <strong>${order.cancellationReason}</strong>` : "";
+    statusText = `We have received your request to cancel order <strong>#${orderId.slice(-8).toUpperCase()}</strong>. Our operations team is verifying the shipping state. If the order has not been dispatched, we will process the cancellation and initiate any applicable refunds. ${reasonText}`;
+    timelineHtml = "";
+  } else if (status === "Cancellation Approved") {
+    emailTitle = "Order Cancellation Approved";
+    statusText = `Your cancellation request for order <strong>#${orderId.slice(-8).toUpperCase()}</strong> has been approved. The order status has been updated to Cancelled.`;
+    timelineHtml = "";
+  } else if (status === "Cancellation Rejected") {
+    emailTitle = "Order Cancellation Request Rejected";
+    const remarkText = order.refundRemarks ? `<br/>Reason: <em>${order.refundRemarks}</em>` : "";
+    statusText = `Your cancellation request for order <strong>#${orderId.slice(-8).toUpperCase()}</strong> has been declined because the package has already been handed over to our logistics partner for dispatch. ${remarkText}`;
+    timelineHtml = "";
+  } else if (status === "Refund Initiated") {
+    emailTitle = "Refund Process Initiated 💸";
+    const expectedDateStr = order.refundExpectedDate ? new Date(order.refundExpectedDate).toLocaleDateString("en-IN", { day: 'numeric', month: 'long', year: 'numeric' }) : "3-5 business days";
+    statusText = `Your refund of <strong>₹${totalAmount.toFixed(2)}</strong> has been initiated via ${order.refundMethod || "original payment method"}. The amount is expected to credit by <strong>${expectedDateStr}</strong>.`;
     timelineHtml = "";
   }
 

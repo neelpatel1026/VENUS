@@ -190,31 +190,8 @@ const Profile = () => {
     }
   };
 
-  const handleCancelOrder = async (orderId) => {
-    const confirmCancel = window.confirm("Are you sure you want to cancel this order? This action cannot be undone.");
-    if (!confirmCancel) return;
-
-    try {
-      toast.loading("Processing cancellation request...");
-      const res = await axios.put(
-        `/api/orders/${orderId}/cancel`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      );
-      toast.dismiss();
-      if (res.data.success) {
-        toast.success("Order cancelled successfully!");
-        setOrders(prev => prev.map(o => o._id === orderId ? { ...o, status: "Cancelled", orderTimeline: res.data.order.orderTimeline } : o));
-      }
-    } catch (err) {
-      toast.dismiss();
-      console.error("Cancel failed:", err);
-      toast.error(err.response?.data?.message || "Failed to cancel order");
-    }
+  const handleCancelOrder = (orderId) => {
+    navigate(`/order/${orderId}`, { state: { triggerCancel: true } });
   };
 
   const toggleExpandOrder = (orderId) => {

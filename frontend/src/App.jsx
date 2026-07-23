@@ -145,7 +145,7 @@ const NotFound = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: "white",
+        color: "#1A1A1A",
         fontSize: "2rem",
       }}
     >
@@ -243,6 +243,7 @@ function App() {
               <Route path="/faq" element={<FAQ />} />
               <Route path="/disclaimer" element={<Disclaimer />} />
               <Route path="/return" element={<ReturnPolicy />} />
+              <Route path="/return-policy" element={<ReturnPolicy />} />
               <Route path="/return/:id" element={<ReturnRequest />} />
 
               {/* ADMIN ROUTES */}

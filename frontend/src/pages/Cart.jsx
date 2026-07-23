@@ -72,6 +72,7 @@ import {
 
 import '../styles/cart.css';
 import toast from 'react-hot-toast';
+import { getThumbnailUrl } from '../utils/imageHelper';
 
 const Cart = () => {
 
@@ -147,7 +148,7 @@ const Cart = () => {
               >
 
                 <img
-                  src={item.imageUrl || item.image || item.productImage || "/cosmetic_1.avif"}
+                  src={getThumbnailUrl(item.imageUrl || item.image || item.productImage || "/cosmetic_1.avif")}
                   alt={item.name}
                   className="cart-item-image"
                   loading="lazy"

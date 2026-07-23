@@ -13,6 +13,9 @@ const {
   resendOrderEmail,
   cancelMyOrder,
   deleteOrder,
+  approveOrderCancellation,
+  rejectOrderCancellation,
+  updateOrderRefundDetails,
 } = require("../controllers/orderController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -28,6 +31,9 @@ router.route("/myorders").get(protect, getMyOrders);
 router.route("/myorders/:id").get(protect, getMyOrderById);
 router.route("/bulk-status").put(protect, admin, adminLimiter, bulkUpdateOrderStatus);
 router.route("/:id/cancel").put(protect, cancelMyOrder);
+router.route("/:id/approve-cancellation").put(protect, admin, adminLimiter, approveOrderCancellation);
+router.route("/:id/reject-cancellation").put(protect, admin, adminLimiter, rejectOrderCancellation);
+router.route("/:id/refund").put(protect, admin, adminLimiter, updateOrderRefundDetails);
 
 router.route("/:id/invoice").get(protect, downloadInvoice);
 

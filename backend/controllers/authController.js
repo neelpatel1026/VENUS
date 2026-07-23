@@ -12,6 +12,22 @@ const generateToken = (id) => {
   });
 };
 
+const getCookieOptions = () => {
+  const isProd = process.env.NODE_ENV === "production";
+  const options = {
+    httpOnly: true,
+    secure: process.env.COOKIE_SECURE === "true" || (process.env.COOKIE_SECURE === undefined && isProd),
+    sameSite: process.env.COOKIE_SAME_SITE || (isProd ? "strict" : "lax"),
+    maxAge: parseInt(process.env.COOKIE_MAX_AGE || String(15 * 24 * 60 * 60 * 1000)),
+    path: process.env.COOKIE_PATH || "/",
+  };
+  if (process.env.COOKIE_DOMAIN) {
+    options.domain = process.env.COOKIE_DOMAIN;
+  }
+  return options;
+};
+
+
 
 // REGISTER
 const registerUser = async (req, res) => {
@@ -127,12 +143,7 @@ const user = await User.create({
 
     const token = generateToken(user._id);
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 15 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie("token", token, getCookieOptions());
 
     res.status(201).json({
       _id: user._id,
@@ -182,12 +193,7 @@ const loginUser = async (req, res) => {
 
     const token = generateToken(user._id);
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 15 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie("token", token, getCookieOptions());
 
     res.json({
       _id: user._id,
@@ -244,12 +250,7 @@ const googleLogin = async (req, res) => {
 
     const token = generateToken(user._id);
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 15 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie("token", token, getCookieOptions());
 
     res.status(200).json({
       _id: user._id,

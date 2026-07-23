@@ -113,29 +113,23 @@ const Footer = () => {
           <div className="footer-col">
             <h4>Shop</h4>
             <div className="footer-links-stack">
-              <Link to="/" className="footer-link-item">Home</Link>
               <Link to="/shop" className="footer-link-item">Shop</Link>
-              <Link to="/shop" className="footer-link-item">Collections</Link>
-              <Link to="/gifting" className="footer-link-item">Gifting</Link>
-              <Link to="/shop" className="footer-link-item">New Arrivals</Link>
               <Link to="/shop" className="footer-link-item">Best Sellers</Link>
+              <Link to="/shop" className="footer-link-item">New Arrivals</Link>
               <Link to="/shop" className="footer-link-item">Offers</Link>
-              <Link to="/profile" className="footer-link-item">Track Order</Link>
+              <Link to="/gifting" className="footer-link-item">Gifting</Link>
             </div>
           </div>
 
-          {/* Column 3: Support links */}
+          {/* Column 3: Customer Care links */}
           <div className="footer-col">
-            <h4>Support</h4>
+            <h4>Customer Care</h4>
             <div className="footer-links-stack">
               <Link to="/faq" className="footer-link-item">FAQ</Link>
-              <Link to="/shipping-policy" className="footer-link-item">Shipping</Link>
-              <Link to="/return" className="footer-link-item">Returns</Link>
-              <Link to="/return" className="footer-link-item">Refund</Link>
-              <Link to="/privacy-policy" className="footer-link-item">Privacy</Link>
-              <Link to="/terms" className="footer-link-item">Terms</Link>
-              <Link to="/my-complaints" className="footer-link-item">Support Ticket</Link>
-              <Link to="/contact" className="footer-link-item">Contact Us</Link>
+              <Link to="/shipping-policy" className="footer-link-item">Shipping Policy</Link>
+              <Link to="/return-policy" className="footer-link-item">Return & Refund Policy</Link>
+              <Link to="/privacy-policy" className="footer-link-item">Privacy Policy</Link>
+              <Link to="/terms" className="footer-link-item">Terms & Conditions</Link>
             </div>
           </div>
 
@@ -158,10 +152,6 @@ const Footer = () => {
               <div className="contact-detail-line">
                 <FaRegClock />
                 <span>Business Hours: Mon–Sat: 9 AM - 7 PM</span>
-              </div>
-              <div className="contact-detail-line">
-                <FaHeadphones />
-                <span>Support Hours: 24×7 Ticket Desk</span>
               </div>
             </div>
           </div>
@@ -187,7 +177,7 @@ const Footer = () => {
                   {loading ? "Subscribing..." : "Subscribe"}
                 </button>
               </form>
-              <span className="newsletter-spam-notice">We respect your privacy.</span>
+              <span className="newsletter-spam-notice">By subscribing, you agree to our privacy policy.</span>
             </div>
           </div>
 
@@ -195,15 +185,20 @@ const Footer = () => {
 
         {/* 3. PAYMENT METHODS - Monochrome style inline text badges */}
         <div className="footer-payments-row">
-          <span className="payment-logo-item">Visa</span>
-          <span className="payment-logo-item">Mastercard</span>
-          <span className="payment-logo-item">RuPay</span>
-          <span className="payment-logo-item">UPI</span>
-          <span className="payment-logo-item">Google Pay</span>
-          <span className="payment-logo-item">PhonePe</span>
-          <span className="payment-logo-item">Paytm</span>
-          <span className="payment-logo-item">Razorpay</span>
-          <span className="payment-logo-item">COD</span>
+          <svg width="40" height="24" viewBox="0 0 40 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ opacity: 0.7 }} aria-label="Visa">
+            <rect width="38.5" height="22.5" x="0.75" y="0.75" rx="3.25" fill="none" />
+            <path d="M15.3 7.8l-1.9 6.8h-1.6l1.2-6.8h2.3zm8.3.1l-1.5 5.2-.2-1c-.3-1.1-.9-1.5-1.9-1.5h-1.5l.1.7c.9.2 1.6.6 1.8 1.2l1.6 5.4h2l2.4-6.8h-2.1v-.2zm7.6 0c-.5 0-1 .3-1.2.8l-2.4 6h2.1l.4-1.2h2.6l.2 1.2h1.9l-1.6-6.8h-2zm-1 3.5l1-2.9.6 2.9h-1.6zM6 7.8L8.6 14.5h1.9l3-6.8H11.2l-1.7 4.5-.6-4.5H6z" fill="currentColor" stroke="none" />
+          </svg>
+          <svg width="40" height="24" viewBox="0 0 40 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ opacity: 0.7 }} aria-label="Mastercard">
+            <rect width="38.5" height="22.5" x="0.75" y="0.75" rx="3.25" fill="none" />
+            <circle cx="16" cy="12" r="5.5" fill="currentColor" fillOpacity="0.8" stroke="none" />
+            <circle cx="24" cy="12" r="5.5" fill="currentColor" fillOpacity="0.4" stroke="none" />
+          </svg>
+          <span style={{ fontSize: "10px", fontWeight: "800", border: "1.5px solid currentColor", padding: "2.5px 7px", borderRadius: "4px", letterSpacing: "1px", opacity: 0.7, textTransform: "uppercase", display: "inline-flex", alignItems: "center", height: "24px" }}>RuPay</span>
+          <span style={{ fontSize: "10px", fontWeight: "800", border: "1.5px solid currentColor", padding: "2.5px 7px", borderRadius: "4px", letterSpacing: "1.5px", opacity: 0.7, textTransform: "uppercase", display: "inline-flex", alignItems: "center", height: "24px" }}>UPI</span>
+          <span style={{ fontSize: "10px", fontWeight: "800", border: "1.5px solid currentColor", padding: "2.5px 7px", borderRadius: "4px", letterSpacing: "0.5px", opacity: 0.7, textTransform: "uppercase", display: "inline-flex", alignItems: "center", height: "24px" }}>GPay</span>
+          <span style={{ fontSize: "10px", fontWeight: "800", border: "1.5px solid currentColor", padding: "2.5px 7px", borderRadius: "4px", opacity: 0.7, textTransform: "uppercase", display: "inline-flex", alignItems: "center", height: "24px" }}>Razorpay</span>
+          <span style={{ fontSize: "10px", fontWeight: "800", border: "1.5px solid currentColor", padding: "2.5px 7px", borderRadius: "4px", opacity: 0.7, textTransform: "uppercase", display: "inline-flex", alignItems: "center", height: "24px" }}>COD</span>
         </div>
 
         {/* Thin divider */}
@@ -212,7 +207,7 @@ const Footer = () => {
         {/* 4. BOTTOM SECTION */}
         <div className="footer-bottom-bar-flex">
           <span className="bottom-credits">
-            &copy; 2026 VENUS CARE
+            &copy; VENUS CARE
           </span>
           
           <span className="bottom-love-flag">
@@ -221,6 +216,7 @@ const Footer = () => {
 
           <div className="bottom-links-menu">
             <Link to="/privacy-policy" className="bottom-menu-link">Privacy</Link>
+            <Link to="/terms" className="bottom-menu-link">Terms</Link>
             <Link to="/terms" className="bottom-menu-link">Cookies</Link>
             <Link to="/faq" className="bottom-menu-link">Sitemap</Link>
           </div>
