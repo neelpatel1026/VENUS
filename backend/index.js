@@ -22,17 +22,38 @@ app.use(helmetConfig);
 
 app.use(globalLimiter);
 
-// CORS
-const allowedOrigins = ["http://localhost:5173"];
+// CORS Configuration
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://venus-f3m6zcesh-neelpatel1026s-projects.vercel.app",
+  "https://venus-woad-alpha.vercel.app"
+];
 if (process.env.FRONTEND_URL) {
   allowedOrigins.push(process.env.FRONTEND_URL);
 }
+
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin(origin, callback) {
+      if (!origin) return callback(null, true);
+
+      const isAllowed = allowedOrigins.includes(origin) || 
+                        origin.endsWith(".vercel.app") || 
+                        /^http:\/\/localhost:\d+$/.test(origin);
+
+      if (isAllowed) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
-  }),
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "X-Requested-With"]
+  })
 );
+
+app.options("*", cors());
 
 // NoSQL Query Injection Sanitizer
 const sanitizeMongo = (obj) => {
