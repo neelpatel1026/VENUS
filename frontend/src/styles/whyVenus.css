@@ -1,62 +1,222 @@
-.why-venus{
-  padding:50px 20px;
-  background:#fff;
-  
+/* ==========================================================================
+   VENUS CARE REDESIGNED WHY CHOOSE VENUS SECTION
+   ========================================================================== */
+.why-venus-section {
+  width: 100%;
+  max-width: 1200px !important;
+  margin: 40px auto !important; /* Reduced vertical space by ~60% */
+  padding: 48px 32px !important; /* Reduced padding inside */
+  background: #FFFDF9; /* Soft cream background */
+  border-radius: 30px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.why-venus h2{
-  text-align:center;
-  /* font-size:26px; */
-  font-weight:500;
-  color:#222;
-  margin-bottom:40px;
-  text-transform:uppercase;
-  font-size:22px;
-  letter-spacing:1px;
+/* Decorative blurred warm glow */
+.why-decor-circle {
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200, 161, 101, 0.06) 0%, rgba(255, 255, 255, 0) 70%);
+  filter: blur(30px);
+  pointer-events: none;
+  z-index: 1;
 }
 
-.why-grid{
-  max-width:1100px;
-  margin:auto;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:25px;
+/* ================= HEADER BLOCK ================= */
+.why-header {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.why-card{
-  text-align:center;
+.why-tagline {
+  font-size: 11px;
+  font-weight: 700;
+  color: #C8A165;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
 }
 
-.why-card svg{
-  font-size:32px;
-  color:#666;
-  margin-bottom:12px;
+.why-main-title {
+  font-size: clamp(24px, 2.5vw, 32px);
+  font-weight: 700;
+  color: #1F1F1F;
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.why-card h3{
-  font-size:15px;
-  font-weight:600;
-  margin-bottom:10px;
-  text-transform:uppercase;
-  letter-spacing:0.5px;
+.why-subtitle {
+  font-size: 14.5px;
+  color: #6B7280;
+  margin: 0;
+  max-width: 500px;
+  line-height: 1.5;
 }
 
-.why-card p{
-  font-size:14px;
-  line-height:1.5;
-  color:#777;
-  max-width:220px;
-  margin:auto;
+/* ================= CARDS GRID ================= */
+.why-grid-lux {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 cards in one row */
+  gap: 24px;
+  width: 100%;
+  margin-bottom: 40px;
 }
 
-@media(max-width:992px){
-  .why-grid{
-    grid-template-columns:repeat(2,1fr);
+.why-card-lux {
+  background: rgba(255, 255, 255, 0.7); /* Glass effect */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(239, 232, 223, 0.6); /* Soft border */
+  border-radius: 24px; /* Border radius 24px */
+  padding: 24px 20px; /* Reduced card height by ~25% */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.015); /* Luxury shadow */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.why-card-lux:hover {
+  transform: translateY(-5px); /* Hover lift animation */
+  border-color: rgba(200, 161, 101, 0.25);
+  box-shadow: 0 12px 28px rgba(200, 161, 101, 0.08); /* Hover shadow */
+  background: #FFFFFF;
+}
+
+/* CIRCULAR ICON BADGE */
+.why-icon-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(200, 161, 101, 0.08) 0%, rgba(200, 161, 101, 0.02) 100%); /* Soft gold badge */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  border: 1px solid rgba(200, 161, 101, 0.12);
+  transition: all 0.3s ease;
+}
+
+.why-icon-svg {
+  font-size: 30px !important; /* Increased size by 40% */
+  color: #C8A165;
+  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.why-card-lux:hover .why-icon-badge {
+  background: linear-gradient(135deg, rgba(200, 161, 101, 0.15) 0%, rgba(200, 161, 101, 0.05) 100%);
+  border-color: rgba(200, 161, 101, 0.25);
+}
+
+.why-card-lux:hover .why-icon-svg {
+  transform: scale(1.15) rotate(5deg); /* Animate icon on hover */
+}
+
+.why-card-lux h3 {
+  font-size: 15px;
+  font-weight: 700; /* Bold title */
+  color: #1F1F1F;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.why-card-lux p {
+  font-size: 13px;
+  line-height: 1.6; /* Better line height */
+  color: #4B5563; /* Slightly darker gray */
+  margin: 0;
+}
+
+/* ================= STATISTICS ROW ================= */
+.why-stats-row {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  border-top: 1px solid rgba(239, 232, 223, 0.8);
+  padding-top: 32px;
+}
+
+.why-stat-card {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(239, 232, 223, 0.4);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.why-stat-card:hover {
+  background: #FFFFFF;
+  border-color: rgba(200, 161, 101, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+}
+
+.stat-number {
+  font-size: 22px;
+  font-weight: 800;
+  color: #C8A165;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   RESPONSIVE OVERRIDES
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .why-grid-lux {
+    grid-template-columns: repeat(2, 1fr) !important; /* 2x2 grid on tablet */
+    gap: 20px;
+  }
+  .why-stats-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px;
   }
 }
 
-@media(max-width:600px){
-  .why-grid{
-    grid-template-columns:1fr;
+@media (max-width: 600px) {
+  .why-grid-lux {
+    grid-template-columns: 1fr !important; /* 1 column on mobile */
+    gap: 16px;
+  }
+  .why-stats-row {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+    padding-top: 24px;
+  }
+  .why-venus-section {
+    padding: 32px 16px !important;
   }
 }

@@ -76,20 +76,22 @@ const Shop = () => {
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '36px 20px 60px 20px' }}>
         
         {/* 2. DYNAMIC CATEGORY PILLS BAR */}
-        <div className="category-scroll-wrapper" style={{ marginBottom: '36px' }}>
-          {categories.map((cat) => {
-            const isActive = selectedCategory === cat;
-            return (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`category-pill ${isActive ? 'active' : ''}`}
-                style={{ scrollSnapAlign: 'start', flexShrink: 0 }}
-              >
-                {cat}
-              </button>
-            );
-          })}
+        <div className="category-scroll-relative-wrapper" style={{ marginBottom: '36px' }}>
+          <div className="category-scroll-wrapper" style={{ marginBottom: '0px' }}>
+            {categories.map((cat) => {
+              const isActive = selectedCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`category-pill ${isActive ? 'active' : ''}`}
+                  style={{ scrollSnapAlign: 'start', flexShrink: 0 }}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* 3. STICKY FILTER TOOLBAR */}

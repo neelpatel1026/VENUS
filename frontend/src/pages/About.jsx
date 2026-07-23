@@ -14,6 +14,7 @@ import {
   FiBox,
   FiSmile
 } from "react-icons/fi";
+import "../styles/aboutPage.css";
 
 const About = () => {
   // Animation Variants
@@ -91,33 +92,33 @@ const About = () => {
   ];
 
   return (
-    <div className="route-fade-in" style={{ background: "#FFFFFF", color: "#1A1A1A", minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
+    <div className="about-page-wrapper route-fade-in">
       
       {/* 1. HERO SECTION */}
-      <section style={{ padding: "80px 20px 60px 20px", maxWidth: "1280px", margin: "0 auto" }}>
+      <section className="about-hero-section">
         <motion.div
           initial="hidden"
           animate="visible"
           variants={staggerContainer}
-          style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "60px", alignItems: "center" }}
+          className="about-hero-grid"
         >
           {/* Hero Left Text */}
           <motion.div variants={fadeInUp}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 16px", borderRadius: "30px", background: "#FAF9F6", border: "1px solid #ECE7DF", color: "#C8A165", fontSize: "12px", fontWeight: "700", letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: "20px" }}>
+            <div className="about-hero-badge">
               <span>VENUS CARE</span>
               <span>•</span>
               <span>Pure Apothecary</span>
             </div>
 
-            <h1 style={{ fontSize: "clamp(2.5rem, 5vw, 3.8rem)", fontWeight: "800", fontFamily: "'Cinzel', 'Georgia', serif", lineHeight: "1.15", color: "#1A1A1A", marginBottom: "24px", letterSpacing: "-0.5px" }}>
+            <h1 className="about-hero-title">
               Pure Botanical Luxury, Backed By Science.
             </h1>
 
-            <p style={{ fontSize: "1.1rem", lineHeight: "1.8", color: "#4B5563", marginBottom: "32px", maxWidth: "540px" }}>
+            <p className="about-hero-desc">
               At VENUS CARE, we believe skincare is an intimate daily ritual. We craft acid-free, nutrient-dense botanical formulations that honour your natural beauty — with zero compromise on safety or performance.
             </p>
 
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
+            <div className="about-hero-buttons">
               <Link
                 to="/shop"
                 style={{
@@ -155,12 +156,12 @@ const About = () => {
           </motion.div>
 
           {/* Hero Right Image Showcase */}
-          <motion.div variants={fadeInUp} style={{ position: "relative" }}>
-            <div style={{ borderRadius: "24px", overflow: "hidden", boxShadow: "0 20px 40px rgba(0,0,0,0.06)", border: "1px solid #ECE7DF" }}>
+          <motion.div variants={fadeInUp} className="about-hero-img-wrapper">
+            <div className="about-hero-img-box">
               <img
                 src="/about_hero.jpg"
                 alt="Venus Care Hero Botanical"
-                style={{ width: "100%", height: "520px", objectFit: "cover", display: "block" }}
+                className="about-hero-img"
                 loading="lazy"
                 onError={(e) => { e.target.onerror = null; e.target.src = "/cosmetic_1.avif"; }}
               />
@@ -170,20 +171,7 @@ const About = () => {
             <motion.div
               animate={{ y: [0, -10, 0] }}
               transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-              style={{
-                position: "absolute",
-                bottom: "-25px",
-                left: "20px",
-                background: "#FFFFFF",
-                padding: "18px 24px",
-                borderRadius: "16px",
-                boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-                border: "1px solid #ECE7DF",
-                display: "flex",
-                alignItems: "center",
-                gap: "14px",
-                maxWidth: "280px",
-              }}
+              className="about-hero-floating-badge"
             >
               <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "#FAF9F6", display: "flex", alignItems: "center", justifyContent: "center", color: "#C8A165", fontSize: "20px", flexShrink: 0 }}>
                 <FiAward />
@@ -198,7 +186,7 @@ const About = () => {
       </section>
 
       {/* 2. OUR STORY (ALTERNATING LAYOUT) */}
-      <section id="our-story" style={{ padding: "100px 20px", background: "#FAFAFA", borderTop: "1px solid #F3F4F6", borderBottom: "1px solid #F3F4F6" }}>
+      <section id="our-story" className="about-story-section">
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           
           <motion.div
@@ -206,7 +194,7 @@ const About = () => {
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeInUp}
-            style={{ textAlign: "center", marginBottom: "70px" }}
+            className="about-story-header"
           >
             <span style={{ color: "#C8A165", fontWeight: "700", letterSpacing: "2px", fontSize: "12px", textTransform: "uppercase" }}>THE VENUS HERITAGE</span>
             <h2 style={{ fontSize: "clamp(2rem, 4vw, 2.8rem)", fontFamily: "'Cinzel', 'Georgia', serif", fontWeight: "700", color: "#1A1A1A", marginTop: "10px" }}>
@@ -215,7 +203,7 @@ const About = () => {
           </motion.div>
 
           {/* Block 1 */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "60px", alignItems: "center", marginBottom: "80px" }}>
+          <div className="about-story-grid" style={{ marginBottom: "40px" }}>
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}>
               <h3 style={{ fontSize: "1.8rem", fontFamily: "'Cinzel', serif", color: "#1A1A1A", marginBottom: "16px" }}>The Genesis of Pure Care</h3>
               <p style={{ fontSize: "1.05rem", lineHeight: "1.8", color: "#4B5563", marginBottom: "20px" }}>
@@ -230,7 +218,7 @@ const About = () => {
               <img
                 src="/about_lab.jpg"
                 alt="Apothecary Lab"
-                style={{ width: "100%", height: "400px", objectFit: "cover", borderRadius: "20px", boxShadow: "0 10px 30px rgba(0,0,0,0.04)" }}
+                className="about-story-img"
                 loading="lazy"
                 onError={(e) => { e.target.onerror = null; e.target.src = "/cosmetic_1.avif"; }}
               />
@@ -238,18 +226,18 @@ const About = () => {
           </div>
 
           {/* Block 2 */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "60px", alignItems: "center" }}>
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} style={{ order: window.innerWidth > 768 ? 1 : 2 }}>
+          <div className="about-story-grid">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}>
               <img
                 src="/about_formulation.jpg"
                 alt="Clean Formulations"
-                style={{ width: "100%", height: "400px", objectFit: "cover", borderRadius: "20px", boxShadow: "0 10px 30px rgba(0,0,0,0.04)" }}
+                className="about-story-img"
                 loading="lazy"
                 onError={(e) => { e.target.onerror = null; e.target.src = "/cosmetic_1.avif"; }}
               />
             </motion.div>
 
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} style={{ order: window.innerWidth > 768 ? 2 : 1 }}>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}>
               <h3 style={{ fontSize: "1.8rem", fontFamily: "'Cinzel', serif", color: "#1A1A1A", marginBottom: "16px" }}>Science Meets Nature</h3>
               <p style={{ fontSize: "1.05rem", lineHeight: "1.8", color: "#4B5563", marginBottom: "20px" }}>
                 We blend rare organic cold-pressed oils, bio-identical peptides, and gentle plant actives to create harmonious formulas tailored for modern skin stress.
@@ -264,8 +252,8 @@ const About = () => {
       </section>
 
       {/* 3. WHY CHOOSE VENUS CARE (FEATURE CARDS) */}
-      <section style={{ padding: "100px 20px", maxWidth: "1280px", margin: "0 auto" }}>
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} style={{ textAlign: "center", marginBottom: "60px" }}>
+      <section className="about-features-section">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} className="about-features-header">
           <span style={{ color: "#C8A165", fontWeight: "700", letterSpacing: "2px", fontSize: "12px", textTransform: "uppercase" }}>STANDARDS OF EXCELLENCE</span>
           <h2 style={{ fontSize: "clamp(2rem, 4vw, 2.8rem)", fontFamily: "'Cinzel', 'Georgia', serif", fontWeight: "700", color: "#1A1A1A", marginTop: "10px" }}>
             Why Discerning Clients Trust VENUS CARE
@@ -277,21 +265,14 @@ const About = () => {
           whileInView="visible"
           viewport={{ once: true }}
           variants={staggerContainer}
-          style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "24px" }}
+          className="about-features-grid"
         >
           {featureCards.map((card, idx) => (
             <motion.div
               key={idx}
               variants={fadeInUp}
               whileHover={{ y: -6, transition: { duration: 0.2 } }}
-              style={{
-                background: "#FFFFFF",
-                padding: "32px 28px",
-                borderRadius: "20px",
-                border: "1px solid #ECE7DF",
-                boxShadow: "0 4px 16px rgba(0,0,0,0.02)",
-                transition: "box-shadow 0.3s, border-color 0.3s",
-              }}
+              className="about-feature-card"
             >
               <div style={{ fontSize: "28px", marginBottom: "18px" }}>{card.icon}</div>
               <h4 style={{ fontSize: "1.15rem", fontWeight: "700", color: "#1A1A1A", marginBottom: "10px" }}>{card.title}</h4>
@@ -302,15 +283,15 @@ const About = () => {
       </section>
 
       {/* 4. MISSION & VISION (LUXURY GLASS DUAL CARDS) */}
-      <section style={{ padding: "80px 20px", background: "#FAFAFA", borderTop: "1px solid #F3F4F6", borderBottom: "1px solid #F3F4F6" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "30px" }}>
+      <section className="about-mission-section">
+        <div className="about-mission-grid">
           
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeInUp}
-            style={{ background: "#FFFFFF", padding: "48px 40px", borderRadius: "24px", border: "1px solid #ECE7DF", boxShadow: "0 6px 20px rgba(0,0,0,0.03)" }}
+            className="about-mission-card"
           >
             <div style={{ color: "#C8A165", fontWeight: "700", letterSpacing: "1.5px", fontSize: "12px", textTransform: "uppercase", marginBottom: "12px" }}>PURPOSE & CALLING</div>
             <h3 style={{ fontSize: "2rem", fontFamily: "'Cinzel', serif", color: "#1A1A1A", marginBottom: "18px" }}>Our Mission</h3>
@@ -324,7 +305,7 @@ const About = () => {
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeInUp}
-            style={{ background: "#FFFFFF", padding: "48px 40px", borderRadius: "24px", border: "1px solid #ECE7DF", boxShadow: "0 6px 20px rgba(0,0,0,0.03)" }}
+            className="about-mission-card"
           >
             <div style={{ color: "#C8A165", fontWeight: "700", letterSpacing: "1.5px", fontSize: "12px", textTransform: "uppercase", marginBottom: "12px" }}>FUTURE HORIZONS</div>
             <h3 style={{ fontSize: "2rem", fontFamily: "'Cinzel', serif", color: "#1A1A1A", marginBottom: "18px" }}>Our Vision</h3>
@@ -337,16 +318,16 @@ const About = () => {
       </section>
 
       {/* 5. CUSTOMER TRUST & STATS */}
-      <section style={{ padding: "90px 20px", maxWidth: "1280px", margin: "0 auto" }}>
+      <section className="about-stats-section">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={staggerContainer}
-          style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "30px", textAlign: "center" }}
+          className="about-stats-grid"
         >
           {statsData.map((stat, idx) => (
-            <motion.div key={idx} variants={fadeInUp} style={{ padding: "30px 20px", background: "#FAF9F6", borderRadius: "20px", border: "1px solid #ECE7DF" }}>
+            <motion.div key={idx} variants={fadeInUp} className="about-stat-card">
               <div style={{ fontSize: "2.8rem", fontWeight: "800", color: "#C8A165", fontFamily: "'Cinzel', serif", marginBottom: "8px" }}>{stat.value}</div>
               <div style={{ fontSize: "0.95rem", fontWeight: "600", color: "#4B5563" }}>{stat.label}</div>
             </motion.div>
@@ -355,10 +336,10 @@ const About = () => {
       </section>
 
       {/* 6. OUR CRAFTSMANSHIP PROCESS (TIMELINE) */}
-      <section style={{ padding: "100px 20px", background: "#FAFAFA", borderTop: "1px solid #F3F4F6", borderBottom: "1px solid #F3F4F6" }}>
+      <section className="about-process-section">
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} style={{ textAlign: "center", marginBottom: "60px" }}>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp} className="about-process-header">
             <span style={{ color: "#C8A165", fontWeight: "700", letterSpacing: "2px", fontSize: "12px", textTransform: "uppercase" }}>FROM FARM TO RITUAL</span>
             <h2 style={{ fontSize: "clamp(2rem, 4vw, 2.8rem)", fontFamily: "'Cinzel', 'Georgia', serif", fontWeight: "700", color: "#1A1A1A", marginTop: "10px" }}>
               Our 5-Step Botanical Process
@@ -370,10 +351,10 @@ const About = () => {
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerContainer}
-            style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px" }}
+            className="about-process-grid"
           >
             {processSteps.map((step, idx) => (
-              <motion.div key={idx} variants={fadeInUp} style={{ background: "#FFFFFF", padding: "30px 24px", borderRadius: "20px", border: "1px solid #ECE7DF", position: "relative" }}>
+              <motion.div key={idx} variants={fadeInUp} className="about-process-card">
                 <div style={{ fontSize: "24px", fontWeight: "800", color: "#C8A165", opacity: 0.6, marginBottom: "12px", fontFamily: "'Cinzel', serif" }}>{step.number}</div>
                 <h4 style={{ fontSize: "1.1rem", fontWeight: "700", color: "#1A1A1A", marginBottom: "8px" }}>{step.title}</h4>
                 <p style={{ fontSize: "0.9rem", color: "#6B7280", lineHeight: "1.6" }}>{step.desc}</p>
@@ -385,7 +366,7 @@ const About = () => {
       </section>
 
       {/* 7. CUSTOMER TESTIMONIAL HIGHLIGHT */}
-      <section style={{ padding: "100px 20px", maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
+      <section className="about-testimonial-section">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}>
           <div style={{ display: "flex", justifyContent: "center", gap: "4px", color: "#C8A165", fontSize: "20px", marginBottom: "20px" }}>
             {[...Array(5)].map((_, i) => (

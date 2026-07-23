@@ -1,174 +1,149 @@
 import React, { useState, useEffect } from "react";
-import "../styles/testimonial.css";
+import { FaStar, FaChevronLeft, FaChevronRight, FaCheckCircle } from "react-icons/fa";
 import user1 from "../assets/user1.jpg";
 import user2 from "../assets/user2.jpg";
 import user3 from "../assets/user3.jpg";
 import user4 from "../assets/user4.jpg";
 import user5 from "../assets/user5.jpg";
-import { FaInstagram } from "react-icons/fa";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import "../styles/testimonial.css";
 
 const testimonials = [
   {
     id: 1,
-    name: "Priya Sharma",
-    username: "@priya_sharma",
+    name: "Aanya Sen",
+    location: "Mumbai, India",
     image: user1,
-    review: "My skin feels healthier and more radiant than ever.",
+    rating: 5,
+    text: "Venus skincare has completely transformed my dry patches. The natural botanical extracts feel so luxury, and it absorbs incredibly fast. 10/10 recommend!",
   },
   {
     id: 2,
-    name: "Riya Patel",
-    username: "@riya_patel",
+    name: "Rohan Mehra",
+    location: "Delhi, India",
     image: user2,
-    review: "Luxury skincare that actually delivers results.",
+    rating: 5,
+    text: "The formulation is extremely lightweight and premium. My skin tone feels more balanced and glowing after just two weeks of daily use.",
   },
   {
     id: 3,
-    name: "Neel Patel",
-    username: "@patelneel1026",
+    name: "Ira Patel",
+    location: "Ahmedabad, India",
     image: user3,
-    review: "Premium quality products at an affordable price.",
+    rating: 5,
+    text: "Absolutely stunning packaging and even better performance. Feels like an expensive spa routine at home. My friends keep asking about my glow!",
   },
   {
     id: 4,
-    name: "Jevin Shah",
-    username: "@jevin_shah",
+    name: "Karan Shah",
+    location: "Bangalore, India",
     image: user4,
-    review: "The best skincare products I've used this year.",
+    rating: 5,
+    text: "Being dermatologist tested was a major selling point for my sensitive skin. Zero breakouts and beautiful moisturized skin every single morning.",
   },
   {
     id: 5,
-    name: "Ayush Mehta",
-    username: "@ayush_mehta",
+    name: "Mira Singhania",
+    location: "Kolkata, India",
     image: user5,
-    review: "My go-to brand for daily skincare essentials.",
+    rating: 5,
+    text: "Hands down the best cruelty-free skincare brand on the market. It leaves my skin feeling deeply hydrated and balanced without any greasy residue.",
   },
 ];
 
 const Testimonials = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [startIndex, setStartIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Touch swiping state variables
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-  const minSwipeDistance = 50;
+  const nextSlide = () => {
+    setStartIndex((prev) => (prev + 1) % testimonials.length);
+  };
 
   const prevSlide = () => {
-    setActiveIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    setStartIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   };
 
-  const nextSlide = () => {
-    setActiveIndex((prev) => (prev + 1) % testimonials.length);
-  };
-
-  // Autoplay loop with smooth pause-on-hover logic
+  // Auto-slide loop with pause-on-hover logic
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
       nextSlide();
-    }, 4000);
+    }, 4500);
     return () => clearInterval(interval);
   }, [isPaused]);
 
-  // Touch event callbacks
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-    if (isLeftSwipe) {
-      nextSlide();
-    } else if (isRightSwipe) {
-      prevSlide();
-    }
-  };
-
-  // Map absolute indexes of the 5 visible slides to keep calculations precise
-  const prev2Idx = (activeIndex - 2 + testimonials.length) % testimonials.length;
-  const prev1Idx = (activeIndex - 1 + testimonials.length) % testimonials.length;
-  const next1Idx = (activeIndex + 1) % testimonials.length;
-  const next2Idx = (activeIndex + 2) % testimonials.length;
-
-  const prev2 = testimonials[prev2Idx];
-  const prev1 = testimonials[prev1Idx];
-  const next1 = testimonials[next1Idx];
-  const next2 = testimonials[next2Idx];
-  const current = testimonials[activeIndex];
+  // Compute visible slides
+  const visibleSlides = [
+    testimonials[startIndex],
+    testimonials[(startIndex + 1) % testimonials.length],
+    testimonials[(startIndex + 2) % testimonials.length],
+  ];
 
   return (
     <section 
-      className="testimonial-section"
+      className="testimonials-section-lux font-outfit"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
     >
-      <h2>WHAT OUR CUSTOMERS HAVE TO SAY</h2>
-
-      <div className="testimonial-slider">
-        <button className="arrow left" onClick={prevSlide} aria-label="Previous review">
-          <FiChevronLeft className="arrow-icon" />
-        </button>
-
-        <div className="avatars">
-          {/* Every visible avatar card is clickable to transition smoothly to the center */}
-          <img 
-            src={prev2.image} 
-            alt={prev2.name} 
-            className="small fade" 
-            onClick={() => setActiveIndex(prev2Idx)}
-          />
-          <img 
-            src={prev1.image} 
-            alt={prev1.name} 
-            className="small" 
-            onClick={() => setActiveIndex(prev1Idx)}
-          />
-          <img 
-            src={current.image} 
-            alt={current.name} 
-            className="active" 
-            onClick={() => {}}
-          />
-          <img 
-            src={next1.image} 
-            alt={next1.name} 
-            className="small" 
-            onClick={() => setActiveIndex(next1Idx)}
-          />
-          <img 
-            src={next2.image} 
-            alt={next2.name} 
-            className="small fade" 
-            onClick={() => setActiveIndex(next2Idx)}
-          />
+      <div className="testimonials-lux-container">
+        
+        {/* Section Header */}
+        <div className="testimonials-header">
+          <span className="testimonials-tag">TESTIMONIALS</span>
+          <h2 className="testimonials-title font-serif">What Our Customers Have to Say</h2>
+          <p className="testimonials-subtitle">Verified feedback from real users sharing their skincare journeys.</p>
         </div>
 
-        <button className="arrow right" onClick={nextSlide} aria-label="Next review">
-          <FiChevronRight className="arrow-icon" />
-        </button>
-      </div>
+        {/* Carousel Wrapper */}
+        <div className="testimonials-slider-wrapper">
+          
+          {/* Navigation Left Arrow */}
+          <button className="slider-arrow arrow-left" onClick={prevSlide} aria-label="Previous testimonial">
+            <FaChevronLeft />
+          </button>
 
-      <div className="review-content">
-        <div className="stars">★★★★★</div>
-        <p>{current.review}</p>
-        <h4>{current.name}</h4>
-        <div className="insta-user">
-          <FaInstagram />
-          <span>{current.username}</span>
+          {/* Cards Grid */}
+          <div className="testimonials-grid-lux">
+            {visibleSlides.map((item, index) => (
+              <div 
+                key={item.id} 
+                className={`testimonial-card-lux slide-index-${index}`}
+              >
+                <div className="card-top-row">
+                  <div className="stars-lux-row">
+                    {[...Array(item.rating)].map((_, i) => (
+                      <FaStar key={i} className="star-gold" />
+                    ))}
+                  </div>
+                  <span className="verified-badge">
+                    <FaCheckCircle /> Verified Buyer
+                  </span>
+                </div>
+
+                <p className="testimonial-text font-serif">"{item.text}"</p>
+
+                <div className="testimonial-user-row">
+                  <img 
+                    src={item.image} 
+                    alt={item.name} 
+                    className="user-avatar-img"
+                    loading="lazy" 
+                  />
+                  <div className="user-meta-info">
+                    <h4>{item.name}</h4>
+                    <p>{item.location}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Navigation Right Arrow */}
+          <button className="slider-arrow arrow-right" onClick={nextSlide} aria-label="Next testimonial">
+            <FaChevronRight />
+          </button>
+
         </div>
+
       </div>
     </section>
   );

@@ -1,0 +1,277 @@
+/* ==========================================================================
+   PROMO SECTION LUXURY EDITORIAL STYLE
+   ========================================================================== */
+.promo-section-lux {
+  width: 100%;
+  max-width: 1200px;
+  margin: 80px auto;
+  padding: 0 32px;
+  box-sizing: border-box;
+}
+
+.promo-lux-container {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Left Content Column (55%) */
+.promo-lux-content {
+  flex: 0 0 55%;
+  max-width: 55%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.promo-lux-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #C8A165;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.promo-lux-heading {
+  font-size: clamp(26px, 2.8vw, 36px);
+  font-weight: 700;
+  line-height: 1.25;
+  color: #1F1F1F;
+  margin: 0 0 16px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.promo-lux-desc {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #6B7280;
+  margin: 0 0 28px 0;
+  max-width: 540px;
+}
+
+/* 3 Offer Cards */
+.promo-lux-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.promo-card-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #FFFDF9;
+  border: 1px solid #EFE8DF;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.01);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: 480px;
+  box-sizing: border-box;
+}
+
+.promo-card-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(200, 161, 101, 0.25);
+  box-shadow: 0 6px 18px rgba(200, 161, 101, 0.06);
+}
+
+.promo-card-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(200, 161, 101, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(200, 161, 101, 0.12);
+}
+
+.promo-card-icon {
+  font-size: 18px;
+  color: #C8A165;
+}
+
+.promo-card-info h4 {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1F1F1F;
+  margin: 0 0 2px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.promo-card-info p {
+  font-size: 12px;
+  color: #6B7280;
+  margin: 0;
+}
+
+/* CTA Buttons */
+.promo-lux-ctas {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.btn-promo-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #C8A165 0%, #A8844D 100%);
+  color: #FFFFFF;
+  padding: 0 32px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 30px;
+  box-shadow: 0 4px 14px rgba(200, 161, 101, 0.2);
+  transition: all 0.3s ease;
+  height: 48px;
+}
+
+.btn-promo-primary:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 20px rgba(200, 161, 101, 0.3);
+}
+
+.btn-arrow-icon {
+  font-size: 11px;
+  transition: transform 0.2s ease;
+}
+
+.btn-promo-primary:hover .btn-arrow-icon {
+  transform: translateX(3px);
+}
+
+.btn-promo-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFFFFF;
+  color: #1F1F1F;
+  border: 1px solid #ECE7DF;
+  padding: 0 32px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  height: 48px;
+}
+
+.btn-promo-secondary:hover {
+  background: #FAF9F6;
+  border-color: #C8A165;
+  color: #C8A165;
+  transform: translateY(-1px);
+}
+
+/* Right Image Column (45%) */
+.promo-lux-image-wrapper {
+  flex: 0 0 45%;
+  max-width: 45%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.promo-lux-picture {
+  display: block;
+  width: 100%;
+  max-width: 450px;
+  height: 520px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.04);
+  border: 1px solid #EFE8DF;
+}
+
+.promo-lux-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.promo-lux-picture:hover .promo-lux-img {
+  transform: scale(1.03);
+}
+
+/* ================= RESPONSIVE DESIGN BREAKPOINTS ================= */
+@media (max-width: 1024px) {
+  .promo-section-lux {
+    margin: 60px auto;
+    padding: 0 24px;
+  }
+  .promo-lux-container {
+    flex-direction: column;
+    gap: 36px;
+  }
+  .promo-lux-content {
+    flex: 0 0 100%;
+    max-width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+  .promo-lux-desc {
+    max-width: 600px;
+  }
+  .promo-lux-cards {
+    align-items: center;
+  }
+  .promo-lux-ctas {
+    justify-content: center;
+  }
+  .promo-lux-image-wrapper {
+    flex: 0 0 100%;
+    max-width: 100%;
+    width: 100%;
+    justify-content: center;
+  }
+  .promo-lux-picture {
+    max-width: 500px;
+    height: 380px;
+  }
+}
+
+@media (max-width: 768px) {
+  .promo-lux-picture {
+    height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .promo-section-lux {
+    margin: 40px auto;
+    padding: 0 16px;
+  }
+  .promo-lux-picture {
+    width: 100%;
+    height: 240px;
+    border-radius: 16px;
+  }
+  .promo-lux-ctas {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+  .btn-promo-primary, .btn-promo-secondary {
+    width: 100%;
+    height: 48px;
+  }
+}

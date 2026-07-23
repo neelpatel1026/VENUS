@@ -580,9 +580,56 @@
 }
 
 /* ================= CATEGORY PILLS ================= */
+.category-scroll-relative-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .category-scroll-relative-wrapper::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 60px;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #FFFFFF 100%);
+    pointer-events: none;
+    z-index: 5;
+  }
+}
+
+.category-scroll-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .category-scroll-wrapper {
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    gap: 10px !important;
+    padding: 8px 16px !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+  .category-scroll-wrapper::-webkit-scrollbar {
+    display: none !important;
+  }
+}
+
 .category-pill {
-  padding: 10px 24px;
-  border-radius: 30px;
+  padding: 0 24px;
+  height: 44px; /* Minimum 44px height touch target */
+  border-radius: 22px; /* Pill design */
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -592,18 +639,23 @@
   color: #1C1C1C;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  scroll-snap-align: start;
 }
 
 .category-pill:hover {
-  border-color: #C9A45C;
-  color: #C9A45C;
+  border-color: #C8A165;
+  color: #C8A165;
 }
 
 .category-pill.active {
-  background: #C9A45C; /* Premium Gold */
-  border-color: #C9A45C;
+  background: #C8A165; /* Premium Gold */
+  border-color: #C8A165;
   color: #FFFFFF;
-  box-shadow: 0 4px 14px rgba(201, 164, 92, 0.25);
+  box-shadow: 0 4px 14px rgba(200, 161, 101, 0.25);
 }
 
 /* ================= FILTER TOOLBAR ================= */
@@ -2907,15 +2959,18 @@
 @media (max-width: 1024px) {
   .product-grid,
   .featured-products-grid {
-    grid-template-columns: repeat(3, 1fr); /* 3 columns on tablet */
+    grid-template-columns: repeat(2, 1fr) !important; /* 2 columns on tablet */
     gap: 20px;
+  }
+  .luxury-add-to-cart-btn {
+    height: 44px !important; /* Ensure min 44px touch target */
   }
 }
 
 @media (max-width: 768px) {
   .product-grid,
   .featured-products-grid {
-    grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
+    grid-template-columns: repeat(2, 1fr) !important; /* 2 columns on mobile */
     gap: 16px;
     padding: 0 16px;
   }
@@ -2929,15 +2984,23 @@
     padding: 0 16px 14px 16px;
   }
   .luxury-sale-price {
-    font-size: 16px;
+    font-size: 15px !important;
+  }
+  .luxury-old-price {
+    font-size: 12px !important;
+  }
+  .luxury-savings-tag {
+    font-size: 10px !important;
+  }
+  .luxury-add-to-cart-btn {
+    height: 44px !important;
   }
 }
 
 @media (max-width: 480px) {
   .product-grid,
   .featured-products-grid {
-    /* Auto flexible columns depending on width, fallback to 1 column on extremely small phones */
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px;
     padding: 0 12px;
   }

@@ -1,42 +1,40 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-
-import hero1 from "../assets/hero1.jpg";
-import hero2 from "../assets/hero2.jpg";
-import hero3 from "../assets/hero3.jpg";
-import hero4 from "../assets/hero4.jpg";
 
 import "./../styles/heroslider.css";
 
 const slides = [
   {
-    image: hero1,
-    subtitle: "THE SKINCARE APOTHECARY",
-    title: "Reveal Your Skin's Radiance",
+    desktopImage: "/hero1_desktop.jpg",
+    mobileImage: "/hero1_mobile.jpg",
+    subtitle: "Luxury Botanical Skincare",
+    title: "Reveal Your Natural Glow",
     buttonText: "Shop Collection",
     align: "right",
   },
   {
-    image: hero2,
-    subtitle: "ELIXIR OF YOUTH",
-    title: "Timeless Plant Hydration",
-    buttonText: "Discover Luxury",
+    desktopImage: "/hero2_desktop.jpg",
+    mobileImage: "/hero2_mobile.jpg",
+    subtitle: "Vitamin C Collection",
+    title: "Brighten Every Day",
+    buttonText: "Shop Vitamin C",
     align: "left",
   },
   {
-    image: hero3,
-    subtitle: "SENSORY PERFECTION",
-    title: "Pure Botanical Rituals",
-    buttonText: "Explore Collection",
+    desktopImage: "/hero3_desktop.jpg",
+    mobileImage: "/hero3_mobile.jpg",
+    subtitle: "Hydration Collection",
+    title: "Deep Hydration",
+    buttonText: "Discover More",
     align: "right",
   },
   {
-    image: hero4,
-    subtitle: "CLEAN BEAUTY ESSENCE",
-    title: "Vegan & Active Nutrition",
-    buttonText: "Discover More",
+    desktopImage: "/hero4_desktop.jpg",
+    mobileImage: "/hero4_mobile.jpg",
+    subtitle: "Luxury Anti-Aging",
+    title: "Timeless Beauty",
+    buttonText: "Explore Collection",
     align: "left",
   },
 ];
@@ -118,12 +116,16 @@ export default function HeroSlider() {
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
           >
-            <img
-              src={slide.image}
-              alt={slide.title}
-              className="hero-slide-image"
-              loading={index === 0 ? "eager" : "lazy"}
-            />
+            <picture style={{ display: "block", width: "100%", height: "100%" }}>
+              <source media="(max-width: 768px)" srcSet={slide.mobileImage} />
+              <img
+                src={slide.desktopImage}
+                alt={slide.title}
+                className="hero-slide-image"
+                loading={index === 0 ? "eager" : "lazy"}
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              />
+            </picture>
             {/* TEXT CONTENT OVERLAY (Responsive, luxury alignment) */}
             <div className={`hero-slide-content-overlay align-${slide.align}`}>
               <span className="hero-slide-subtitle">

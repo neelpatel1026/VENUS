@@ -162,6 +162,18 @@ const cartSlice = createSlice({
         saveCartToStorage(state.cartItems);
       }
     },
+
+    setCartQty: (state, action) => {
+      const { productId, qty } = action.payload;
+      const item = state.cartItems.find((x) => x.productId === productId);
+      if (item) {
+        const targetQty = Number(qty);
+        if (targetQty > 0 && targetQty <= item.stock) {
+          item.qty = targetQty;
+          saveCartToStorage(state.cartItems);
+        }
+      }
+    },
   },
 });
 
@@ -179,6 +191,8 @@ export const {
   increaseQty,
 
   decreaseQty,
+
+  setCartQty,
 } = cartSlice.actions;
 
 /* ================= EXPORT REDUCER ================= */

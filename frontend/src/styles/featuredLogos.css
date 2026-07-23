@@ -1,0 +1,90 @@
+/* ==========================================================================
+   VENUS CARE FEATURED IN LOGOS SECTION
+   ========================================================================== */
+.featured-logos-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 0 32px;
+  box-sizing: border-box;
+}
+
+.logos-lux-container {
+  width: 100%;
+  border-top: 1px solid #EFE8DF;
+  border-bottom: 1px solid #EFE8DF;
+  padding: 36px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.logos-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #C8A165;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.logos-grid-lux {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px 48px;
+  width: 100%;
+}
+
+.logo-item-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: 800;
+  color: #9CA3AF; /* Grayscale soft gray */
+  letter-spacing: 1.5px;
+  transition: all 0.3s ease;
+}
+
+.logo-item-wrapper:hover .logo-text {
+  color: #C8A165; /* Transitions to Gold on hover */
+  transform: scale(1.05);
+}
+
+/* ================= RESPONSIVE DESIGN BREAKPOINTS ================= */
+@media (max-width: 768px) {
+  .featured-logos-section {
+    margin: 40px auto;
+    padding: 0 24px;
+  }
+  .logos-lux-container {
+    padding: 24px 0;
+    gap: 18px;
+  }
+  .logos-grid-lux {
+    gap: 16px 28px;
+  }
+  .logo-text {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .featured-logos-section {
+    padding: 0 16px;
+  }
+  .logos-grid-lux {
+    gap: 12px 20px;
+  }
+  .logo-text {
+    font-size: 13.5px;
+  }
+}

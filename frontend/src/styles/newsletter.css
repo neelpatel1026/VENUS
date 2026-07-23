@@ -1,0 +1,210 @@
+/* ==========================================================================
+   VENUS CARE NEWSLETTER SUBSCRIPTION BLOCK
+   ========================================================================== */
+.newsletter-section-lux {
+  width: 100%;
+  max-width: 1200px;
+  margin: 80px auto;
+  padding: 0 32px;
+  box-sizing: border-box;
+}
+
+.newsletter-lux-container {
+  background: linear-gradient(135deg, #FAF8F5 0%, #F5EFEB 100%); /* Luxury background gradient */
+  border: 1px solid #EFE8DF;
+  border-radius: 30px;
+  padding: 60px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Left Side: Information */
+.newsletter-lux-info {
+  flex: 0 0 55%;
+  max-width: 55%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.newsletter-lux-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #C8A165;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.newsletter-lux-title {
+  font-size: clamp(24px, 2.6vw, 32px);
+  font-weight: 700;
+  color: #1F1F1F;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.newsletter-lux-subtitle {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #6B7280;
+  margin: 0 0 24px 0;
+}
+
+/* Benefits Checklist */
+.newsletter-benefits-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+
+.benefit-item-lux {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #374151;
+  font-weight: 600;
+}
+
+.benefit-icon-lux {
+  color: #C8A165;
+  font-size: 14px;
+}
+
+/* Right Side: Form */
+.newsletter-lux-form-wrapper {
+  flex: 0 0 40%;
+  max-width: 40%;
+  width: 100%;
+}
+
+.newsletter-lux-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.newsletter-lux-input {
+  width: 100%;
+  height: 48px;
+  border-radius: 30px;
+  border: 1px solid #ECE7DF;
+  padding: 0 24px;
+  font-size: 14px;
+  color: #1F1F1F;
+  outline: none;
+  background: #FFFFFF;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.newsletter-lux-input:focus {
+  border-color: #C8A165;
+  box-shadow: 0 0 0 3px rgba(200, 161, 101, 0.1);
+}
+
+.btn-newsletter-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #1F1F1F;
+  color: #FFFFFF;
+  border: none;
+  height: 48px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-newsletter-submit:hover {
+  background: #C8A165;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 14px rgba(200, 161, 101, 0.25);
+}
+
+.btn-send-icon {
+  font-size: 11px;
+  transition: transform 0.2s ease;
+}
+
+.btn-newsletter-submit:hover .btn-send-icon {
+  transform: translate(2px, -2px);
+}
+
+/* Success Message */
+.newsletter-success-message {
+  text-align: center;
+  padding: 20px;
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+}
+
+.newsletter-success-message h3 {
+  font-size: 18px;
+  color: #10B981;
+  margin: 0 0 8px 0;
+}
+
+.newsletter-success-message p {
+  font-size: 13.5px;
+  color: #6B7280;
+  margin: 0;
+}
+
+/* ================= RESPONSIVE DESIGN BREAKPOINTS ================= */
+@media (max-width: 1024px) {
+  .newsletter-section-lux {
+    margin: 60px auto;
+    padding: 0 24px;
+  }
+  .newsletter-lux-container {
+    flex-direction: column;
+    padding: 40px 32px;
+    gap: 32px;
+  }
+  .newsletter-lux-info {
+    flex: 0 0 100%;
+    max-width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+  .newsletter-benefits-list {
+    justify-content: center;
+  }
+  .newsletter-lux-form-wrapper {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .newsletter-section-lux {
+    margin: 40px auto;
+    padding: 0 16px;
+  }
+  .newsletter-lux-container {
+    padding: 32px 20px;
+    gap: 24px;
+  }
+  .newsletter-benefits-list {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}

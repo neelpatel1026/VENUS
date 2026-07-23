@@ -67,7 +67,7 @@
 
 /* Typography elements */
 .hero-slide-subtitle {
-  font-size: 13px;
+  font-size: clamp(11px, 1.1vw, 13px);
   font-weight: 600;
   letter-spacing: 4px;
   color: #C8A165;
@@ -78,13 +78,13 @@
 
 .hero-slide-title {
   font-family: 'Cinzel', 'Didot', 'Bodoni MT', 'Times New Roman', serif;
-  font-size: 56px; /* Desktop Hero size */
+  font-size: clamp(24px, 4.2vw, 56px); /* Fluid size */
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: 2px;
   max-width: 600px;
   color: #FFFFFF;
-  margin-bottom: 24px;
+  margin-bottom: clamp(14px, 2vw, 24px); /* Fluid spacing */
   text-transform: uppercase;
 }
 
@@ -171,6 +171,7 @@
 }
 
 .indicator-dot {
+  position: relative;
   width: 9px;
   height: 9px;
   border-radius: 50%;
@@ -179,6 +180,15 @@
   padding: 0;
   cursor: pointer;
   transition: all 0.3s ease;
+}
+
+.indicator-dot::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  bottom: -10px;
+  left: -10px;
+  right: -10px;
 }
 
 .indicator-dot.active {
@@ -193,15 +203,11 @@
   .hero-slider-container {
     height: 480px; /* Tablet height proportion */
   }
-  .hero-slide-title {
-    font-size: 42px; /* Tablet Hero size */
-    max-width: 500px;
-  }
 }
 
 @media (max-width: 768px) {
   .hero-slider-container {
-    height: 380px; /* Mobile height proportion */
+    height: 420px; /* Mobile landscape / tablet portrait height */
   }
 
   .hero-slide-content-overlay {
@@ -212,24 +218,13 @@
     justify-content: center;
   }
 
-  .hero-slide-subtitle {
-    font-size: 11px;
-    letter-spacing: 3px;
-  }
-
-  .hero-slide-title {
-    font-size: 30px; /* Mobile Hero size */
-    margin-bottom: 20px;
-    max-width: 100%;
-  }
-
-  .hero-slide-btn {
-    padding: 12px 30px;
-    font-size: 13px;
-    min-height: 48px;
-  }
-
   .nav-arrow {
     display: none; /* Hide navigation arrows on touch mobiles to favor swiping */
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-slider-container {
+    height: 380px; /* Small mobile portrait height */
   }
 }

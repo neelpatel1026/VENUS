@@ -3,8 +3,12 @@ import { Link } from "react-router-dom";
 
 import HeroSlider from "../components/HeroSlider";
 import WhyVenus from "../components/WhyVenus";
-import AppPromo from "../components/AppPromo";
+import PromoSection from "../components/PromoSection";
 import Testimonials from "../components/Testimonials";
+import Gallery from "../components/Gallery";
+import FeaturedLogos from "../components/FeaturedLogos";
+import InstagramFeed from "../components/InstagramFeed";
+import Newsletter from "../components/Newsletter";
 import ProductCard from "../components/ProductCard";
 import "../styles/home.css"
 
@@ -52,22 +56,24 @@ const Home = () => {
           <span className="section-tag">CATEGORIES</span>
           <h2 style={{ fontSize: "28px", marginTop: "8px" }}>Shop By Ritual</h2>
         </div>
-        <div className="category-scroll-wrapper">
-          <Link to="/shop?category=Face%20Care" className="category-chip-item">
-            <span className="chip-icon">✨</span> Face Care
-          </Link>
-          <Link to="/shop?category=Fragrance" className="category-chip-item">
-            <span className="chip-icon">🌸</span> Fragrance
-          </Link>
-          <Link to="/shop?category=Body%20Care" className="category-chip-item">
-            <span className="chip-icon">🧴</span> Body Care
-          </Link>
-          <Link to="/shop?category=Serum" className="category-chip-item">
-            <span className="chip-icon">💧</span> Serums
-          </Link>
-          <Link to="/shop?category=Gifting" className="category-chip-item">
-            <span className="chip-icon">🎁</span> Gift Sets
-          </Link>
+        <div className="category-scroll-relative-wrapper">
+          <div className="category-scroll-wrapper">
+            <Link to="/shop?category=Face%20Care" className="category-chip-item">
+              <span className="chip-icon">✨</span> Face Care
+            </Link>
+            <Link to="/shop?category=Fragrance" className="category-chip-item">
+              <span className="chip-icon">🌸</span> Fragrance
+            </Link>
+            <Link to="/shop?category=Body%20Care" className="category-chip-item">
+              <span className="chip-icon">🧴</span> Body Care
+            </Link>
+            <Link to="/shop?category=Serum" className="category-chip-item">
+              <span className="chip-icon">💧</span> Serums
+            </Link>
+            <Link to="/shop?category=Gifting" className="category-chip-item">
+              <span className="chip-icon">🎁</span> Gift Sets
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -107,9 +113,17 @@ const Home = () => {
 
       <WhyVenus />
 
-      <AppPromo />
+      <PromoSection />
 
       <Testimonials />
+
+      <Gallery />
+
+      <FeaturedLogos />
+
+      <InstagramFeed />
+
+      <Newsletter />
     </div>
   );
 };

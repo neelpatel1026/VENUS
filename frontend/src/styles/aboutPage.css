@@ -1,0 +1,412 @@
+/* ==========================================================================
+   VENUS CARE ABOUT PAGE RESPONSIVE STYLES
+   ========================================================================== */
+.about-page-wrapper {
+  background: #FFFFFF;
+  color: #1A1A1A;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ================= 1. HERO SECTION ================= */
+.about-hero-section {
+  padding: 80px 20px 60px 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.about-hero-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 60px;
+  align-items: center;
+}
+
+.about-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 30px;
+  background: #FAF9F6;
+  border: 1px solid #ECE7DF;
+  color: #C8A165;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.about-hero-title {
+  font-size: clamp(2.5rem, 5vw, 3.8rem);
+  font-weight: 800;
+  font-family: 'Cinzel', 'Georgia', serif;
+  line-height: 1.15;
+  color: #1A1A1A;
+  margin-bottom: 24px;
+  letter-spacing: -0.5px;
+}
+
+.about-hero-desc {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #4B5563;
+  margin-bottom: 32px;
+  max-width: 540px;
+}
+
+.about-hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.about-hero-img-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.about-hero-img-box {
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+  border: 1px solid #ECE7DF;
+}
+
+.about-hero-img {
+  width: 100%;
+  height: 520px; /* Desktop luxury height */
+  object-fit: cover;
+  display: block;
+}
+
+.about-hero-floating-badge {
+  position: absolute;
+  bottom: -25px;
+  left: 20px;
+  background: #FFFFFF;
+  padding: 18px 24px;
+  borderRadius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  border: 1px solid #ECE7DF;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 280px;
+}
+
+/* ================= 2. OUR STORY SECTION ================= */
+.about-story-section {
+  padding: 100px 20px;
+  background: #FAFAFA;
+  border-top: 1px solid #F3F4F6;
+  border-bottom: 1px solid #F3F4F6;
+  box-sizing: border-box;
+}
+
+.about-story-header {
+  text-align: center;
+  margin-bottom: 70px;
+}
+
+.about-story-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 60px;
+  align-items: center;
+}
+
+.about-story-img {
+  width: 100%;
+  height: 400px; /* Desktop height */
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+}
+
+/* ================= 3. FEATURE CARDS SECTION ================= */
+.about-features-section {
+  padding: 100px 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.about-features-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.about-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.about-feature-card {
+  background: #FFFFFF;
+  padding: 32px 28px;
+  border-radius: 20px;
+  border: 1px solid #ECE7DF;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.02);
+  transition: box-shadow 0.3s, border-color 0.3s;
+}
+
+/* ================= 4. MISSION & VISION SECTION ================= */
+.about-mission-section {
+  padding: 80px 20px;
+  background: #FAFAFA;
+  border-top: 1px solid #F3F4F6;
+  border-bottom: 1px solid #F3F4F6;
+  box-sizing: border-box;
+}
+
+.about-mission-grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+}
+
+.about-mission-card {
+  background: #FFFFFF;
+  padding: 48px 40px;
+  border-radius: 24px;
+  border: 1px solid #ECE7DF;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.03);
+}
+
+/* ================= 5. STATS SECTION ================= */
+.about-stats-section {
+  padding: 90px 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.about-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 30px;
+  text-align: center;
+}
+
+.about-stat-card {
+  padding: 30px 20px;
+  background: #FAF9F6;
+  border-radius: 20px;
+  border: 1px solid #ECE7DF;
+}
+
+/* ================= 6. BOTANICAL PROCESS TIMELINE ================= */
+.about-process-section {
+  padding: 100px 20px;
+  background: #FAFAFA;
+  border-top: 1px solid #F3F4F6;
+  border-bottom: 1px solid #F3F4F6;
+  box-sizing: border-box;
+}
+
+.about-process-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.about-process-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.about-process-card {
+  background: #FFFFFF;
+  padding: 30px 24px;
+  border-radius: 20px;
+  border: 1px solid #ECE7DF;
+  position: relative;
+}
+
+/* ================= 7. TESTIMONIAL HIGHLIGHT SECTION ================= */
+.about-testimonial-section {
+  padding: 100px 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN BREAKPOINTS (TABLET & MOBILE OPTIMIZATIONS)
+   ========================================================================== */
+
+/* TABLET BREAKPOINT (max-width: 1024px) - Spacing reduced by 30% */
+@media (max-width: 1024px) {
+  .about-hero-section {
+    padding: 56px 20px 42px 20px;
+  }
+  .about-hero-grid {
+    gap: 40px;
+  }
+  .about-hero-img {
+    height: 380px; /* Reduced fixed height */
+  }
+  .about-story-section {
+    padding: 70px 20px;
+  }
+  .about-story-header {
+    margin-bottom: 50px;
+  }
+  .about-story-grid {
+    gap: 40px;
+  }
+  .about-story-img {
+    height: 300px; /* Reduced fixed height */
+  }
+  .about-features-section {
+    padding: 70px 20px;
+  }
+  .about-features-header {
+    margin-bottom: 42px;
+  }
+  .about-mission-section {
+    padding: 56px 20px;
+  }
+  .about-mission-card {
+    padding: 36px 30px;
+  }
+  .about-stats-section {
+    padding: 64px 20px;
+  }
+  .about-stats-grid {
+    gap: 20px;
+  }
+  .about-process-section {
+    padding: 70px 20px;
+  }
+  .about-process-header {
+    margin-bottom: 42px;
+  }
+  .about-testimonial-section {
+    padding: 70px 20px;
+  }
+}
+
+/* MOBILE BREAKPOINT (max-width: 768px) - Spacing reduced by 50% & Content Stacked */
+@media (max-width: 768px) {
+  .about-hero-section {
+    padding: 40px 16px 30px 16px;
+  }
+  .about-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .about-hero-badge {
+    margin-bottom: 12px;
+  }
+  .about-hero-title {
+    margin-bottom: 16px;
+  }
+  .about-hero-desc {
+    margin-bottom: 24px;
+    font-size: 1rem;
+  }
+  .about-hero-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .about-hero-buttons a {
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  .about-hero-img {
+    height: 280px; /* Mobile scaled height */
+    border-radius: 16px;
+  }
+  .about-hero-floating-badge {
+    bottom: -15px;
+    left: 10px;
+    padding: 12px 18px;
+    max-width: 240px;
+  }
+  
+  .about-story-section {
+    padding: 48px 16px;
+  }
+  .about-story-header {
+    margin-bottom: 30px;
+  }
+  .about-story-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px;
+  }
+  .about-story-img {
+    height: 240px; /* Mobile height */
+    border-radius: 16px;
+  }
+  
+  .about-features-section {
+    padding: 48px 16px;
+  }
+  .about-features-header {
+    margin-bottom: 30px;
+  }
+  .about-features-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+  .about-feature-card {
+    padding: 24px 20px;
+  }
+  
+  .about-mission-section {
+    padding: 40px 16px;
+  }
+  .about-mission-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+  }
+  .about-mission-card {
+    padding: 28px 24px;
+    border-radius: 16px;
+  }
+  
+  .about-stats-section {
+    padding: 40px 16px;
+  }
+  .about-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important; /* Keep 2-column stats layout */
+    gap: 12px;
+  }
+  .about-stat-card {
+    padding: 20px 12px;
+    border-radius: 16px;
+  }
+  
+  .about-process-section {
+    padding: 48px 16px;
+  }
+  .about-process-header {
+    margin-bottom: 30px;
+  }
+  .about-process-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+  .about-process-card {
+    padding: 20px 18px;
+    border-radius: 16px;
+  }
+  
+  .about-testimonial-section {
+    padding: 48px 16px;
+  }
+  .about-testimonial-section blockquote {
+    font-size: 1.15rem !important;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+}
