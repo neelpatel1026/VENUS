@@ -17,7 +17,7 @@ const getCookieOptions = () => {
   const options = {
     httpOnly: true,
     secure: process.env.COOKIE_SECURE === "true" || (process.env.COOKIE_SECURE === undefined && isProd),
-    sameSite: process.env.COOKIE_SAME_SITE || (isProd ? "strict" : "lax"),
+    sameSite: process.env.COOKIE_SAME_SITE || (isProd ? "none" : "lax"),
     maxAge: parseInt(process.env.COOKIE_MAX_AGE || String(15 * 24 * 60 * 60 * 1000)),
     path: process.env.COOKIE_PATH || "/",
   };

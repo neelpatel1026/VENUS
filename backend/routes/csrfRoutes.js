@@ -8,8 +8,8 @@ router.get("/token", (req, res) => {
 
   const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production" || process.env.COOKIE_SECURE === "true",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     path: "/",
     maxAge: 3600000 * 8, // 8 hours
   };
