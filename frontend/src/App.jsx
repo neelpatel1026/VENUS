@@ -6,6 +6,8 @@ import toast from "react-hot-toast";
 
 // 1. Axios global configurations and request/response interceptors
 axios.defaults.withCredentials = true;
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || "";
+
 axios.interceptors.request.use(
   async (config) => {
     const method = (config.method || "get").toLowerCase();
@@ -49,14 +51,23 @@ axios.interceptors.response.use(
 // 2. Native fetch global monkeypatch for non-Axios operations
 const originalFetch = window.fetch;
 window.fetch = async function (url, options = {}) {
+  let targetUrl = url;
+  const baseUrl = import.meta.env.VITE_API_URL || "";
+  
+  if (typeof url === "string" && url.startsWith("/api/")) {
+    targetUrl = `${baseUrl}${url}`;
+  } else if (url instanceof URL && url.pathname.startsWith("/api/")) {
+    targetUrl = new URL(url.pathname + url.search, baseUrl);
+  }
+  
   const method = (options.method || "GET").toUpperCase();
   const isStateChanging = ["POST", "PUT", "DELETE", "PATCH"].includes(method);
   
-  if (isStateChanging && url.toString().startsWith("/api/")) {
+  if (isStateChanging && targetUrl.toString().includes("/api/")) {
     let csrfToken = window._csrfToken;
     if (!csrfToken) {
       try {
-        const res = await originalFetch("/api/csrf/token");
+        const res = await originalFetch(baseUrl + "/api/csrf/token");
         if (res.ok && res.headers.get("content-type")?.includes("application/json")) {
           const data = await res.json();
           csrfToken = data.csrfToken;
@@ -73,7 +84,7 @@ window.fetch = async function (url, options = {}) {
       };
     }
   }
-  const response = await originalFetch(url, options);
+  const response = await originalFetch(targetUrl, options);
   if (response.status === 429) {
     toast.error("Too many requests. Please slow down and try again.", {
       id: "rate-limit-toast",
