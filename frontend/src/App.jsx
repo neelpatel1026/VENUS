@@ -60,6 +60,10 @@ window.fetch = async function (url, options = {}) {
     targetUrl = new URL(url.pathname + url.search, baseUrl);
   }
   
+  if (targetUrl.toString().includes("/api/")) {
+    options.credentials = "include";
+  }
+  
   const method = (options.method || "GET").toUpperCase();
   const isStateChanging = ["POST", "PUT", "DELETE", "PATCH"].includes(method);
   
@@ -67,7 +71,7 @@ window.fetch = async function (url, options = {}) {
     let csrfToken = window._csrfToken;
     if (!csrfToken) {
       try {
-        const res = await originalFetch(baseUrl + "/api/csrf/token");
+        const res = await originalFetch(baseUrl + "/api/csrf/token", { credentials: "include" });
         if (res.ok && res.headers.get("content-type")?.includes("application/json")) {
           const data = await res.json();
           csrfToken = data.csrfToken;
