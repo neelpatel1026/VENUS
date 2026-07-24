@@ -375,38 +375,58 @@
   }
   
   .about-stats-section {
-    padding: 40px 16px;
+    padding: 32px 16px !important;
   }
   .about-stats-grid {
-    grid-template-columns: repeat(2, 1fr) !important; /* Keep 2-column stats layout */
-    gap: 12px;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
   }
   .about-stat-card {
-    padding: 20px 12px;
-    border-radius: 16px;
+    padding: 24px 16px !important;
+    border-radius: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    min-height: 140px !important;
+    box-sizing: border-box !important;
+  }
+  .about-stat-card > div:first-child {
+    font-size: 38px !important;
+    font-weight: 700 !important;
+    line-height: 1.1 !important;
+    margin-bottom: 8px !important;
+    font-family: 'Cinzel', serif !important;
+  }
+  .about-stat-card > div:last-child {
+    font-size: 15px !important;
+    line-height: 1.4 !important;
+    font-weight: 500 !important;
+    color: #4B5563 !important;
   }
   
   .about-process-section {
-    padding: 48px 16px;
+    padding: 40px 16px !important;
   }
   .about-process-header {
-    margin-bottom: 30px;
+    margin-bottom: 30px !important;
   }
   .about-process-grid {
     grid-template-columns: 1fr !important;
-    gap: 14px;
+    gap: 14px !important;
   }
   .about-process-card {
-    padding: 20px 18px;
-    border-radius: 16px;
+    padding: 20px 18px !important;
+    border-radius: 16px !important;
   }
   
   .about-testimonial-section {
-    padding: 48px 16px;
+    padding: 40px 16px !important;
   }
   .about-testimonial-section blockquote {
     font-size: 1.15rem !important;
-    line-height: 1.6;
-    margin-bottom: 20px;
+    line-height: 1.6 !important;
+    margin-bottom: 20px !important;
   }
 }
