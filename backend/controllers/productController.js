@@ -10,7 +10,8 @@ const fs = require('fs');
 const getProducts = async (req, res) => {
   try {
     const products = await Product.find({})
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     res.status(200).json(products);
 

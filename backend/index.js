@@ -5,6 +5,7 @@ const helmet = require("helmet");
 const globalLimiter = require("./middleware/globalLimiter.js");
 const connectDB = require("./config/db.js");
 const path = require("path");
+const compression = require("compression");
 
 dotenv.config();
 
@@ -55,6 +56,8 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "X-Requested-With", "x-csrf-bypass"]
   })
 );
+
+app.use(compression());
 
 
 

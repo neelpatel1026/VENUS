@@ -51,7 +51,8 @@ const ProductCard = ({ product }) => {
       : 0;
 
   const rawImage = product.imageUrl || product.image || "/cosmetic_1.avif";
-  const optimizedImage = getOptimizedImageUrl(rawImage, 600);
+  const image300 = getOptimizedImageUrl(rawImage, 300);
+  const image600 = getOptimizedImageUrl(rawImage, 600);
 
   const savingsAmount = product.originalPrice - product.price;
 
@@ -67,7 +68,7 @@ const ProductCard = ({ product }) => {
             -{discount}%
           </span>
         )}
-
+ 
         {/* Wishlist Toggle Action */}
         <button 
           type="button"
@@ -81,11 +82,13 @@ const ProductCard = ({ product }) => {
             <FaRegHeart className="wishlist-icon outline" style={{ color: "#1F1F1F" }} />
           )}
         </button>
-
+ 
         {/* Link wraps image for navigation */}
         <Link to={`/product/${product._id}`} className="product-image-click-block">
           <img
-            src={optimizedImage}
+            src={image600}
+            srcSet={`${image300} 300w, ${image600} 600w`}
+            sizes="(max-width: 768px) 300px, 600px"
             alt={product.name}
             className="product-image-img-luxury"
             loading="lazy"
