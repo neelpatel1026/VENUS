@@ -20,6 +20,7 @@ const Register = () => {
   
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [accepted, setAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [nameError, setNameError] = useState("");
@@ -346,24 +347,29 @@ const Register = () => {
             )}
 
             {/* TERMS & PRIVACY */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "26px" }}>
-              <label className="auth-checkbox-label" style={{ fontSize: "13px" }}>
+            <div style={{ marginBottom: "26px" }}>
+              <label className="auth-checkbox-label" style={{ fontSize: "13px", display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
                 <input
                   type="checkbox"
                   className="auth-checkbox"
-                  checked={termsAccepted}
-                  onChange={(e) => setTermsAccepted(e.target.checked)}
+                  checked={accepted}
+                  onChange={(e) => {
+                    const val = e.target.checked;
+                    setAccepted(val);
+                    setTermsAccepted(val);
+                    setPrivacyAccepted(val);
+                  }}
                 />
-                I agree to the <Link to="/terms" target="_blank" className="auth-link">Terms & Conditions</Link>
-              </label>
-              <label className="auth-checkbox-label" style={{ fontSize: "13px" }}>
-                <input
-                  type="checkbox"
-                  className="auth-checkbox"
-                  checked={privacyAccepted}
-                  onChange={(e) => setPrivacyAccepted(e.target.checked)}
-                />
-                I agree to the <Link to="/privacy-policy" target="_blank" className="auth-link">Privacy Policy</Link>
+                <span style={{ userSelect: "none" }}>
+                  I agree to the{" "}
+                  <Link to="/terms" target="_blank" className="auth-link" onClick={(e) => e.stopPropagation()}>
+                    Terms & Conditions
+                  </Link>{" "}
+                  and{" "}
+                  <Link to="/privacy-policy" target="_blank" className="auth-link" onClick={(e) => e.stopPropagation()}>
+                    Privacy Policy
+                  </Link>.
+                </span>
               </label>
             </div>
 

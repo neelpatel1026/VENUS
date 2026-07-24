@@ -153,14 +153,17 @@ const Login = () => {
           window.googleGsiInitialized = true;
         }
 
-        const container = document.getElementById("google-signin-btn-container");
-        if (container) {
-          window.google.accounts.id.renderButton(container, {
-            theme: "outline",
-            size: "large",
-            width: 380,
-          });
-        }
+        setTimeout(() => {
+          const container = document.getElementById("google-signin-btn-container");
+          if (container) {
+            const parentWidth = Math.max(200, Math.min(container.offsetWidth || 340, 400));
+            window.google.accounts.id.renderButton(container, {
+              theme: "outline",
+              size: "large",
+              width: parentWidth,
+            });
+          }
+        }, 100);
       }
     };
 
