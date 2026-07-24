@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const { hashCsrfToken } = require("../utils/csrfToken");
 
 const parseCookies = (cookieHeader) => {
@@ -31,7 +32,22 @@ const csrfProtection = (req, res, next) => {
     return next();
   }
 
-  // 2. Parse Cookies and retrieve token headers
+  // 3. Exclude Bearer token authenticated requests (immune to CSRF by design)
+  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+    const token = req.headers.authorization.split(" ")[1];
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (decoded) {
+          return next();
+        }
+      } catch (err) {
+        // Fall back to cookie checks on invalid token
+      }
+    }
+  }
+
+  // 4. Parse Cookies and retrieve token headers
   const cookies = parseCookies(req.headers.cookie);
   const cookieHash = cookies["_csrf_hash"];
   const headerToken = req.headers["x-csrf-token"];
