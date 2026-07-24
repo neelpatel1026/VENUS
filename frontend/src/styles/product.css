@@ -2970,19 +2970,41 @@
 @media (max-width: 768px) {
   .product-grid,
   .featured-products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)) !important;
-    gap: 20px;
-    padding: 0 20px;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+    padding: 0 10px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  /* Expand main page containers to fill the screen with 94-96% width on mobile */
+  .shop-page-wrapper > div,
+  .shop-page-wrapper,
+  .featured-products-section,
+  .featured-products-section > div,
+  .best-sellers-section,
+  .best-sellers-section > div,
+  .home-category-section,
+  .home-category-section > div {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    max-width: 100% !important;
+    width: 100% !important;
   }
   .product-card-luxury {
     border-radius: 18px;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
+    width: 100% !important;
+    border: 1px solid #FAF9F6;
   }
   .product-image-container-luxury {
     padding-top: 95%;
   }
+  .product-image-img-luxury {
+    max-width: 80%; /* Image occupies 75-80% of card width */
+    max-height: 80%;
+  }
   .product-details-content-luxury {
-    padding: 18px 18px 10px 18px;
+    padding: 16px 12px 10px 12px;
     gap: 6px;
   }
   .luxury-category-label {
@@ -2990,11 +3012,12 @@
     margin-bottom: 4px;
   }
   .luxury-product-title {
-    font-size: 15px;
+    font-size: 14.5px;
     margin-bottom: 8px;
+    line-height: 1.4;
   }
   .luxury-card-rating-block {
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
   .luxury-card-prices-block {
     gap: 8px;
@@ -3010,7 +3033,7 @@
     font-size: 11px !important;
   }
   .product-action-footer-luxury {
-    padding: 0 18px 18px 18px;
+    padding: 0 12px 16px 12px;
   }
   .luxury-add-to-cart-btn {
     height: 48px !important;
@@ -3019,38 +3042,20 @@
   }
 }
 
-@media (max-width: 480px) {
+/* Specific overrides for small screen devices below 390px */
+@media (max-width: 389px) {
   .product-grid,
   .featured-products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
-    gap: 16px;
-    padding: 0 16px;
-  }
-  .product-card-luxury {
-    border-radius: 16px;
+    grid-template-columns: 1fr !important; /* Switch to 1 card per row */
+    gap: 20px !important;
+    padding: 0 10px !important;
   }
   .product-image-container-luxury {
     padding-top: 100%;
   }
-  .product-details-content-luxury {
-    padding: 16px 16px 8px 16px;
-  }
-  .luxury-category-label {
-    font-size: 10px;
-  }
-  .luxury-product-title {
-    font-size: 14px;
-    margin-bottom: 6px;
-  }
-  .luxury-sale-price {
-    font-size: 17px !important;
-  }
-  .product-action-footer-luxury {
-    padding: 0 16px 16px 16px;
-  }
-  .luxury-add-to-cart-btn {
-    height: 48px !important;
-    font-size: 13px !important;
+  .product-image-img-luxury {
+    max-width: 75%;
+    max-height: 75%;
   }
   .reviews-total-tag {
     display: none;
