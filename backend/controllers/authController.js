@@ -13,7 +13,7 @@ const generateToken = (id) => {
 };
 
 const getCookieOptions = () => {
-  const isProd = process.env.NODE_ENV === "production";
+  const isProd = process.env.NODE_ENV === "production" || process.env.RENDER === "true";
   const options = {
     httpOnly: true,
     secure: process.env.COOKIE_SECURE === "true" || (process.env.COOKIE_SECURE === undefined && isProd),
