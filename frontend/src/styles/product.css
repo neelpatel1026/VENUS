@@ -2970,44 +2970,89 @@
 @media (max-width: 768px) {
   .product-grid,
   .featured-products-grid {
-    grid-template-columns: repeat(2, 1fr) !important; /* 2 columns on mobile */
-    gap: 16px;
-    padding: 0 16px;
+    grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)) !important;
+    gap: 20px;
+    padding: 0 20px;
   }
   .product-card-luxury {
-    border-radius: 16px;
+    border-radius: 18px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
+  }
+  .product-image-container-luxury {
+    padding-top: 95%;
   }
   .product-details-content-luxury {
-    padding: 14px 16px;
+    padding: 18px 18px 10px 18px;
+    gap: 6px;
   }
-  .product-action-footer-luxury {
-    padding: 0 16px 14px 16px;
+  .luxury-category-label {
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+  .luxury-product-title {
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+  .luxury-card-rating-block {
+    margin-bottom: 12px;
+  }
+  .luxury-card-prices-block {
+    gap: 8px;
+    margin-bottom: 8px;
   }
   .luxury-sale-price {
-    font-size: 15px !important;
+    font-size: 18px !important;
   }
   .luxury-old-price {
-    font-size: 12px !important;
+    font-size: 13px !important;
   }
   .luxury-savings-tag {
-    font-size: 10px !important;
+    font-size: 11px !important;
+  }
+  .product-action-footer-luxury {
+    padding: 0 18px 18px 18px;
   }
   .luxury-add-to-cart-btn {
-    height: 44px !important;
+    height: 48px !important;
+    font-size: 13px !important;
+    border-radius: 24px;
   }
 }
 
 @media (max-width: 480px) {
   .product-grid,
   .featured-products-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px;
-    padding: 0 12px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+    gap: 16px;
+    padding: 0 16px;
+  }
+  .product-card-luxury {
+    border-radius: 16px;
+  }
+  .product-image-container-luxury {
+    padding-top: 100%;
+  }
+  .product-details-content-luxury {
+    padding: 16px 16px 8px 16px;
+  }
+  .luxury-category-label {
+    font-size: 10px;
   }
   .luxury-product-title {
-    font-size: 13px;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .luxury-sale-price {
+    font-size: 17px !important;
+  }
+  .product-action-footer-luxury {
+    padding: 0 16px 16px 16px;
+  }
+  .luxury-add-to-cart-btn {
+    height: 48px !important;
+    font-size: 13px !important;
   }
   .reviews-total-tag {
-    display: none; /* Hide long reviews count tag on small device */
+    display: none;
   }
 }
