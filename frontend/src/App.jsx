@@ -105,16 +105,16 @@ import ErrorBoundary from "./components/ErrorBoundary.jsx";
 
 /* PAGES */
 
-import Home from "./pages/Home.jsx";
-import Shop from "./pages/Shop.jsx";
-import ProductDetail from "./pages/ProductDetail.jsx";
-import Gifting from "./pages/Gifting.jsx";
-import Cart from "./pages/Cart.jsx";
-import Checkout from "./pages/Checkout.jsx";
-import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
-import Profile from "./pages/Profile.jsx";
-import OrderSuccess from "./pages/OrderSuccess.jsx";
+const Home = React.lazy(() => import("./pages/Home.jsx"));
+const Shop = React.lazy(() => import("./pages/Shop.jsx"));
+const ProductDetail = React.lazy(() => import("./pages/ProductDetail.jsx"));
+const Gifting = React.lazy(() => import("./pages/Gifting.jsx"));
+const Cart = React.lazy(() => import("./pages/Cart.jsx"));
+const Checkout = React.lazy(() => import("./pages/Checkout.jsx"));
+const Login = React.lazy(() => import("./pages/Login.jsx"));
+const Register = React.lazy(() => import("./pages/Register.jsx"));
+const Profile = React.lazy(() => import("./pages/Profile.jsx"));
+const OrderSuccess = React.lazy(() => import("./pages/OrderSuccess.jsx"));
 const About = React.lazy(() => import("./pages/About.jsx"));
 const Disclaimer = React.lazy(() => import("./pages/Disclaimer.jsx"));
 const ReturnPolicy = React.lazy(() => import("./pages/ReturnPolicy.jsx"));
