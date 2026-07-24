@@ -2972,21 +2972,22 @@
   .featured-products-grid {
     grid-template-columns: repeat(2, 1fr) !important; /* Always 2 columns on mobile */
     gap: 10px !important;
-    padding: 0 10px !important;
+    padding: 0 8px !important;
     max-width: 100% !important;
     width: 100% !important;
   }
-  /* Expand main page containers to fill the screen with 94-96% width on mobile */
+  /* Expand main page containers to fill the screen with 95% width on mobile */
   .shop-page-wrapper > div,
   .shop-page-wrapper,
+  .featured-section,
   .featured-products-section,
   .featured-products-section > div,
   .best-sellers-section,
   .best-sellers-section > div,
   .home-category-section,
   .home-category-section > div {
-    padding-left: 10px !important;
-    padding-right: 10px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
     max-width: 100% !important;
     width: 100% !important;
   }
@@ -3000,8 +3001,8 @@
     padding-top: 85%; /* Compact aspect ratio */
   }
   .product-image-img-luxury {
-    max-width: 70%; /* Image occupies 65-70% of card width */
-    max-height: 70%;
+    max-width: 78%; /* Image occupies 75-80% of card width */
+    max-height: 78%;
   }
   .product-details-content-luxury {
     padding: 12px 10px 6px 10px; /* Reduced padding */
@@ -3037,9 +3038,9 @@
     padding: 0 10px 12px 10px; /* Reduced padding */
   }
   .luxury-add-to-cart-btn {
-    height: 42px !important; /* Bella Vita compact button height */
+    height: 44px !important; /* Premium touch target height */
     font-size: 12px !important;
-    border-radius: 21px;
+    border-radius: 22px;
   }
   .reviews-total-tag {
     display: none; /* Hide reviews count to fit mobile width */
