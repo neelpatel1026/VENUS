@@ -2,6 +2,7 @@ import { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 import AdminSidebar from "./AdminSidebar";
 
 const EditProduct = () => {
@@ -113,24 +114,19 @@ const EditProduct = () => {
         data.append('image', image);
       }
 
-      const res = await fetch(`/api/products/${id}`, {
-        method: 'PUT',
+      const res = await axios.put(`/api/products/${id}`, data, {
         headers: {
-          Authorization: `Bearer ${user.token}`
-        },
-        body: data
+          Authorization: `Bearer ${user.token}`,
+          'Content-Type': 'multipart/form-data'
+        }
       });
 
-      if (res.ok) {
-        toast.success('Product updated successfully!');
-        navigate('/admin/products');
-      } else {
-        const errData = await res.json();
-        toast.error(errData.message || 'Failed to update product');
-      }
+      toast.success('Product updated successfully!');
+      navigate('/admin/products');
     } catch (error) {
       console.error(error);
-      toast.error('Failed to update product');
+      const errMsg = error.response?.data?.message || 'Failed to update product';
+      toast.error(errMsg);
     } finally {
       setLoading(false);
     }

@@ -2,6 +2,7 @@ import { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 import AdminSidebar from "./AdminSidebar";
 
 const AddProduct = () => {
@@ -85,25 +86,19 @@ const AddProduct = () => {
     data.append('giftPrice', formData.giftPrice || 0);
 
     try {
-      const res = await fetch('/api/products', {
-        method: 'POST',
+      const res = await axios.post('/api/products', data, {
         headers: {
-          Authorization: `Bearer ${user.token}`
-        },
-        body: data
+          Authorization: `Bearer ${user.token}`,
+          'Content-Type': 'multipart/form-data'
+        }
       });
 
-      const responseData = await res.json();
-
-      if (res.ok) {
-        toast.success('Product created successfully!');
-        navigate('/admin/products');
-      } else {
-        toast.error(responseData.message || 'Error creating product');
-      }
+      toast.success('Product created successfully!');
+      navigate('/admin/products');
     } catch (error) {
       console.error(error);
-      toast.error('Failed to create product');
+      const errMsg = error.response?.data?.message || 'Failed to create product';
+      toast.error(errMsg);
     } finally {
       setLoading(false);
     }
