@@ -48,14 +48,24 @@ const Shop = () => {
   };
 
   // Get dynamic categories list from current database products
-  const categories = ['All', ...new Set(products.map(p => p.category).filter(Boolean))];
+  const categoriesMap = new Map();
+  products.forEach(p => {
+    if (p.category) {
+      const key = p.category.trim().toLowerCase();
+      if (!categoriesMap.has(key)) {
+        categoriesMap.set(key, p.category.trim());
+      }
+    }
+  });
+  const categories = ['All', ...categoriesMap.values()];
 
   // Filter & Sort Logic
   const filteredProducts = products
     .filter(p => {
       const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             (p.category && p.category.toLowerCase().includes(searchQuery.toLowerCase()));
-      const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
+      const matchesCategory = selectedCategory === 'All' || 
+                              (p.category && p.category.trim().toLowerCase() === selectedCategory.trim().toLowerCase());
 
       let matchesPrice = true;
       if (priceRange === 'under-500') matchesPrice = p.price < 500;

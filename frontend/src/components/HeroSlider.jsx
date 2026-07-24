@@ -123,6 +123,8 @@ export default function HeroSlider() {
                 alt={slide.title}
                 className="hero-slide-image"
                 loading={index === 0 ? "eager" : "lazy"}
+                fetchPriority={index === 0 ? "high" : "low"}
+                decoding={index === 0 ? "sync" : "async"}
                 style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
               />
             </picture>
@@ -134,11 +136,6 @@ export default function HeroSlider() {
               <h2 className="hero-slide-title">
                 {slide.title}
               </h2>
-              <div style={{ marginTop: "14px" }}>
-                <Link to="/shop" className="hero-slide-btn">
-                  {slide.buttonText}
-                </Link>
-              </div>
             </div>
           </div>
         );

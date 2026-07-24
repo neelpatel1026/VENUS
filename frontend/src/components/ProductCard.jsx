@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/cartSlice";
 import toast from "react-hot-toast";
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { getOptimizedImageUrl } from "../utils/imageHelper.js";
 import { FaHeart, FaRegHeart, FaStar, FaEye } from "react-icons/fa";
@@ -89,6 +89,7 @@ const ProductCard = ({ product }) => {
             alt={product.name}
             className="product-image-img-luxury"
             loading="lazy"
+            decoding="async"
             onError={(e) => {
               e.target.src = "/cosmetic_1.avif";
             }}
@@ -189,4 +190,4 @@ const ProductCard = ({ product }) => {
   );
 };
 
-export default ProductCard;
+export default React.memo(ProductCard);
