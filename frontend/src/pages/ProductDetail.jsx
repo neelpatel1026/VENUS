@@ -82,8 +82,14 @@ const ProductDetail = () => {
         if (!res.ok) {
           throw new Error("Failed to fetch product");
         }
-        const data = await res.json();
         setProduct(data);
+        try {
+          const viewed = JSON.parse(localStorage.getItem("venus_recently_viewed") || "[]");
+          const updated = [data, ...viewed.filter((p) => p._id !== data._id)].slice(0, 4);
+          localStorage.setItem("venus_recently_viewed", JSON.stringify(updated));
+        } catch (e) {
+          console.error("Failed to save recently viewed product", e);
+        }
       } catch (err) {
         console.error(err);
         setError("Failed to load product");

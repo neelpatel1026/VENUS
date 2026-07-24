@@ -3,7 +3,8 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { useSelector, useDispatch } from "react-redux";
 import { HiMenu, HiX } from "react-icons/hi";
-import { FiSearch, FiShoppingBag, FiUser, FiLayers, FiLogOut, FiMapPin } from "react-icons/fi";
+import { FiSearch, FiShoppingBag, FiUser, FiLayers, FiLogOut, FiMapPin, FiX, FiTrash2, FiTrendingUp } from "react-icons/fi";
+import { FaStar } from "react-icons/fa";
 import { clearCart } from "../redux/cartSlice";
 import "../styles/navbar.css";
 import toast from "react-hot-toast";
@@ -30,6 +31,57 @@ const Navbar = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSearchOverlay, setShowSearchOverlay] = useState(false);
   const searchInputRef = useRef(null);
+
+  const [recentSearches, setRecentSearches] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("venus_recent_searches") || "[]");
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const [recentlyViewed, setRecentlyViewed] = useState([]);
+
+  useEffect(() => {
+    if (showSearchOverlay) {
+      try {
+        const viewed = JSON.parse(localStorage.getItem("venus_recently_viewed") || "[]");
+        setRecentlyViewed(viewed);
+      } catch (e) {
+        setRecentlyViewed([]);
+      }
+      try {
+        const searches = JSON.parse(localStorage.getItem("venus_recent_searches") || "[]");
+        setRecentSearches(searches);
+      } catch (e) {
+        setRecentSearches([]);
+      }
+    }
+  }, [showSearchOverlay]);
+
+  const popularCategories = ["Face Wash", "Serums", "Moisturizers", "Sunscreen", "Perfume", "Hair Care", "Gift Sets", "Lipstick"];
+  const trendingSearches = ["Vitamin C Face Wash", "Niacinamide Serum", "Sunscreen", "Lipstick", "Hair Care"];
+
+  const handleSearchTermClick = (term) => {
+    setSearchQuery(term);
+    const updated = [term, ...recentSearches.filter((s) => s !== term)].slice(0, 5);
+    setRecentSearches(updated);
+    localStorage.setItem("venus_recent_searches", JSON.stringify(updated));
+    setShowSearchOverlay(false);
+    navigate(`/shop?search=${encodeURIComponent(term)}`);
+  };
+
+  const removeRecentSearch = (e, term) => {
+    e.stopPropagation();
+    const updated = recentSearches.filter((s) => s !== term);
+    setRecentSearches(updated);
+    localStorage.setItem("venus_recent_searches", JSON.stringify(updated));
+  };
+
+  const clearAllRecentSearches = () => {
+    setRecentSearches([]);
+    localStorage.removeItem("venus_recent_searches");
+  };
 
   // Cart animation trigger
   const [cartBounce, setCartBounce] = useState(false);
@@ -78,11 +130,13 @@ const Navbar = () => {
     fetchSearchData();
   }, []);
 
-  // Update instant search suggestions dynamically
+  // Update instant search suggestions dynamically (debounced by 300ms)
   useEffect(() => {
     if (searchQuery.trim() === "") {
       setSuggestions([]);
-    } else {
+      return;
+    }
+    const delayDebounce = setTimeout(() => {
       const query = searchQuery.toLowerCase();
       const filtered = allProducts.filter(
         (p) =>
@@ -91,7 +145,9 @@ const Navbar = () => {
           p.description?.toLowerCase().includes(query)
       );
       setSuggestions(filtered.slice(0, 5)); // Limit to top 5 suggestions
-    }
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
   }, [searchQuery, allProducts]);
 
   // Close dropdown on click outside
@@ -144,7 +200,11 @@ const Navbar = () => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/shop?search=${encodeURIComponent(searchQuery)}`);
+      const term = searchQuery.trim();
+      const updated = [term, ...recentSearches.filter((s) => s !== term)].slice(0, 5);
+      setRecentSearches(updated);
+      localStorage.setItem("venus_recent_searches", JSON.stringify(updated));
+      navigate(`/shop?search=${encodeURIComponent(term)}`);
       setSearchQuery("");
       setShowSearchOverlay(false);
     }
@@ -373,20 +433,20 @@ const Navbar = () => {
       {showSearchOverlay && (
         <div className="mobile-search-overlay-container">
           <div className="search-overlay-header">
-            <form onSubmit={handleSearchSubmit} style={{ flex: 1, position: "relative" }}>
+            <form onSubmit={handleSearchSubmit} className="overlay-search-input-wrapper">
               <FiSearch className="overlay-search-icon" />
               <input
                 ref={searchInputRef}
                 type="text"
                 autoFocus
                 className="overlay-search-input"
-                placeholder="Search premium products..."
+                placeholder="Search premium skincare, lipsticks, fragrances..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </form>
-            <button className="overlay-close-btn" onClick={() => setShowSearchOverlay(false)}>
-              Close
+            <button className="overlay-close-btn" onClick={() => setShowSearchOverlay(false)} aria-label="Close search">
+              <FiX />
             </button>
           </div>
 
@@ -415,18 +475,124 @@ const Navbar = () => {
               </div>
             ) : searchQuery.trim() !== "" ? (
               <div className="search-no-suggestions">
-                No matching cosmetics products found.
-              </div>
-            ) : (
-              <div className="search-quick-links">
-                <h4>Quick Links</h4>
-                <div className="quick-tags-grid">
-                  <span onClick={() => { setSearchQuery("Skincare"); }}>Skincare</span>
-                  <span onClick={() => { setSearchQuery("Fragrance"); }}>Fragrance</span>
-                  <span onClick={() => { setSearchQuery("Lipstick"); }}>Lipstick</span>
-                  <span onClick={() => { setSearchQuery("Gifting"); }}>Gifting</span>
+                <h3>No matching products found</h3>
+                <p>We couldn't find anything matching "{searchQuery}".</p>
+                <div className="search-suggestions-tips">
+                  <h5>Search Tips</h5>
+                  <ul>
+                    <li>Check spelling or try different keywords</li>
+                     <li>Search for general categories like "Serums" or "Moisturizers"</li>
+                     <li>Click the close button to browse all products</li>
+                  </ul>
                 </div>
               </div>
+            ) : (
+              <>
+                {/* 1. Recent Searches */}
+                {recentSearches.length > 0 && (
+                  <div className="search-section">
+                    <div className="search-section-header">
+                      <h4 className="search-section-title">Recent Searches</h4>
+                      <button className="recent-search-clear-all" onClick={clearAllRecentSearches}>Clear All</button>
+                    </div>
+                    <div className="recent-searches-list">
+                      {recentSearches.map((term, index) => (
+                        <div key={index} className="recent-search-row" onClick={() => handleSearchTermClick(term)}>
+                          <span>{term}</span>
+                          <button className="recent-search-delete-btn" onClick={(e) => removeRecentSearch(e, term)}>
+                            <FiX />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. Trending Searches */}
+                <div className="search-section">
+                  <div className="search-section-header">
+                    <h4 className="search-section-title">Trending Searches</h4>
+                  </div>
+                  <div className="trending-links-list">
+                    {trendingSearches.map((term, index) => (
+                      <div key={index} className="trending-link-item" onClick={() => handleSearchTermClick(term)}>
+                        <FiTrendingUp style={{ color: "#C8A165" }} />
+                        <span>{term}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 3. Popular Categories */}
+                <div className="search-section">
+                  <div className="search-section-header">
+                    <h4 className="search-section-title">Popular Categories</h4>
+                  </div>
+                  <div className="search-pills-grid">
+                    {popularCategories.map((cat, index) => (
+                      <span key={index} className="search-pill-tag" onClick={() => handleSearchTermClick(cat)}>
+                        {cat}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 4. Recently Viewed Products */}
+                {recentlyViewed.length > 0 && (
+                  <div className="search-section">
+                    <div className="search-section-header">
+                      <h4 className="search-section-title">Recently Viewed</h4>
+                    </div>
+                    <div className="recently-viewed-grid">
+                      {recentlyViewed.map((p) => (
+                        <Link key={p._id} to={`/product/${p._id}`} className="mini-product-card" onClick={() => setShowSearchOverlay(false)}>
+                          <img 
+                            src={p.imageUrl || p.image || "/cosmetic_1.avif"} 
+                            alt={p.name} 
+                            onError={(e) => { e.target.src = "/cosmetic_1.avif"; }}
+                            className="mini-product-thumb"
+                          />
+                          <div className="mini-product-details">
+                            <span className="mini-product-name">{p.name}</span>
+                            <span className="mini-product-price">₹{p.price.toFixed(2)}</span>
+                            <div className="mini-product-rating">
+                              <FaStar /> <span>{p.rating || "4.8"}</span>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 5. Best Sellers */}
+                {allProducts.length > 0 && (
+                  <div className="search-section">
+                    <div className="search-section-header">
+                      <h4 className="search-section-title">Best Sellers</h4>
+                    </div>
+                    <div className="recently-viewed-grid">
+                      {allProducts.slice(0, 4).map((p) => (
+                        <Link key={p._id} to={`/product/${p._id}`} className="mini-product-card" onClick={() => setShowSearchOverlay(false)}>
+                          <img 
+                            src={p.imageUrl || p.image || "/cosmetic_1.avif"} 
+                            alt={p.name} 
+                            onError={(e) => { e.target.src = "/cosmetic_1.avif"; }}
+                            className="mini-product-thumb"
+                          />
+                          <div className="mini-product-details">
+                            <span className="mini-product-name">{p.name}</span>
+                            <span className="mini-product-price">₹{p.price.toFixed(2)}</span>
+                            <div className="mini-product-rating">
+                              <FaStar /> <span>{p.rating || "4.8"}</span>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
