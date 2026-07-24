@@ -38,7 +38,29 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
+    if (
+      error.response &&
+      error.response.status === 403 &&
+      originalRequest &&
+      !originalRequest._retry &&
+      error.response.data?.message?.includes("Security validation")
+    ) {
+      originalRequest._retry = true;
+      try {
+        const tokenRes = await axios.get("/api/csrf/token", {
+          headers: { "x-csrf-bypass": "true" }
+        });
+        const newCsrfToken = tokenRes.data.csrfToken;
+        window._csrfToken = newCsrfToken;
+        originalRequest.headers["X-CSRF-Token"] = newCsrfToken;
+        return axios(originalRequest);
+      } catch (retryError) {
+        console.error("CSRF auto-retry failed", retryError);
+      }
+    }
+
     if (error.response && error.response.status === 429) {
       toast.error(error.response.data?.message || "Too many requests. Please slow down and try again.", {
         id: "rate-limit-toast",

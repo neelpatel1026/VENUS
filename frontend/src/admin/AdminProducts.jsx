@@ -2,6 +2,7 @@ import { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext.jsx';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 import AdminSidebar from "./AdminSidebar";
 import { getThumbnailUrl } from "../utils/imageHelper.js";
 
@@ -38,23 +39,18 @@ const AdminProducts = () => {
             onClick={async () => {
               toast.dismiss(t.id);
               try {
-                const res = await fetch(`/api/products/${id}`, {
-                  method: 'DELETE',
+                const res = await axios.delete(`/api/products/${id}`, {
                   headers: {
                     Authorization: `Bearer ${user.token}`
                   }
                 });
 
-                if (res.ok) {
-                  setProducts(products.filter((p) => p._id !== id));
-                  toast.success("Product deleted successfully");
-                } else {
-                  const errData = await res.json();
-                  toast.error(errData.message || "Failed to delete product");
-                }
+                setProducts(products.filter((p) => p._id !== id));
+                toast.success("Product deleted successfully");
               } catch (error) {
                 console.error(error);
-                toast.error("Failed to delete product");
+                const errMsg = error.response?.data?.message || "Failed to delete product";
+                toast.error(errMsg);
               }
             }}
             style={{
