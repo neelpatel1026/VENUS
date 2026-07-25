@@ -82,6 +82,7 @@ const ProductDetail = () => {
         if (!res.ok) {
           throw new Error("Failed to fetch product");
         }
+        const data = await res.json();
         setProduct(data);
         try {
           const viewed = JSON.parse(localStorage.getItem("venus_recently_viewed") || "[]");
