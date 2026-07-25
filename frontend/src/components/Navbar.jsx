@@ -3,9 +3,10 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { useSelector, useDispatch } from "react-redux";
 import { HiMenu, HiX } from "react-icons/hi";
-import { FiSearch, FiShoppingBag, FiUser, FiLayers, FiLogOut, FiMapPin, FiX, FiTrash2, FiTrendingUp } from "react-icons/fi";
+import { FiSearch, FiShoppingBag, FiUser, FiLayers, FiLogOut, FiMapPin, FiX, FiTrash2, FiTrendingUp, FiChevronDown, FiChevronUp, FiChevronRight, FiHome, FiTag, FiPhoneCall, FiInfo } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
 import { clearCart } from "../redux/cartSlice";
+import { motion, AnimatePresence } from "framer-motion";
 import "../styles/navbar.css";
 import toast from "react-hot-toast";
 
@@ -41,6 +42,7 @@ const Navbar = () => {
   });
 
   const [recentlyViewed, setRecentlyViewed] = useState([]);
+  const [expandedCategory, setExpandedCategory] = useState(null);
 
   useEffect(() => {
     if (showSearchOverlay) {
@@ -443,50 +445,275 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* MOBILE DRAWER (Slides smoothly from left) */}
-      <div className={`mobile-menu-overlay ${menuOpen ? "active" : ""}`}>
-        <div className="mobile-menu-drawer">
-          <div className="drawer-header">
-            <h3>Navigation</h3>
-            <button className="drawer-close-btn" onClick={() => setMenuOpen(false)}>
-              <HiX />
-            </button>
-          </div>
-          
-          <ul className="mobile-menu-links">
-            <li><Link to="/" onClick={() => setMenuOpen(false)}>Home</Link></li>
-            <li><Link to="/shop" onClick={() => setMenuOpen(false)}>Shop</Link></li>
-            <li><Link to="/gifting" onClick={() => setMenuOpen(false)}>Gifting</Link></li>
-            <li><Link to="/about" onClick={() => setMenuOpen(false)}>About</Link></li>
-            <li><Link to="/contact" onClick={() => setMenuOpen(false)}>Contact</Link></li>
-            
-            <li className="mobile-menu-divider" />
-            
-            <li className="mobile-only-profile">
-              {user ? (
-                <div className="mobile-profile-options">
-                  <div className="drawer-user-info">
-                    <span className="user-name">Hi, {user.name}</span>
-                    <span className="user-email">{user.email}</span>
-                  </div>
-                  <Link to="/profile" onClick={() => setMenuOpen(false)}>My Profile</Link>
-                  <Link to="/my-addresses" onClick={() => setMenuOpen(false)}>My Addresses</Link>
-                  {user.role === "admin" && (
-                    <Link to="/admin" onClick={() => setMenuOpen(false)} style={{ color: "#C8A165", fontWeight: "600" }}>
-                      Admin Panel
-                    </Link>
-                  )}
-                  <button onClick={handleLogoutClick} className="btn-logout-mobile">Logout</button>
-                </div>
-              ) : (
-                <Link to="/login" onClick={() => setMenuOpen(false)} className="mobile-login-btn">
-                  Account Login
+      {/* MOBILE DRAWER (Slides smoothly from left using Framer Motion) */}
+      <AnimatePresence>
+        {menuOpen && (
+          <>
+            {/* Backdrop Dark Overlay */}
+            <motion.div
+              className="luxury-mobile-menu-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              onClick={() => setMenuOpen(false)}
+            />
+
+            {/* Side Drawer Panel */}
+            <motion.div
+              className="luxury-mobile-menu-drawer"
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            >
+              {/* HEADER */}
+              <div className="drawer-luxury-header">
+                <Link to="/" onClick={() => setMenuOpen(false)} className="drawer-logo-link">
+                  <span className="drawer-logo-text">
+                    VENUS CARE<span className="drawer-logo-trademark">®</span>
+                  </span>
                 </Link>
-              )}
-            </li>
-          </ul>
-        </div>
-      </div>
+                <button className="drawer-luxury-close-btn" onClick={() => setMenuOpen(false)} aria-label="Close menu">
+                  <FiX />
+                </button>
+              </div>
+
+              {/* DRAWER BODY AREA */}
+              <div className="drawer-luxury-body">
+                {/* 1. User Welcome & Quick Action Cards */}
+                <div className="drawer-welcome-row">
+                  <span>{user ? `Hi, ${user.name}` : "Welcome to Venus Care"}</span>
+                </div>
+                
+                <div className="drawer-quick-cards-grid">
+                  <div className="quick-action-card" onClick={() => { setMenuOpen(false); navigate(user ? "/profile" : "/login"); }}>
+                    <div className="quick-card-icon-box">📦</div>
+                    <div className="quick-card-text-box">
+                      <h4>My Orders</h4>
+                      <p>View All</p>
+                    </div>
+                  </div>
+                  <div className="quick-action-card" onClick={() => { setMenuOpen(false); navigate(user ? "/profile" : "/login"); }}>
+                    <div className="quick-card-icon-box">🚚</div>
+                    <div className="quick-card-text-box">
+                      <h4>Track Order</h4>
+                      <p>Track shipment</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Category Shortcuts (Horizontal Scroll) */}
+                <div className="drawer-section-title">Shop by Category</div>
+                <div className="drawer-categories-scroll-row">
+                  {[
+                    { label: "Face Care", img: "/about_hero.jpg", query: "Face Wash" },
+                    { label: "Hair Care", img: "/about_lab.jpg", query: "Hair Care" },
+                    { label: "Perfume", img: "/about_cta.jpg", query: "Perfume" },
+                    { label: "Lipstick", img: "/cosmetic_1.avif", query: "Lipstick" },
+                    { label: "Serum", img: "/about_formulation.jpg", query: "Serums" },
+                    { label: "Body Care", img: "/about_avatar.jpg", query: "Moisturizers" },
+                    { label: "Gifting", img: "/hero3_mobile.jpg", query: "Gift Sets" }
+                  ].map((cat, idx) => (
+                    <div 
+                      key={idx} 
+                      className="category-scroll-pill-card"
+                      onClick={() => { setMenuOpen(false); navigate(`/shop?search=${encodeURIComponent(cat.query)}`); }}
+                    >
+                      <div className="scroll-pill-img-box">
+                        <img src={cat.img} alt={cat.label} loading="lazy" onError={(e) => { e.target.src = "/cosmetic_1.avif"; }} />
+                      </div>
+                      <span>{cat.label}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 3. Promotional Banner */}
+                <div className="drawer-promotional-banner-card" onClick={() => { setMenuOpen(false); navigate("/shop"); }}>
+                  <img src="/hero1_mobile.jpg" alt="Promo collection banner" onError={(e) => { e.target.src = "/about_hero.jpg"; }} />
+                  <div className="promo-banner-overlay-text">
+                    <h3>BUY 2 GET 1 FREE</h3>
+                    <p>Free Shipping Above ₹499 • Luxury Skincare</p>
+                  </div>
+                </div>
+
+                {/* 4. Luxury Navigation List with Accordion Submenus */}
+                <div className="drawer-menu-list-items">
+                  {/* Home */}
+                  <div className="drawer-menu-list-row-item" onClick={() => { setMenuOpen(false); navigate("/"); }}>
+                    <span className="row-icon-title"><FiHome className="row-icon-main" /> Home</span>
+                    <FiChevronRight className="row-chevron-right" />
+                  </div>
+
+                  {/* Shop All */}
+                  <div className="drawer-menu-list-row-item" onClick={() => { setMenuOpen(false); navigate("/shop"); }}>
+                    <span className="row-icon-title"><FiShoppingBag className="row-icon-main" /> Shop All</span>
+                    <FiChevronRight className="row-chevron-right" />
+                  </div>
+
+                  {/* Skincare (Expandable) */}
+                  <div className="drawer-menu-collapsible-group">
+                    <div className="drawer-menu-list-row-item" onClick={() => toggleExpand("skincare")}>
+                      <span className="row-icon-title">🧴 Skincare</span>
+                      {expandedCategory === "skincare" ? <FiChevronUp className="row-chevron-right" /> : <FiChevronDown className="row-chevron-right" />}
+                    </div>
+                    <motion.div
+                      initial={false}
+                      animate={{ height: expandedCategory === "skincare" ? "auto" : 0 }}
+                      className="drawer-submenu-collapsible-wrapper"
+                      style={{ overflow: "hidden" }}
+                    >
+                      {[
+                        { label: "Face Wash", query: "Face Wash" },
+                        { label: "Serum", query: "Serums" },
+                        { label: "Moisturizer", query: "Moisturizers" },
+                        { label: "Sunscreen", query: "Sunscreen" },
+                        { label: "Night Cream", query: "Moisturizers" }
+                      ].map((sub, sIdx) => (
+                        <div 
+                          key={sIdx} 
+                          className="drawer-submenu-item-row"
+                          onClick={() => { setMenuOpen(false); navigate(`/shop?search=${encodeURIComponent(sub.query)}`); }}
+                        >
+                          {sub.label}
+                        </div>
+                      ))}
+                    </motion.div>
+                  </div>
+
+                  {/* Hair Care (Expandable) */}
+                  <div className="drawer-menu-collapsible-group">
+                    <div className="drawer-menu-list-row-item" onClick={() => toggleExpand("hair")}>
+                      <span className="row-icon-title">💇 Hair Care</span>
+                      {expandedCategory === "hair" ? <FiChevronUp className="row-chevron-right" /> : <FiChevronDown className="row-chevron-right" />}
+                    </div>
+                    <motion.div
+                      initial={false}
+                      animate={{ height: expandedCategory === "hair" ? "auto" : 0 }}
+                      className="drawer-submenu-collapsible-wrapper"
+                      style={{ overflow: "hidden" }}
+                    >
+                      {[
+                        { label: "Hair Oil", query: "Hair Care" },
+                        { label: "Hair Serum", query: "Hair Care" },
+                        { label: "Shampoo", query: "Hair Care" },
+                        { label: "Conditioner", query: "Hair Care" }
+                      ].map((sub, sIdx) => (
+                        <div 
+                          key={sIdx} 
+                          className="drawer-submenu-item-row"
+                          onClick={() => { setMenuOpen(false); navigate(`/shop?search=${encodeURIComponent(sub.query)}`); }}
+                        >
+                          {sub.label}
+                        </div>
+                      ))}
+                    </motion.div>
+                  </div>
+
+                  {/* Perfume (Expandable) */}
+                  <div className="drawer-menu-collapsible-group">
+                    <div className="drawer-menu-list-row-item" onClick={() => toggleExpand("perfume")}>
+                      <span className="row-icon-title">🌸 Fragrance</span>
+                      {expandedCategory === "perfume" ? <FiChevronUp className="row-chevron-right" /> : <FiChevronDown className="row-chevron-right" />}
+                    </div>
+                    <motion.div
+                      initial={false}
+                      animate={{ height: expandedCategory === "perfume" ? "auto" : 0 }}
+                      className="drawer-submenu-collapsible-wrapper"
+                      style={{ overflow: "hidden" }}
+                    >
+                      {[
+                        { label: "Luxury Oils", query: "Perfume" },
+                        { label: "Unisex Cologne", query: "Perfume" },
+                        { label: "Women's Collection", query: "Perfume" },
+                        { label: "Men's Collection", query: "Perfume" }
+                      ].map((sub, sIdx) => (
+                        <div 
+                          key={sIdx} 
+                          className="drawer-submenu-item-row"
+                          onClick={() => { setMenuOpen(false); navigate(`/shop?search=${encodeURIComponent(sub.query)}`); }}
+                        >
+                          {sub.label}
+                        </div>
+                      ))}
+                    </motion.div>
+                  </div>
+
+                  {/* Cosmetics (Expandable) */}
+                  <div className="drawer-menu-collapsible-group">
+                    <div className="drawer-menu-list-row-item" onClick={() => toggleExpand("cosmetics")}>
+                      <span className="row-icon-title">💄 Cosmetics</span>
+                      {expandedCategory === "cosmetics" ? <FiChevronUp className="row-chevron-right" /> : <FiChevronDown className="row-chevron-right" />}
+                    </div>
+                    <motion.div
+                      initial={false}
+                      animate={{ height: expandedCategory === "cosmetics" ? "auto" : 0 }}
+                      className="drawer-submenu-collapsible-wrapper"
+                      style={{ overflow: "hidden" }}
+                    >
+                      {[
+                        { label: "Lipstick", query: "Lipstick" },
+                        { label: "Eyeliner", query: "Lipstick" },
+                        { label: "Foundation", query: "Lipstick" },
+                        { label: "Nail Polish", query: "Lipstick" }
+                      ].map((sub, sIdx) => (
+                        <div 
+                          key={sIdx} 
+                          className="drawer-submenu-item-row"
+                          onClick={() => { setMenuOpen(false); navigate(`/shop?search=${encodeURIComponent(sub.query)}`); }}
+                        >
+                          {sub.label}
+                        </div>
+                      ))}
+                    </motion.div>
+                  </div>
+
+                  {/* Offers */}
+                  <div className="drawer-menu-list-row-item" onClick={() => { setMenuOpen(false); navigate("/shop"); }}>
+                    <span className="row-icon-title"><FiTag className="row-icon-main" /> Special Offers</span>
+                    <FiChevronRight className="row-chevron-right" />
+                  </div>
+
+                  {/* About */}
+                  <div className="drawer-menu-list-row-item" onClick={() => { setMenuOpen(false); navigate("/about"); }}>
+                    <span className="row-icon-title"><FiInfo className="row-icon-main" /> About Brand</span>
+                    <FiChevronRight className="row-chevron-right" />
+                  </div>
+
+                  {/* Contact */}
+                  <div className="drawer-menu-list-row-item" onClick={() => { setMenuOpen(false); navigate("/contact"); }}>
+                    <span className="row-icon-title"><FiPhoneCall className="row-icon-main" /> Contact Support</span>
+                    <FiChevronRight className="row-chevron-right" />
+                  </div>
+                </div>
+
+                {/* 5. Fixed Golden Gradient Bottom Section */}
+                <div className="drawer-luxury-fixed-bottom-section">
+                  <div className="bottom-download-banner-row">
+                    <span className="bottom-banner-main-title">Download VENUS CARE App</span>
+                    <span className="bottom-banner-sub-desc">Get extra 10% Off on your first App purchase!</span>
+                  </div>
+                  <div className="bottom-support-links-stack">
+                    <span className="bottom-support-header">Customer Helpdesk</span>
+                    <a href="mailto:support@venuscare.com" className="bottom-support-item">📧 support@venuscare.com</a>
+                    <a href="https://wa.me/919999988888" target="_blank" rel="noopener noreferrer" className="bottom-support-item">💬 WhatsApp: +91 99999 88888</a>
+                  </div>
+                  <div className="bottom-socials-row">
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a>
+                    <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer">Pinterest</a>
+                  </div>
+                  <div className="bottom-privacy-terms-row">
+                    <Link to="/privacy-policy" onClick={() => setMenuOpen(false)}>Privacy Policy</Link>
+                    <span className="bullet-dot">•</span>
+                    <Link to="/terms-conditions" onClick={() => setMenuOpen(false)}>Terms & Conditions</Link>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* FULLSCREEN SEARCH OVERLAY (Mobile/Tablet only) */}
       {showSearchOverlay && (
