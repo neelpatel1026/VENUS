@@ -48,7 +48,7 @@ const sendEmailOtp = async (req, res) => {
 
     // Store securely (hashed representation)
     user.emailOtp = await bcrypt.hash(otp, 10);
-    user.emailOtpExpire = now + 5 * 60 * 1000; // 5 minutes expiry
+    user.emailOtpExpire = now + 10 * 60 * 1000; // 10 minutes expiry
     user.emailVerified = false;
     user.otpSendCount += 1;
 
@@ -57,7 +57,7 @@ const sendEmailOtp = async (req, res) => {
 
     const { sendEmailVerificationOtp } = require("../utils/notificationService.js");
     
-    // Await delivery to verify SMTP connection state immediately
+    // Await delivery to verify Resend API connection state immediately
     try {
       await sendEmailVerificationOtp(user, otp);
       console.log(`[emailOtpController] Email delivered successfully to ${email}`);

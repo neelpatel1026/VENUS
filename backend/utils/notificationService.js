@@ -243,7 +243,7 @@ const sendEmailVerificationOtp = async (user, otp) => {
     <div style="background: #FAF9F6; border: 1px solid #ECE7DF; padding: 18px; font-size: 28px; font-weight: bold; color: #C8A165; letter-spacing: 6px; text-align: center; border-radius: 8px; margin: 20px 0; font-family: monospace;">
       ${otp}
     </div>
-    This code is valid for exactly <strong>5 minutes</strong>. If you did not initiate this request, please ignore this email.
+    This code is valid for exactly <strong>10 minutes</strong>. If you did not initiate this request, please ignore this email.
   `;
   const baseUrl = process.env.CLIENT_URL || "http://localhost:5173";
   const actionButtonsHtml = `

@@ -1,10 +1,4 @@
 const express = require("express");
-const dns = require("dns");
-
-if (typeof dns.setDefaultResultOrder === "function") {
-  dns.setDefaultResultOrder("ipv4first");
-  console.log("[Entry DNS] Prioritizing IPv4 address lookup default result order.");
-}
 const dotenv = require("dotenv");
 const cors = require("cors");
 const helmet = require("helmet");

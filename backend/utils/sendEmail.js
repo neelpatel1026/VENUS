@@ -1,33 +1,4 @@
-const nodemailer = require("nodemailer");
-const dns = require("dns");
-
-// Force Node to prioritize IPv4 DNS resolution to prevent ENETUNREACH errors on IPv6-unfriendly environments (like Render)
-if (typeof dns.setDefaultResultOrder === "function") {
-  dns.setDefaultResultOrder("ipv4first");
-  console.log("[SMTP DNS] Prioritizing IPv4 resolution for outbound connections.");
-}
-
-// Helper to resolve hostname to IPv4 address dynamically to prevent network errors in IPv6-constrained container systems
-async function resolveHostToIPv4(hostname) {
-  try {
-    const dnsPromises = dns.promises;
-    const addresses = await dnsPromises.resolve4(hostname);
-    if (addresses && addresses.length > 0) {
-      console.log(`[DNS RESOLVE] Dynamic DNS resolved ${hostname} to IPv4: ${addresses[0]}`);
-      return addresses[0];
-    }
-  } catch (err) {
-    console.warn(`[DNS RESOLVE] dns.resolve4 failed for ${hostname}: ${err.message}. Trying dns.lookup.`);
-    try {
-      const result = await dns.promises.lookup(hostname, { family: 4 });
-      console.log(`[DNS RESOLVE] dns.lookup resolved ${hostname} to IPv4: ${result.address}`);
-      return result.address;
-    } catch (lookupErr) {
-      console.error(`[DNS RESOLVE] dns.lookup failed for ${hostname}: ${lookupErr.message}`);
-    }
-  }
-  return hostname; // fallback to original hostname on resolve failures
-}
+const { Resend } = require("resend");
 
 const sendEmail = async ({
   email,
@@ -35,54 +6,32 @@ const sendEmail = async ({
   message,
 }) => {
   try {
-    const user = process.env.EMAIL_USER || process.env.GMAIL_USER;
-    const pass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
-    const originalHost = process.env.EMAIL_HOST || process.env.SMTP_HOST || "smtp.gmail.com";
-    const port = parseInt(process.env.EMAIL_PORT || process.env.SMTP_PORT || "465");
-    const secure = process.env.EMAIL_SECURE === "true" || process.env.SMTP_SECURE === "true" || port === 465;
+    const apiKey = process.env.RESEND_API_KEY;
+    const fromEmail = process.env.FROM_EMAIL || "onboarding@resend.dev";
 
-    // Dynamically resolve target host to IPv4 to prevent ENETUNREACH exceptions
-    const ipv4Host = await resolveHostToIPv4(originalHost);
+    if (!apiKey) {
+      throw new Error("Missing RESEND_API_KEY environment variable");
+    }
 
-    const transporterOptions = {
-      host: ipv4Host,
-      port,
-      secure,
-      auth: {
-        user,
-        pass,
-      },
-      // Pass the original hostname as servername for TLS validation (SNI verification)
-      tls: {
-        servername: originalHost,
-        rejectUnauthorized: true,
-      },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 15000,
-      family: 4, // Force IPv4 socket connection
-    };
+    const resend = new Resend(apiKey);
 
-    console.log(`[SMTP TRANS] Building transporter targeting: ${originalHost} (via IP: ${ipv4Host}) on port ${port}`);
-
-    const transporter = nodemailer.createTransport(transporterOptions);
-
-    const mailOptions = {
-      from: `"VENUS CARE Support" <${user}>`,
+    const { data, error } = await resend.emails.send({
+      from: `VENUS CARE <${fromEmail}>`,
       to: email,
-      subject,
+      subject: subject,
       html: message,
-    };
+    });
 
-    await transporter.sendMail(mailOptions);
-    console.log(`✅ Email successfully sent to ${email}`);
+    if (error) {
+      throw new Error(error.message || JSON.stringify(error));
+    }
 
     return {
       success: true,
       message: "Email sent successfully",
+      messageId: data ? data.id : null,
     };
   } catch (error) {
-    console.error(`❌ Email sending failed to ${email}: ${error.message}`);
     throw error;
   }
 };
