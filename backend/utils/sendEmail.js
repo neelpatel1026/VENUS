@@ -1,4 +1,11 @@
 const nodemailer = require("nodemailer");
+const dns = require("dns");
+
+// Force Node to prioritize IPv4 DNS resolution to prevent ENETUNREACH errors on IPv6-unfriendly environments (like Render)
+if (typeof dns.setDefaultResultOrder === "function") {
+  dns.setDefaultResultOrder("ipv4first");
+  console.log("[SMTP DNS] Prioritizing IPv4 resolution for outbound connections.");
+}
 
 const sendEmail = async ({
   email,
