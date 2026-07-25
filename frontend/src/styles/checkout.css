@@ -818,50 +818,204 @@
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 768px) {
   .checkout-page-container {
-    padding-top: 20px;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 20px 16px 110px 16px !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
   }
-
-  .checkout-section-block {
-    padding: 24px 20px;
-    border-radius: 16px;
-  }
-
-  .address-cards-stack {
-    grid-template-columns: 1fr; /* Single column address cards */
-    gap: 16px;
-  }
-
-  .empty-addresses-box {
-    grid-column: span 1;
-  }
-
-  .payment-options-grid {
-    grid-template-columns: 1fr; /* Single column payment options */
-    gap: 16px;
-  }
-
-  .input-group-row {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  /* Fixed Place Order button at mobile viewports */
-  .summary-checkout-place-order-action-submit-btn {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: 0;
-    border-radius: 0;
-    z-index: 1001;
-    height: 52px;
-    box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.1);
+  .checkout-main-wrapper {
+    overflow-x: hidden !important;
   }
   
-  .checkout-page-container {
-    padding-bottom: 90px !important;
+  .checkout-section-block {
+    border-radius: 18px !important;
+    padding: 18px !important;
+    margin-bottom: 20px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03) !important;
+  }
+  
+  .checkout-address-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  
+  .empty-addresses-box-luxury {
+    padding: 24px !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+  
+  .add-address-trigger-btn-luxury {
+    width: 100% !important;
+    height: 50px !important;
+    border-radius: 12px !important;
+  }
+  
+  .payment-options-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  
+  .payment-option-card {
+    padding: 16px 14px !important;
+  }
+  
+  .email-otp-verification-card {
+    padding: 18px !important;
+  }
+  .email-status-container {
+    width: 100% !important;
+    align-items: stretch !important;
+  }
+  .email-address-badge {
+    width: 100% !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+  .otp-actions-block {
+    width: 100% !important;
+  }
+  .send-otp-primary-action-btn {
+    width: 100% !important;
+    height: 48px !important;
+  }
+  .otp-input-and-submit-row {
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 12px !important;
+  }
+  .otp-input-and-submit-row input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    height: 48px !important;
+  }
+  .verify-otp-action-submit-btn {
+    width: 100% !important;
+    height: 48px !important;
+    border-radius: 30px !important;
+  }
+  
+  .summary-item-row {
+    display: flex !important;
+    gap: 16px !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+  }
+  .summary-item-thumb {
+    width: 80px !important;
+    height: 80px !important;
+    flex-shrink: 0 !important;
+  }
+  .summary-item-details {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    gap: 4px !important;
+  }
+  .summary-item-details h4 {
+    white-space: normal !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    font-size: 13.5px !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+  }
+  .item-qty-and-price-col {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+  .item-qty-and-price-col span {
+    font-size: 12.5px !important;
+    color: #6B7280 !important;
+  }
+  .item-qty-and-price-col strong {
+    font-size: 13.5px !important;
+    color: #1A1A1A !important;
+    margin-left: auto !important;
+  }
+  
+  .coupon-input-and-button-row {
+    display: flex !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .coupon-input-and-button-row input {
+    width: 70% !important;
+    flex-grow: 0 !important;
+    box-sizing: border-box !important;
+    height: 44px !important;
+  }
+  .coupon-input-and-button-row button {
+    width: 30% !important;
+    padding: 0 !important;
+    flex-grow: 0 !important;
+    box-sizing: border-box !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+    text-align: center !important;
+  }
+  
+  .breakdown-item-line {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .summary-checkout-place-order-action-submit-btn {
+    position: fixed !important;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+    left: 16px !important;
+    right: 16px !important;
+    width: calc(100% - 32px) !important;
+    margin: 0 auto !important;
+    border-radius: 27px !important;
+    z-index: 1001 !important;
+    height: 54px !important;
+    box-shadow: 0 8px 24px rgba(200, 161, 101, 0.2) !important;
+    background: #1A1A1A !important;
+    color: #FFFFFF !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
+  }
+  
+  .section-header-row h2 {
+    font-size: 20px !important;
+  }
+  .section-desc-subtext {
+    font-size: 13px !important;
+    margin-bottom: 20px !important;
+  }
+  
+  .checkout-two-columns-layout {
+    gap: 20px !important;
+  }
+}
+
+@media (max-width: 359px) {
+  .coupon-input-and-button-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  .coupon-input-and-button-row input {
+    width: 100% !important;
+  }
+  .coupon-input-and-button-row button {
+    width: 100% !important;
   }
 }
 
