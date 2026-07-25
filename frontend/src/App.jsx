@@ -124,6 +124,7 @@ import Footer from "./components/Footer.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import OfferBar from "./components/OfferBar";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
+import { ToastContainer } from "./components/ToastContainer.jsx";
 
 /* PAGES */
 
@@ -226,6 +227,9 @@ function App() {
 
   return (
     <Router>
+      {/* TOAST SYSTEM CONTEXT SAFE */}
+      <ToastContainer />
+
       {/* AUTO SCROLL TOP */}
 
       <ScrollToTop />
