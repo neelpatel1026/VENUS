@@ -38,7 +38,7 @@ const sendEmail = async ({
     const user = process.env.EMAIL_USER || process.env.GMAIL_USER;
     const pass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
     const originalHost = process.env.EMAIL_HOST || process.env.SMTP_HOST || "smtp.gmail.com";
-    const port = parseInt(process.env.EMAIL_PORT || process.env.SMTP_PORT || "587");
+    const port = parseInt(process.env.EMAIL_PORT || process.env.SMTP_PORT || "465");
     const secure = process.env.EMAIL_SECURE === "true" || process.env.SMTP_SECURE === "true" || port === 465;
 
     // Dynamically resolve target host to IPv4 to prevent ENETUNREACH exceptions
