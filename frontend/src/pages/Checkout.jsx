@@ -19,6 +19,17 @@ import {
 } from "react-icons/lu";
 import AddressCard from "../components/AddressCard";
 import { useGoogleMaps } from "../components/GoogleMapLoader";
+import { 
+  FaSearch, 
+  FaMapMarkerAlt, 
+  FaLocationArrow, 
+  FaChevronUp, 
+  FaChevronDown, 
+  FaHome, 
+  FaBriefcase, 
+  FaBuilding, 
+  FaHotel 
+} from "react-icons/fa";
 import "../styles/checkout.css";
 import "../styles/myAddresses.css";
 
