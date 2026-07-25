@@ -174,7 +174,7 @@ const ProductCard = ({ product }) => {
                 }),
               );
 
-              toast.success(`${product.name} added to cart! 🛍️`);
+              toast.success(`${product.name} added to cart! 🛍️`, { product });
             }}
           >
             {product.stock > 0 ? "Add To Cart" : "Out Of Stock"}

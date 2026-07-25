@@ -2,87 +2,112 @@
    LUXURY PREMIUM NOTIFICATION SYSTEM STYLES - VENUS CARE
    ========================================================================== */
 
-/* Toast Container Positions */
 .premium-toast-container {
   z-index: 99999 !important;
 }
 
 @media (min-width: 769px) {
   .premium-toast-container {
-    top: 24px !important;
-    left: 24px !important;
-    right: auto !important;
+    margin: 24px !important;
   }
 }
 
 @media (max-width: 768px) {
   .premium-toast-container {
-    top: 76px !important; /* Positioned below sticky mobile header */
-    left: 50% !important;
-    right: auto !important;
-    bottom: auto !important;
-    transform: translateX(-50%) !important;
-    width: 90% !important;
-    max-width: 420px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 12px !important;
+    top: 84px !important; /* Safe area below mobile header */
+    padding: 0 16px !important;
   }
 }
 
 /* Base Luxury Card styling */
 .luxury-toast-card {
   position: relative !important;
-  background: rgba(255, 255, 255, 0.88) !important;
-  backdrop-filter: blur(20px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
-  border: 1px solid rgba(200, 161, 101, 0.22) !important;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.05) !important;
-  border-radius: 18px !important;
-  padding: 16px 18px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #ECE7DF !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 14px !important;
+  padding: 14px 16px !important;
   display: flex !important;
-  align-items: flex-start !important;
-  gap: 14px !important;
-  width: 100% !important;
-  max-width: 360px !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 360px !important;
+  max-width: 100% !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
   pointer-events: auto !important;
   font-family: 'Inter', -apple-system, sans-serif !important;
+  border-left: 4px solid #C8A165 !important; /* Gold Accent */
 }
 
 @media (max-width: 768px) {
   .luxury-toast-card {
-    max-width: 100% !important;
-    border-radius: 16px !important;
-    padding: 14px 16px !important;
+    width: 100% !important;
+    max-width: 360px !important;
   }
 }
 
-/* Left colored icon circle */
+/* Product layout inside Toast */
+.toast-product-layout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.toast-product-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #ECE7DF;
+  flex-shrink: 0;
+}
+
+.toast-product-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-product-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1A1A1A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toast-product-msg {
+  font-size: 11.5px;
+  color: #6B7280;
+}
+
+/* Left icon styling for standard toasts */
 .toast-left-color-circle {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 /* Specific Notification Type Styles */
 .luxury-toast-card.success-toast {
-  border-left: 3.5px solid #16A34A !important;
+  border-left-color: #C8A165 !important; /* Maintain gold accent */
 }
 .success-toast .toast-left-color-circle {
-  background: rgba(22, 163, 74, 0.08);
-  color: #16A34A;
+  background: rgba(200, 161, 101, 0.08);
+  color: #C8A165;
 }
 
 .luxury-toast-card.wishlist-toast {
-  border-left: 3.5px solid #DB2777 !important;
+  border-left-color: #DB2777 !important;
 }
 .wishlist-toast .toast-left-color-circle {
   background: rgba(219, 39, 119, 0.08);
@@ -90,7 +115,7 @@
 }
 
 .luxury-toast-card.removed-toast {
-  border-left: 3.5px solid #DC2626 !important;
+  border-left-color: #DC2626 !important;
 }
 .removed-toast .toast-left-color-circle {
   background: rgba(220, 38, 38, 0.08);
@@ -98,7 +123,7 @@
 }
 
 .luxury-toast-card.warning-toast {
-  border-left: 3.5px solid #D97706 !important;
+  border-left-color: #D97706 !important;
 }
 .warning-toast .toast-left-color-circle {
   background: rgba(217, 119, 6, 0.08);
@@ -106,7 +131,7 @@
 }
 
 .luxury-toast-card.error-toast {
-  border-left: 3.5px solid #DC2626 !important;
+  border-left-color: #DC2626 !important;
   animation: shakeToast 0.4s ease-in-out !important;
 }
 .error-toast .toast-left-color-circle {
@@ -114,18 +139,18 @@
   color: #DC2626;
 }
 
-/* Content layout styles */
+/* Content layout */
 .toast-content-wrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  box-sizing: border-box;
+  gap: 2px;
+  min-width: 0;
 }
 
 .toast-title-text {
   font-family: 'Cinzel', serif;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   color: #1A1A1A;
   letter-spacing: 0.5px;
@@ -133,33 +158,33 @@
 }
 
 .toast-message-body {
-  font-size: 13px;
+  font-size: 12.5px;
   color: #4B5563;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .toast-subtext {
   display: block;
-  font-size: 11px;
+  font-size: 10.5px;
   color: #9CA3AF;
-  margin-top: 3px;
+  margin-top: 2px;
 }
 
-/* Action button row layout */
+/* Toast action button rows */
 .toast-buttons-row {
   display: flex;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .toast-action-view-cart-btn {
   background: #1A1A1A;
   color: #FFFFFF;
   border: none;
-  padding: 6px 12px;
+  padding: 5px 12px;
   border-radius: 20px;
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -171,17 +196,17 @@
 }
 
 .toast-action-view-cart-btn:hover {
-  background: #C8A96B;
+  background: #C8A165;
 }
 
 .toast-action-continue-btn {
   background: transparent;
   color: #1A1A1A;
-  border: 1px solid #E8DFD2;
-  padding: 5px 12px;
+  border: 1px solid #ECE7DF;
+  padding: 4px 12px;
   border-radius: 20px;
   font-family: 'Cinzel', serif;
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -190,22 +215,22 @@
 }
 
 .toast-action-continue-btn:hover {
-  background: #FAF7F2;
-  border-color: #C8A96B;
+  background: #FAFAFA;
+  border-color: #C8A165;
 }
 
-/* Close icon styling */
+/* Close icon */
 .toast-luxury-close-btn {
   background: none !important;
   border: none !important;
   color: #9CA3AF !important;
-  font-size: 14px !important;
+  font-size: 12px !important;
   cursor: pointer !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 20px !important;
-  height: 20px !important;
+  width: 18px !important;
+  height: 18px !important;
   padding: 0 !important;
   border-radius: 50% !important;
   flex-shrink: 0 !important;
@@ -217,13 +242,13 @@
   background: rgba(0, 0, 0, 0.04) !important;
 }
 
-/* Visible progress bar indicator lines */
+/* Progress bar (green by default for success) */
 .toast-progress-bar-line {
   position: absolute;
   bottom: 0;
   left: 0;
   height: 3px;
-  background: #C8A165;
+  background: #16A34A; /* Green progress bar */
   transition: width 0.1s linear;
 }
 
@@ -243,7 +268,6 @@
   background: #DC2626 !important;
 }
 
-/* Error card shake keyframes */
 @keyframes shakeToast {
   0%, 100% { transform: translateX(0); }
   20%, 60% { transform: translateX(-6px); }

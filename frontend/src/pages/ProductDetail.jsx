@@ -451,25 +451,7 @@ const ProductDetail = () => {
       }),
     );
 
-    toast((t) => (
-      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-        <span style={{ fontWeight: "600" }}>Added {product.name} to cart!</span>
-        <button
-          onClick={() => {
-            dispatch(removeFromCart(product._id));
-            toast.dismiss(t.id);
-            toast.success("Add to cart undone", { id: "cart-undo" });
-          }}
-          className="toast-action-btn"
-          style={{ alignSelf: "flex-start", background: "#C8A165", color: "#fff", border: "none", padding: "4px 8px", borderRadius: "4px", fontSize: "0.75rem", cursor: "pointer" }}
-        >
-          Undo Add
-        </button>
-      </div>
-    ), {
-      duration: 5000,
-      icon: "🎉",
-    });
+    toast.success(`${product.name} added to cart! 🛍️`, { product });
   };
 
   const getStageClass = (index) => {

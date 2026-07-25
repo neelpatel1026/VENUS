@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 /* ================= TOAST SYSTEM PARSING & CONTROLS ================= */
 
 const getToastMeta = (t) => {
-  const rawMsg = String(resolveValue(t.message, t));
+  const rawMsg = typeof t.message === "string" ? t.message : String(resolveValue(t.message, t));
   
   let type = "success";
   let title = "Success";
@@ -16,21 +16,38 @@ const getToastMeta = (t) => {
   let showButtons = false;
   let msg = rawMsg;
 
+  // Access product passed in options
+  const product = t.product || (t.options && t.options.product);
+
   // 1. Success added to cart
-  if (rawMsg.toLowerCase().includes("added to cart")) {
+  if (rawMsg.toLowerCase().includes("added to cart") || product) {
     type = "success";
     title = "Success";
     icon = <FiShoppingBag />;
     colorClass = "success-toast";
     showButtons = true;
     
-    const cleanProductName = rawMsg.replace(/added to cart!/gi, "").replace(/🛍️|🛍/g, "").trim();
-    msg = (
-      <>
-        <span>✓ <strong>VENUS CARE {cleanProductName}</strong> added to your cart!</span>
-        <span className="toast-subtext">🛍 Continue shopping or checkout anytime.</span>
-      </>
-    );
+    if (product) {
+      const pName = product.name || product.title || "Product";
+      const pImg = product.image || product.imageUrl || product.productImage || (product.images && product.images[0]) || "/cosmetic_1.avif";
+      msg = (
+        <div className="toast-product-layout">
+          <img src={pImg} alt={pName} className="toast-product-thumb" />
+          <div className="toast-product-info">
+            <span className="toast-product-name">{pName}</span>
+            <span className="toast-product-msg">Added to cart successfully</span>
+          </div>
+        </div>
+      );
+    } else {
+      const cleanProductName = rawMsg.replace(/added to cart!/gi, "").replace(/🛍️|🛍/g, "").trim();
+      msg = (
+        <>
+          <span>✓ <strong>{cleanProductName || "Item"}</strong> added to your cart!</span>
+          <span className="toast-subtext">🛍 Continue shopping or checkout.</span>
+        </>
+      );
+    }
   }
   // 2. Wishlist Added
   else if (rawMsg.toLowerCase().includes("wishlist")) {
@@ -85,7 +102,7 @@ const getToastMeta = (t) => {
 const ToastItem = ({ t }) => {
   const meta = getToastMeta(t);
   const [isHovered, setIsHovered] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(t.duration || 3000);
+  const [remainingTime, setRemainingTime] = useState(t.duration || 3500);
 
   // Sync remaining duration and handle pause on hover
   useEffect(() => {
@@ -106,7 +123,7 @@ const ToastItem = ({ t }) => {
     return () => clearInterval(interval);
   }, [isHovered, t.id, t.type, t.duration]);
 
-  const progressPercent = (remainingTime / (t.duration || 3000)) * 100;
+  const progressPercent = (remainingTime / (t.duration || 3500)) * 100;
 
   let touchStartX = 0;
   const handleTouchStart = (e) => {
@@ -120,13 +137,15 @@ const ToastItem = ({ t }) => {
     }
   };
 
+  const isProductToast = !!t.product || !!t.options?.product;
+
   return (
     <motion.div
       layout
-      initial={window.innerWidth > 768 ? { x: -150, opacity: 0, scale: 0.85 } : { y: -100, opacity: 0, scale: 0.9 }}
-      animate={t.visible ? { x: 0, y: 0, opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
-      exit={{ opacity: 0, scale: 0.85, y: -20 }}
-      transition={{ type: "spring", stiffness: 220, damping: 22 }}
+      initial={{ x: -60, opacity: 0, scale: 0.92 }}
+      animate={t.visible ? { x: 0, opacity: 1, scale: 1 } : { x: -60, opacity: 0, scale: 0.95 }}
+      exit={{ x: -60, opacity: 0, scale: 0.95 }}
+      transition={{ type: "spring", stiffness: 280, damping: 24, duration: 0.35 }}
       className={`luxury-toast-card ${meta.colorClass}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -134,21 +153,25 @@ const ToastItem = ({ t }) => {
       onTouchEnd={(e) => handleTouchEnd(e, t.id)}
       style={{ pointerEvents: "auto" }}
     >
-      <div className="toast-left-color-circle">
-        {meta.icon}
-      </div>
+      {!isProductToast && (
+        <div className="toast-left-color-circle">
+          {meta.icon}
+        </div>
+      )}
       
       <div className="toast-content-wrapper">
-        <div className="toast-title-text">{meta.title}</div>
+        {!isProductToast && (
+          <div className="toast-title-text">{meta.title}</div>
+        )}
         <div className="toast-message-body">{meta.msg}</div>
         
         {meta.showButtons && (
           <div className="toast-buttons-row">
             <Link to="/cart" className="toast-action-view-cart-btn" onClick={() => toast.dismiss(t.id)}>
-              View Cart
+              View Cart →
             </Link>
             <button className="toast-action-continue-btn" onClick={() => toast.dismiss(t.id)}>
-              Continue Shopping
+              Continue
             </button>
           </div>
         )}
@@ -195,13 +218,13 @@ export const ToastContainer = () => {
     <>
       <ToastManager />
       <Toaster
-        position="top-left"
+        position={window.innerWidth > 768 ? "top-left" : "top-center"}
         containerClassName="premium-toast-container"
         reverseOrder={false}
         toastOptions={{
-          success: { duration: 3000 },
-          error: { duration: 5000 },
-          blank: { duration: 3000 },
+          success: { duration: 3500 },
+          error: { duration: 3500 },
+          blank: { duration: 3500 },
         }}
       >
         {(t) => <ToastItem t={t} />}
