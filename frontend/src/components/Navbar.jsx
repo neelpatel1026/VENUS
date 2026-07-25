@@ -4,7 +4,7 @@ import { AuthContext } from "../context/AuthContext";
 import { useSelector, useDispatch } from "react-redux";
 import { HiMenu, HiX } from "react-icons/hi";
 import { FiSearch, FiShoppingBag, FiUser, FiLayers, FiLogOut, FiMapPin, FiX, FiTrash2, FiTrendingUp, FiChevronDown, FiChevronUp, FiChevronRight, FiHome, FiTag, FiPhoneCall, FiInfo } from "react-icons/fi";
-import { FaStar } from "react-icons/fa";
+import { FaStar, FaInstagram, FaFacebookF, FaYoutube, FaPinterestP, FaLinkedinIn, FaWhatsapp, FaEnvelope, FaMapMarkerAlt, FaClock, FaCheckCircle } from "react-icons/fa";
 import { clearCart } from "../redux/cartSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import "../styles/navbar.css";
@@ -726,22 +726,75 @@ const Navbar = () => {
                   </div>
                 </div>
 
-                {/* 5. Fixed Golden Gradient Bottom Section */}
+                {/* 5. Luxury Brand Support Card Section */}
                 <div className="drawer-luxury-fixed-bottom-section">
-                  <div className="bottom-download-banner-row">
-                    <span className="bottom-banner-main-title">Download VENUS CARE App</span>
-                    <span className="bottom-banner-sub-desc">Get extra 10% Off on your first App purchase!</span>
+                  <div className="drawer-support-card-luxury">
+                    <h4 className="support-card-title-luxury">✨ Need Help?</h4>
+                    <p className="support-card-subtitle-luxury">Our skincare experts are always happy to assist you.</p>
+                    
+                    <div className="support-info-items-list">
+                      <a href="mailto:support@venuscare.in" className="support-info-item-row-link">
+                        <FaEnvelope className="info-row-icon" /> support@venuscare.in
+                      </a>
+                      <a href="https://wa.me/919999988888" target="_blank" rel="noopener noreferrer" className="support-info-item-row-link">
+                        <FaWhatsapp className="info-row-icon" /> WhatsApp Support
+                      </a>
+                      <div className="support-info-item-row-static">
+                        <FaMapMarkerAlt className="info-row-icon" /> Ahmedabad, Gujarat, India
+                      </div>
+                      <div className="support-info-item-row-static">
+                        <FaClock className="info-row-icon" /> Mon–Sat | 9:00 AM – 7:00 PM
+                      </div>
+                    </div>
+
+                    <div className="support-trust-badges-grid-luxury">
+                      <span className="trust-badge-item"><FaCheckCircle className="badge-check-icon" /> Secure Payments</span>
+                      <span className="trust-badge-item"><FaCheckCircle className="badge-check-icon" /> Fast Delivery</span>
+                      <span className="trust-badge-item"><FaCheckCircle className="badge-check-icon" /> Easy Returns</span>
+                      <span className="trust-badge-item"><FaCheckCircle className="badge-check-icon" /> Premium Quality</span>
+                    </div>
+
+                    <div className="support-action-buttons-stack">
+                      <button 
+                        type="button" 
+                        className="support-primary-action-btn-gold" 
+                        onClick={() => { setMenuOpen(false); navigate("/contact"); }}
+                      >
+                        Contact Support
+                      </button>
+                      <a 
+                        href="https://wa.me/919999988888" 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="support-secondary-action-btn-whatsapp"
+                      >
+                        <FaWhatsapp /> WhatsApp Chat
+                      </a>
+                    </div>
+
+                    <div className="support-card-socials-row">
+                      <motion.a whileTap={{ scale: 0.9 }} href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="circular-social-icon-btn">
+                        <FaInstagram />
+                      </motion.a>
+                      <motion.a whileTap={{ scale: 0.9 }} href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="circular-social-icon-btn">
+                        <FaFacebookF />
+                      </motion.a>
+                      <motion.a whileTap={{ scale: 0.9 }} href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="circular-social-icon-btn">
+                        <FaYoutube />
+                      </motion.a>
+                      <motion.a whileTap={{ scale: 0.9 }} href="https://pinterest.com" target="_blank" rel="noopener noreferrer" className="circular-social-icon-btn">
+                        <FaPinterestP />
+                      </motion.a>
+                      <motion.a whileTap={{ scale: 0.9 }} href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="circular-social-icon-btn">
+                        <FaLinkedinIn />
+                      </motion.a>
+                    </div>
+
+                    <p className="support-card-brand-message">
+                      "Crafted with premium botanical ingredients for healthy, glowing skin."
+                    </p>
                   </div>
-                  <div className="bottom-support-links-stack">
-                    <span className="bottom-support-header">Customer Helpdesk</span>
-                    <a href="mailto:support@venuscare.com" className="bottom-support-item">📧 support@venuscare.com</a>
-                    <a href="https://wa.me/919999988888" target="_blank" rel="noopener noreferrer" className="bottom-support-item">💬 WhatsApp: +91 99999 88888</a>
-                  </div>
-                  <div className="bottom-socials-row">
-                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
-                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a>
-                    <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer">Pinterest</a>
-                  </div>
+
                   <div className="bottom-privacy-terms-row">
                     <Link to="/privacy-policy" onClick={() => setMenuOpen(false)}>Privacy Policy</Link>
                     <span className="bullet-dot">•</span>

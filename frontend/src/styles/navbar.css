@@ -1864,78 +1864,196 @@
 }
 
 /* 5. Fixed Golden Gradient Bottom Section */
+/* 5. Fixed Golden Gradient Bottom Section */
 .drawer-luxury-fixed-bottom-section {
-  background: linear-gradient(135deg, #1C1C1C 0%, #2D2D2D 100%);
-  border: 1.5px solid #C8A165;
-  border-radius: 16px;
-  padding: 16px;
-  color: #FFFFFF;
   box-sizing: border-box;
-  margin-top: auto;
+  margin-top: 24px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
-.bottom-download-banner-row {
+.drawer-support-card-luxury {
+  background: #1F2430; /* luxury dark background */
+  border: 1px solid rgba(200, 161, 101, 0.25);
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 12px;
 }
 
-.bottom-banner-main-title {
+.support-card-title-luxury {
   font-family: 'Cinzel', serif;
-  font-size: 12px;
+  font-size: 13.5px;
   font-weight: 700;
   color: #C8A165;
   letter-spacing: 0.5px;
+  margin: 0 0 2px 0;
 }
 
-.bottom-banner-sub-desc {
-  font-size: 9.5px;
-  color: #EFECE6;
+.support-card-subtitle-luxury {
+  font-size: 10px;
+  color: #D1D5DB;
+  margin: 0;
+  line-height: 1.4;
+  font-family: 'Inter', sans-serif;
 }
 
-.bottom-support-links-stack {
+.support-info-items-list {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 10px;
 }
 
-.bottom-support-header {
-  font-size: 10px;
-  text-transform: uppercase;
-  color: #9CA3AF;
-  letter-spacing: 0.5px;
-  font-weight: 600;
-}
-
-.bottom-support-item {
-  font-size: 11.5px;
-  color: #FFFFFF;
-  text-decoration: none;
-}
-
-.bottom-socials-row {
+.support-info-item-row-link {
   display: flex;
-  gap: 12px;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #F3F4F6;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.support-info-item-row-link:active {
+  color: #C8A165;
+}
+
+.support-info-item-row-static {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #9CA3AF;
+  font-family: 'Inter', sans-serif;
+}
+
+.info-row-icon {
+  color: #C8A165;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.support-trust-badges-grid-luxury {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 10px;
+}
+
+.trust-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9.5px;
+  color: #D1D5DB;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+}
+
+.badge-check-icon {
+  color: #10B981;
+  font-size: 10px;
+}
+
+.support-action-buttons-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.support-primary-action-btn-gold {
+  background: linear-gradient(135deg, #C8A165 0%, #B59053 100%);
+  color: #FFFFFF;
+  border: none;
+  height: 36px;
+  border-radius: 18px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.support-secondary-action-btn-whatsapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #10B981;
+  color: #10B981;
+  background: transparent;
+  height: 36px;
+  border-radius: 18px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: transform 0.2s ease;
+}
+
+.support-primary-action-btn-gold:active,
+.support-secondary-action-btn-whatsapp:active {
+  transform: scale(0.98);
+}
+
+.support-card-socials-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 10px;
 }
 
-.bottom-socials-row a {
-  font-size: 11px;
-  color: #C8A165;
+.circular-social-icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #9CA3AF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
   text-decoration: none;
-  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.circular-social-icon-btn:active {
+  border-color: #C8A165;
+  color: #C8A165;
+}
+
+.support-card-brand-message {
+  font-size: 9px;
+  color: #9CA3AF;
+  text-align: center;
+  font-style: italic;
+  margin: 6px 0 0 0;
+  line-height: 1.4;
+  font-family: 'Inter', sans-serif;
 }
 
 .bottom-privacy-terms-row {
   display: flex;
   gap: 6px;
   align-items: center;
+  justify-content: center;
   font-size: 9.5px;
   color: #9CA3AF;
+  margin-top: 6px;
 }
 
 .bottom-privacy-terms-row a {
