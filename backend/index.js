@@ -104,6 +104,69 @@ app.get("/api/debug-env-keys", (req, res) => {
   res.json({ keys: present });
 });
 
+app.get("/api/debug-smtp-test", async (req, res) => {
+  const nodemailer = require("nodemailer");
+  const host = "smtp.gmail.com";
+  const user = process.env.EMAIL_USER || process.env.GMAIL_USER;
+  const pass = process.env.EMAIL_PASS || process.env.GMAIL_PASS;
+  const logs = [];
+  
+  logs.push(`Testing with User: ${user}`);
+  logs.push(`Testing with Pass: ${pass ? pass.slice(0, 4) + "..." : "undefined"}`);
+
+  try {
+    const dnsPromises = require("dns").promises;
+    const addresses = await dnsPromises.resolve4(host);
+    const ip = addresses[0];
+    logs.push(`Resolved ${host} to IPv4: ${ip}`);
+
+    // Test Port 587 (STARTTLS)
+    logs.push("Starting Port 587 (STARTTLS) test...");
+    const t587 = nodemailer.createTransport({
+      host: ip,
+      port: 587,
+      secure: false,
+      auth: { user, pass },
+      tls: { servername: host, rejectUnauthorized: true },
+      connectionTimeout: 8000,
+      greetingTimeout: 8000,
+      socketTimeout: 10000,
+      family: 4
+    });
+    try {
+      await t587.verify();
+      logs.push("→ Port 587 VERIFY SUCCESS!");
+    } catch (e587) {
+      logs.push(`→ Port 587 VERIFY FAIL: ${e587.message}`);
+    }
+
+    // Test Port 465 (SSL/TLS direct)
+    logs.push("Starting Port 465 (SSL/TLS direct) test...");
+    const t465 = nodemailer.createTransport({
+      host: ip,
+      port: 465,
+      secure: true,
+      auth: { user, pass },
+      tls: { servername: host, rejectUnauthorized: true },
+      connectionTimeout: 8000,
+      greetingTimeout: 8000,
+      socketTimeout: 10000,
+      family: 4
+    });
+    try {
+      await t465.verify();
+      logs.push("→ Port 465 VERIFY SUCCESS!");
+    } catch (e465) {
+      logs.push(`→ Port 465 VERIFY FAIL: ${e465.message}`);
+    }
+
+  } catch (err) {
+    logs.push(`General error: ${err.message}`);
+  }
+
+  res.json({ logs });
+});
+
 // CSRF Routes (exclude from protection middleware)
 app.use("/api/csrf", require("./routes/csrfRoutes"));
 
