@@ -4,7 +4,7 @@ import "../styles/policy.css";
 
 const PrivacyPolicy = () => {
   return (
-    <div className="policy-container route-fade-in" style={{ padding: "40px 20px" }}>
+    <div className="policy-container route-fade-in">
       <div className="policy-card">
         <div className="policy-section">
           <h2>
