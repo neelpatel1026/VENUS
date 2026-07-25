@@ -92,6 +92,17 @@ const cookieParser = require("cookie-parser");
 app.use(express.json());
 app.use(cookieParser());
 
+app.get("/api/debug-env-keys", (req, res) => {
+  const safeKeys = Object.keys(process.env).filter(k => 
+    !k.toLowerCase().includes("secret") && 
+    !k.toLowerCase().includes("pass") && 
+    !k.toLowerCase().includes("key") && 
+    !k.toLowerCase().includes("token") && 
+    !k.toLowerCase().includes("uri")
+  );
+  res.json({ keys: safeKeys });
+});
+
 // CSRF Routes (exclude from protection middleware)
 app.use("/api/csrf", require("./routes/csrfRoutes"));
 
