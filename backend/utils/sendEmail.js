@@ -32,7 +32,9 @@ const sendEmail = async ({
       };
     } else {
       transporterOptions = {
-        service: "gmail",
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false, // Use STARTTLS (port 587)
         auth: {
           user,
           pass,
