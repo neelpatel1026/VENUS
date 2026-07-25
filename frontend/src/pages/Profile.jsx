@@ -2,6 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { LuChevronRight, LuCopy, LuStar, LuReceipt, LuRefreshCw, LuMessageSquare, LuTruck, LuPackage, LuHeart, LuEye } from "react-icons/lu";
 import { addToCart } from "../redux/cartSlice";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -21,6 +22,22 @@ const Profile = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [visibleCount, setVisibleCount] = useState(5);
   const [expandedOrders, setExpandedOrders] = useState({});
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("/api/products");
+        const data = await res.json();
+        if (res.ok) {
+          setRecommendedProducts(data.slice(0, 4));
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   // Fetch customer orders history
   useEffect(() => {
@@ -414,27 +431,58 @@ const Profile = () => {
         <div className="profile-content-col">
           
           <div className="dashboard-order-history-section">
-            <h3 style={{ fontFamily: "'Cinzel', serif", fontWeight: "700", fontSize: "1.3rem", color: "#1A1A1A", marginBottom: "20px" }}>
-              My Orders
-            </h3>
+            <div className="orders-section-header-luxury">
+              <h3 className="orders-section-title-luxury">My Order History</h3>
+              <p className="orders-section-subtitle-luxury">Manage and track your premium cosmetic deliveries</p>
+            </div>
             
             {loading ? (
-              <div className="order-history-loading" style={{ textAlign: "center", padding: "40px 0" }}>
-                <div className="ordersuccess-spinner" style={{ margin: "0 auto 16px auto" }}></div>
-                <p style={{ color: "#6B7280" }}>Loading historical order statements...</p>
+              <div className="order-history-loading-luxury">
+                <div className="ordersuccess-spinner"></div>
+                <p>Loading historical order statements...</p>
               </div>
             ) : orders.length === 0 ? (
-              <div className="profile-empty-orders-card" style={{ textAlign: "center", padding: "60px 20px", background: "#FFFFFF", border: "1px solid #EFEFEF", borderRadius: "20px" }}>
-                <span className="empty-icon" style={{ fontSize: "48px", display: "block", marginBottom: "16px" }}>🛍️</span>
-                <h4 style={{ fontSize: "18px", color: "#1A1A1A", margin: "0 0 8px 0" }}>You haven't placed any orders yet</h4>
-                <p style={{ color: "#6B7280", margin: "0 0 24px 0", fontSize: "14px" }}>Start shopping our organic premium cosmetic catalogs to log transactions.</p>
-                <Link to="/shop" className="btn-history-track-primary" style={{ display: "inline-block", textDecoration: "none", padding: "12px 30px", borderRadius: "30px", background: "#C8A165", color: "#FFFFFF", fontWeight: "700" }}>Start Shopping</Link>
+              <div className="profile-empty-orders-card-luxury">
+                <div className="empty-orders-illustration-box">
+                  <LuPackage className="empty-orders-box-vector" />
+                </div>
+                <h4 className="empty-orders-title">No Orders Yet</h4>
+                <p className="empty-orders-subtitle">
+                  You haven't placed your first order yet. Discover our premium botanical skincare collection.
+                </p>
+                <div className="empty-orders-actions-row">
+                  <Link to="/shop" className="btn-empty-orders-start-shopping">
+                    ✨ Start Shopping
+                  </Link>
+                  <Link to="/shop?filter=bestsellers" className="btn-empty-orders-bestsellers">
+                    🔥 View Best Sellers
+                  </Link>
+                </div>
+
+                {recommendedProducts.length > 0 && (
+                  <div className="empty-orders-recommendations-section">
+                    <h5 className="recommendations-header-title">Trending Skincare For You</h5>
+                    <div className="recommendations-products-grid">
+                      {recommendedProducts.map((p) => (
+                        <div key={p._id} className="recommendation-mini-product-card" onClick={() => navigate(`/product/${p._id}`)}>
+                          <div className="recommendation-card-image-box">
+                            <img src={p.imageUrl || "/cosmetic_1.avif"} alt={p.name} onError={(e) => { e.target.src = "/cosmetic_1.avif"; }} />
+                          </div>
+                          <div className="recommendation-card-details">
+                            <h6>{p.name}</h6>
+                            <span className="recommendation-card-price">₹{p.price.toFixed(2)}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <>
                 {/* Search, Filter, Sort Controls */}
-                <div className="orders-control-bar" style={{ display: "flex", flexDirection: "column", gap: "16px", marginBottom: "24px" }}>
-                  <div style={{ display: "flex", gap: "12px", width: "100%", flexWrap: "wrap" }}>
+                <div className="orders-control-bar-luxury">
+                  <div className="orders-search-filter-inputs-row">
                     <input
                       type="text"
                       placeholder="Search orders by Product Name or Order ID..."
@@ -443,33 +491,13 @@ const Profile = () => {
                         setSearchTerm(e.target.value);
                         setVisibleCount(5);
                       }}
-                      style={{
-                        flex: 1,
-                        minWidth: "260px",
-                        height: "48px",
-                        padding: "0 16px",
-                        borderRadius: "12px",
-                        border: "1px solid #ECE7DF",
-                        outline: "none",
-                        fontSize: "13.5px",
-                        background: "#FFFFFF"
-                      }}
+                      className="orders-search-input-field-luxury"
                     />
                     
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      style={{
-                        height: "48px",
-                        padding: "0 16px",
-                        borderRadius: "12px",
-                        border: "1px solid #ECE7DF",
-                        outline: "none",
-                        fontSize: "13.5px",
-                        background: "#FFFFFF",
-                        color: "#1A1A1A",
-                        cursor: "pointer"
-                      }}
+                      className="orders-sort-select-field-luxury"
                     >
                       <option value="newest">Sort: Newest First</option>
                       <option value="oldest">Sort: Oldest First</option>
@@ -478,26 +506,16 @@ const Profile = () => {
                     </select>
                   </div>
 
-                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  <div className="orders-status-filter-chips-list">
                     {["All", "Processing", "Delivered", "Cancelled", "Returns"].map((chip) => (
                       <button
                         key={chip}
+                        type="button"
                         onClick={() => {
                           setFilterStatus(chip);
                           setVisibleCount(5);
                         }}
-                        style={{
-                          padding: "8px 16px",
-                          borderRadius: "20px",
-                          border: "1px solid",
-                          borderColor: filterStatus === chip ? "#C8A165" : "#ECE7DF",
-                          background: filterStatus === chip ? "#C8A165" : "#FFFFFF",
-                          color: filterStatus === chip ? "#FFFFFF" : "#6B7280",
-                          fontSize: "12.5px",
-                          fontWeight: "600",
-                          cursor: "pointer",
-                          transition: "all 0.2s ease"
-                        }}
+                        className={`orders-filter-chip-btn ${filterStatus === chip ? "active" : ""}`}
                       >
                         {chip === "All" ? "All Orders" : chip}
                       </button>
@@ -507,11 +525,11 @@ const Profile = () => {
 
                 {/* Orders Card Stack */}
                 {processedOrders.length === 0 ? (
-                  <div style={{ textAlign: "center", padding: "40px", background: "#FFFFFF", border: "1px solid #EFEFEF", borderRadius: "20px", color: "#6B7280" }}>
+                  <div className="orders-empty-filter-match-luxury">
                     No orders match your search criteria. Try modifying filters or search query terms.
                   </div>
                 ) : (
-                  <div className="order-history-cards-stack" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                  <div className="order-history-cards-stack-luxury">
                     {processedOrders.slice(0, visibleCount).map((order) => {
                       const deliveredDate = order.deliveredAt ? new Date(order.deliveredAt) : null;
                       const daysSinceDelivery = deliveredDate ? Math.floor((Date.now() - deliveredDate.getTime()) / (1000 * 60 * 60 * 24)) : null;
@@ -525,80 +543,49 @@ const Profile = () => {
                       const hasMultiple = items.length > 1;
                       const isExpanded = expandedOrders[order._id];
 
-                      // Status Badge coloring mapper
-                      const getBadgeStyle = (status) => {
-                        switch (status) {
-                          case "Pending":
-                            return { bg: "rgba(59, 130, 246, 0.08)", color: "#3B82F6", border: "1px solid rgba(59, 130, 246, 0.2)" };
-                          case "Processing":
-                            return { bg: "rgba(249, 115, 22, 0.08)", color: "#F97316", border: "1px solid rgba(249, 115, 22, 0.2)" };
-                          case "Packed":
-                            return { bg: "rgba(139, 92, 246, 0.08)", color: "#8B5CF6", border: "1px solid rgba(139, 92, 246, 0.2)" };
-                          case "Shipped":
-                            return { bg: "rgba(99, 102, 241, 0.08)", color: "#6366F1", border: "1px solid rgba(99, 102, 241, 0.2)" };
-                          case "Out For Delivery":
-                            return { bg: "rgba(200, 161, 101, 0.08)", color: "#C8A165", border: "1px solid rgba(200, 161, 101, 0.2)" };
-                          case "Delivered":
-                            return { bg: "rgba(16, 185, 129, 0.08)", color: "#10B981", border: "1px solid rgba(16, 185, 129, 0.2)" };
-                          case "Cancelled":
-                            return { bg: "rgba(239, 68, 68, 0.08)", color: "#EF4444", border: "1px solid rgba(239, 68, 68, 0.2)" };
-                          case "Return Requested":
-                          case "Return Approved":
-                          case "Returned":
-                            return { bg: "rgba(217, 119, 6, 0.08)", color: "#D97706", border: "1px solid rgba(217, 119, 6, 0.2)" };
-                          case "Refund Completed":
-                            return { bg: "rgba(5, 150, 105, 0.08)", color: "#059669", border: "1px solid rgba(5, 150, 105, 0.2)" };
-                          default:
-                            return { bg: "#F3F4F6", color: "#6B7280", border: "1px solid #E5E7EB" };
-                        }
-                      };
-
-                      const badge = getBadgeStyle(order.status);
-
                       return (
-                        <div key={order._id} className="history-order-item-card" style={{ background: "#FFFFFF", border: "1px solid #EFEFEF", borderRadius: "20px", padding: "28px", display: "flex", flexDirection: "column", gap: "20px" }}>
+                        <div key={order._id} className="history-order-item-card-luxury">
                           
                           {/* Header metadata row */}
-                          <div className="history-header-row" style={{ display: "flex", flexWrap: "wrap", gap: "16px", justifyContent: "space-between", borderBottom: "1px solid #F6F6F6", paddingBottom: "16px", margin: 0 }}>
-                            <div className="meta-block">
-                              <span style={{ fontSize: "11px", textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: "4px" }}>ORDER NUMBER</span>
-                              <strong style={{ fontSize: "14px", color: "#1A1A1A" }}>#{order._id.slice(-8).toUpperCase()}</strong>
+                          <div className="history-header-row-luxury">
+                            <div className="meta-block-luxury">
+                              <span className="meta-label-luxury">ORDER NUMBER</span>
+                              <strong className="meta-value-luxury">#{order._id.slice(-8).toUpperCase()}</strong>
                             </div>
-                            <div className="meta-block">
-                              <span style={{ fontSize: "11px", textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: "4px" }}>ORDER DATE</span>
-                              <strong style={{ fontSize: "14px", color: "#1A1A1A" }}>{new Date(order.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</strong>
+                            <div className="meta-block-luxury">
+                              <span className="meta-label-luxury">ORDER DATE</span>
+                              <strong className="meta-value-luxury">{new Date(order.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</strong>
                             </div>
-                            <div className="meta-block">
-                              <span style={{ fontSize: "11px", textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: "4px" }}>AMOUNT PAID</span>
-                              <strong style={{ fontSize: "14px", color: "#C8A165" }}>₹{order.totalAmount.toFixed(2)}</strong>
+                            <div className="meta-block-luxury">
+                              <span className="meta-label-luxury">AMOUNT PAID</span>
+                              <strong className="meta-value-luxury price-luxury">₹{order.totalAmount.toFixed(2)}</strong>
                             </div>
-                            <div className="meta-block">
-                              <span style={{ fontSize: "11px", textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: "4px" }}>STATUS</span>
-                              <span style={{ padding: "4px 10px", borderRadius: "20px", fontSize: "11.5px", fontWeight: "700", textTransform: "uppercase", background: badge.bg, color: badge.color, border: badge.border }}>
+                            <div className="meta-block-luxury">
+                              <span className="meta-label-luxury">STATUS</span>
+                              <span className={`status-badge-luxury status-${order.status.toLowerCase().replace(/\s+/g, "-")}`}>
                                 {order.status === "Pending" ? "Confirmed" : order.status}
                               </span>
                             </div>
                             {deliveredDate && (
-                              <div className="meta-block">
-                                <span style={{ fontSize: "11px", textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: "4px" }}>DELIVERED DATE</span>
-                                <strong style={{ fontSize: "14px", color: "#10B981" }}>{deliveredDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</strong>
+                              <div className="meta-block-luxury">
+                                <span className="meta-label-luxury">DELIVERED DATE</span>
+                                <strong className="meta-value-luxury delivery-success-luxury">{deliveredDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</strong>
                               </div>
                             )}
                           </div>
 
-                          {/* Expandable items listing */}
-                          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                          {/* Items listing */}
+                          <div className="history-items-list-container-luxury">
                             {/* Always show first item */}
-                            <div className="history-thumbnail-row" style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                            <div className="history-thumbnail-row-luxury">
                               <img
                                 src={firstItem.productImage || "/placeholder.jpg"}
                                 alt={firstItem.productName}
-                                className="history-thumb-image"
-                                style={{ width: "70px", height: "70px", borderRadius: "10px", objectFit: "cover", border: "1px solid #EFEFEF" }}
+                                className="history-thumb-image-luxury"
                               />
-                              <div className="history-thumb-details">
-                                <h4 style={{ margin: "0 0 4px 0", fontSize: "14px", color: "#1A1A1A", fontWeight: "600" }}>{firstItem.productName}</h4>
-                                <p style={{ margin: 0, fontSize: "12.5px", color: "#6B7280" }}>Quantity: {firstItem.qty} • Price: ₹{firstItem.price.toFixed(2)}</p>
+                              <div className="history-thumb-details-luxury">
+                                <h4 className="product-title-luxury">{firstItem.productName}</h4>
+                                <p className="product-meta-subtext-luxury">Quantity: {firstItem.qty} • Price: ₹{firstItem.price.toFixed(2)}</p>
                               </div>
                             </div>
 
@@ -606,17 +593,17 @@ const Profile = () => {
                             {hasMultiple && (
                               <>
                                 {isExpanded && (
-                                  <div className="expandable-items-container" style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "4px", borderTop: "1px dashed #EFEFEF", paddingTop: "12px" }}>
+                                  <div className="expandable-items-container-luxury">
                                     {items.slice(1).map((item, idx) => (
-                                      <div key={item._id || idx} className="history-thumbnail-row" style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                                      <div key={item._id || idx} className="history-thumbnail-row-luxury">
                                         <img
                                           src={item.productImage || "/placeholder.jpg"}
                                           alt={item.productName}
-                                          style={{ width: "70px", height: "70px", borderRadius: "10px", objectFit: "cover", border: "1px solid #EFEFEF" }}
+                                          className="history-thumb-image-luxury"
                                         />
-                                        <div className="history-thumb-details">
-                                          <h4 style={{ margin: "0 0 4px 0", fontSize: "14px", color: "#1A1A1A", fontWeight: "600" }}>{item.productName}</h4>
-                                          <p style={{ margin: 0, fontSize: "12.5px", color: "#6B7280" }}>Quantity: {item.qty} • Price: ₹{item.price.toFixed(2)}</p>
+                                        <div className="history-thumb-details-luxury">
+                                          <h4 className="product-title-luxury">{item.productName}</h4>
+                                          <p className="product-meta-subtext-luxury">Quantity: {item.qty} • Price: ₹{item.price.toFixed(2)}</p>
                                         </div>
                                       </div>
                                     ))}
@@ -626,20 +613,7 @@ const Profile = () => {
                                 <button
                                   type="button"
                                   onClick={() => toggleExpandOrder(order._id)}
-                                  style={{
-                                    alignSelf: "flex-start",
-                                    background: "none",
-                                    border: "none",
-                                    color: "#C8A165",
-                                    fontWeight: "600",
-                                    fontSize: "12.5px",
-                                    cursor: "pointer",
-                                    padding: "4px 0",
-                                    outline: "none",
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    gap: "4px"
-                                  }}
+                                  className="toggle-expand-items-btn-luxury"
                                 >
                                   {isExpanded ? "View Less Items" : `View All Items (+${items.length - 1} more)`}
                                 </button>
@@ -648,34 +622,33 @@ const Profile = () => {
                           </div>
 
                           {/* Footer Actions buttons */}
-                          <div className="history-actions-footer" style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "8px", borderTop: "1px solid #F6F6F6", paddingTop: "18px" }}>
-                            <Link to={`/order/${order._id}`} className="btn-history-track-primary" style={{ padding: "10px 20px", borderRadius: "8px", textDecoration: "none", fontSize: "13px", fontWeight: "600", background: "#C8A165", color: "#FFFFFF", display: "inline-flex", alignItems: "center" }}>
-                              Track Order
+                          <div className="history-actions-footer-luxury">
+                            <Link to={`/order/${order._id}`} className="btn-luxury-action-primary">
+                              <LuTruck /> Track Order
                             </Link>
                             
                             <button
+                              type="button"
                               onClick={() => handleDownloadInvoice(order._id)}
-                              className="btn-history-invoice-secondary"
-                              style={{ padding: "10px 20px", borderRadius: "8px", border: "1px solid #1A1A1A", background: "#1A1A1A", color: "#FFFFFF", fontSize: "13px", fontWeight: "600", cursor: "pointer" }}
+                              className="btn-luxury-action-secondary"
                             >
-                              Download Invoice
+                              <LuReceipt /> Download Invoice
                             </button>
 
                             {order.status === "Delivered" && items.map(item => {
                               const alreadyReviewed = userReviews.some(r => r.orderId === order._id && r.productId === item.productId);
                               return (
-                                <div key={item.productId} style={{ display: "inline-block" }}>
+                                <div key={item.productId} className="inline-action-item-wrap">
                                   {alreadyReviewed ? (
-                                    <span style={{ padding: "10px 14px", borderRadius: "8px", border: "1px solid #ECE7DF", background: "#FAF9F6", color: "#6B7280", fontSize: "13px", fontWeight: "600", display: "inline-block" }}>
-                                      View Your Review ({item.productName.slice(0, 8)}...)
+                                    <span className="btn-luxury-action-status-badge">
+                                      ✓ Reviewed ({item.productName.slice(0, 10)}...)
                                     </span>
                                   ) : (
                                     <Link
                                       to={`/product/${item.productId}`}
-                                      className="btn-history-buyagain-outline"
-                                      style={{ padding: "10px 14px", borderRadius: "8px", border: "1px solid #C8A165", background: "#FFFFFF", color: "#C8A165", textDecoration: "none", fontSize: "13px", fontWeight: "600", display: "inline-block" }}
+                                      className="btn-luxury-action-outline-gold"
                                     >
-                                      Review {item.productName.slice(0, 8)}...
+                                      <LuStar /> Review {item.productName.slice(0, 10)}...
                                     </Link>
                                   )}
                                 </div>
@@ -684,34 +657,36 @@ const Profile = () => {
 
                             {isReturnEligible && (
                               <button
+                                type="button"
                                 onClick={() => navigate(`/return/${order._id}`)}
-                                style={{ padding: "10px 20px", borderRadius: "8px", border: "1px solid #EF4444", background: "rgba(239, 68, 68, 0.05)", color: "#EF4444", fontSize: "13px", fontWeight: "600", cursor: "pointer" }}
+                                className="btn-luxury-action-outline-danger"
                               >
                                 Request Return
                               </button>
                             )}
 
                             {returnWindowClosed && (
-                              <span style={{ padding: "10px 20px", borderRadius: "8px", border: "1px solid #ECE7DF", background: "#FAF9F6", color: "#6B7280", fontSize: "13px", fontWeight: "600" }}>
+                              <span className="btn-luxury-action-status-badge">
                                 Return Window Closed
                               </span>
                             )}
 
                             {isCancelable && (
                               <button
+                                type="button"
                                 onClick={() => handleCancelOrder(order._id)}
-                                style={{ padding: "10px 20px", borderRadius: "8px", border: "1px solid #EF4444", background: "#FFFFFF", color: "#EF4444", fontSize: "13px", fontWeight: "600", cursor: "pointer" }}
+                                className="btn-luxury-action-outline-danger"
                               >
                                 Cancel Order
                               </button>
                             )}
                             
                             <button
+                              type="button"
                               onClick={() => handleReorderAll(order.items)}
-                              className="btn-history-buyagain-outline"
-                              style={{ padding: "10px 20px", borderRadius: "8px", border: "1px solid #ECE7DF", background: "#FFFFFF", color: "#6B7280", fontSize: "13px", fontWeight: "600", cursor: "pointer" }}
+                              className="btn-luxury-action-outline-gold"
                             >
-                              Buy Again
+                              <LuRefreshCw /> Buy Again
                             </button>
                           </div>
 
@@ -723,22 +698,11 @@ const Profile = () => {
 
                 {/* Pagination Load More */}
                 {processedOrders.length > visibleCount && (
-                  <div style={{ textAlign: "center", marginTop: "30px" }}>
+                  <div className="pagination-load-more-row-luxury">
                     <button
+                      type="button"
                       onClick={() => setVisibleCount(prev => prev + 5)}
-                      style={{
-                        padding: "12px 30px",
-                        borderRadius: "30px",
-                        border: "1px solid #C8A165",
-                        background: "#FFFFFF",
-                        color: "#C8A165",
-                        fontSize: "14px",
-                        fontWeight: "700",
-                        cursor: "pointer",
-                        outline: "none",
-                        transition: "all 0.2s ease"
-                      }}
-                      className="btn-load-more"
+                      className="btn-load-more-orders-luxury"
                     >
                       Load More Orders
                     </button>
