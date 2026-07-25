@@ -218,7 +218,8 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
+      {/* DESKTOP NAVBAR */}
+      <nav className={`navbar desktop-navbar-container ${scrolled ? "scrolled" : ""}`}>
         
         {/* Logo left */}
         <div className="navbar-left">
@@ -382,52 +383,110 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* MOBILE DRAWER (Slides smoothly from left) */}
-        <div className={`mobile-menu-overlay ${menuOpen ? "active" : ""}`}>
-          <div className="mobile-menu-drawer">
-            <div className="drawer-header">
-              <h3>Navigation</h3>
-              <button className="drawer-close-btn" onClick={() => setMenuOpen(false)}>
-                <HiX />
-              </button>
-            </div>
-            
-            <ul className="mobile-menu-links">
-              <li><Link to="/" onClick={() => setMenuOpen(false)}>Home</Link></li>
-              <li><Link to="/shop" onClick={() => setMenuOpen(false)}>Shop</Link></li>
-              <li><Link to="/gifting" onClick={() => setMenuOpen(false)}>Gifting</Link></li>
-              <li><Link to="/about" onClick={() => setMenuOpen(false)}>About</Link></li>
-              <li><Link to="/contact" onClick={() => setMenuOpen(false)}>Contact</Link></li>
-              
-              <li className="mobile-menu-divider" />
-              
-              <li className="mobile-only-profile">
-                {user ? (
-                  <div className="mobile-profile-options">
-                    <div className="drawer-user-info">
-                      <span className="user-name">Hi, {user.name}</span>
-                      <span className="user-email">{user.email}</span>
-                    </div>
-                    <Link to="/profile" onClick={() => setMenuOpen(false)}>My Profile</Link>
-                    <Link to="/my-addresses" onClick={() => setMenuOpen(false)}>My Addresses</Link>
-                    {user.role === "admin" && (
-                      <Link to="/admin" onClick={() => setMenuOpen(false)} style={{ color: "#C8A165", fontWeight: "600" }}>
-                        Admin Panel
-                      </Link>
-                    )}
-                    <button onClick={handleLogoutClick} className="btn-logout-mobile">Logout</button>
-                  </div>
-                ) : (
-                  <Link to="/login" onClick={() => setMenuOpen(false)} className="mobile-login-btn">
-                    Account Login
-                  </Link>
-                )}
-              </li>
-            </ul>
-          </div>
+      </nav>
+
+      {/* MOBILE NAVBAR */}
+      <nav className={`navbar-mobile mobile-navbar-container ${scrolled ? "scrolled" : ""}`}>
+        {/* LEFT: Hamburger menu */}
+        <div className="navbar-mobile-left">
+          <button
+            className="menu-toggle-btn-mobile"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+          >
+            {menuOpen ? <HiX className="menu-toggle-icon-mobile" /> : <HiMenu className="menu-toggle-icon-mobile" />}
+          </button>
         </div>
 
+        {/* CENTER: Logo with registered mark */}
+        <div className="navbar-mobile-center">
+          <Link to="/" onClick={() => setMenuOpen(false)} className="mobile-navbar-brand-link">
+            <span className="mobile-brand-text">
+              VENUS CARE<span className="mobile-brand-trademark">®</span>
+            </span>
+          </Link>
+        </div>
+
+        {/* RIGHT: Search, Profile, Cart */}
+        <div className="navbar-mobile-right">
+          {/* Search Icon */}
+          <button 
+            className="mobile-header-icon-btn" 
+            onClick={() => navigate("/search")}
+            aria-label="Open search"
+          >
+            <FiSearch className="mobile-header-icon" />
+          </button>
+
+          {/* Profile Icon */}
+          {user ? (
+            <Link to="/profile" className="mobile-header-icon-btn" aria-label="My Profile">
+              <FiUser className="mobile-header-icon" />
+            </Link>
+          ) : (
+            <Link to="/login" className="mobile-header-icon-btn" aria-label="Account login">
+              <FiUser className="mobile-header-icon" />
+            </Link>
+          )}
+
+          {/* Cart Icon with Badge */}
+          {user?.role !== "admin" && (
+            <Link to="/cart" className="mobile-header-icon-btn mobile-cart-wrapper" aria-label="Open shopping bag">
+              <FiShoppingBag className="mobile-header-icon" />
+              {cartItems.length > 0 && (
+                <span className={`mobile-cart-badge ${cartBounce ? "bounce" : ""}`}>
+                  {cartItems.length > 99 ? "99+" : cartItems.length}
+                </span>
+              )}
+            </Link>
+          )}
+        </div>
       </nav>
+
+      {/* MOBILE DRAWER (Slides smoothly from left) */}
+      <div className={`mobile-menu-overlay ${menuOpen ? "active" : ""}`}>
+        <div className="mobile-menu-drawer">
+          <div className="drawer-header">
+            <h3>Navigation</h3>
+            <button className="drawer-close-btn" onClick={() => setMenuOpen(false)}>
+              <HiX />
+            </button>
+          </div>
+          
+          <ul className="mobile-menu-links">
+            <li><Link to="/" onClick={() => setMenuOpen(false)}>Home</Link></li>
+            <li><Link to="/shop" onClick={() => setMenuOpen(false)}>Shop</Link></li>
+            <li><Link to="/gifting" onClick={() => setMenuOpen(false)}>Gifting</Link></li>
+            <li><Link to="/about" onClick={() => setMenuOpen(false)}>About</Link></li>
+            <li><Link to="/contact" onClick={() => setMenuOpen(false)}>Contact</Link></li>
+            
+            <li className="mobile-menu-divider" />
+            
+            <li className="mobile-only-profile">
+              {user ? (
+                <div className="mobile-profile-options">
+                  <div className="drawer-user-info">
+                    <span className="user-name">Hi, {user.name}</span>
+                    <span className="user-email">{user.email}</span>
+                  </div>
+                  <Link to="/profile" onClick={() => setMenuOpen(false)}>My Profile</Link>
+                  <Link to="/my-addresses" onClick={() => setMenuOpen(false)}>My Addresses</Link>
+                  {user.role === "admin" && (
+                    <Link to="/admin" onClick={() => setMenuOpen(false)} style={{ color: "#C8A165", fontWeight: "600" }}>
+                      Admin Panel
+                    </Link>
+                  )}
+                  <button onClick={handleLogoutClick} className="btn-logout-mobile">Logout</button>
+                </div>
+              ) : (
+                <Link to="/login" onClick={() => setMenuOpen(false)} className="mobile-login-btn">
+                  Account Login
+                </Link>
+              )}
+            </li>
+          </ul>
+        </div>
+      </div>
 
       {/* FULLSCREEN SEARCH OVERLAY (Mobile/Tablet only) */}
       {showSearchOverlay && (

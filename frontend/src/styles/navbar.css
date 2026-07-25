@@ -1123,3 +1123,164 @@
   }
 }
 
+/* ==========================================================================
+   MOBILE NAVBAR SPLIT LAYOUT SUPPORT - VENUS CARE
+   ========================================================================== */
+
+.mobile-navbar-container {
+  display: none !important;
+}
+
+@media (max-width: 1024px) {
+  .desktop-navbar-container {
+    display: none !important;
+  }
+  
+  .mobile-navbar-container {
+    display: flex !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background-color: #FFFFFF;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    z-index: 1000;
+    box-shadow: none;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .mobile-navbar-container.scrolled {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  }
+
+  /* Left Toggle Menu Icon */
+  .navbar-mobile-left {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 60px;
+  }
+
+  .menu-toggle-btn-mobile {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    outline: none;
+    transition: transform 0.2s ease;
+  }
+
+  .menu-toggle-btn-mobile:active {
+    transform: scale(0.9);
+  }
+
+  .menu-toggle-icon-mobile {
+    font-size: 24px;
+    color: #1A1A1A;
+  }
+
+  /* Center Logo - Absolutely Centered */
+  .navbar-mobile-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+  }
+
+  .mobile-navbar-brand-link {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-brand-text {
+    font-family: 'Cinzel', 'Didot', 'Bodoni MT', 'Times New Roman', serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #1A1A1A;
+    position: relative;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: flex-start;
+  }
+
+  .mobile-brand-trademark {
+    font-size: 8px;
+    font-weight: 400;
+    margin-left: 2px;
+    margin-top: -3px;
+    color: #C8A165;
+    font-family: sans-serif;
+  }
+
+  /* Right Icons: Search, Profile, Cart */
+  .navbar-mobile-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .mobile-header-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    color: #1A1A1A;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+    padding: 0;
+    position: relative;
+  }
+
+  .mobile-header-icon-btn:active {
+    transform: scale(0.9);
+  }
+
+  .mobile-header-icon {
+    font-size: 22px;
+    color: #1A1A1A;
+  }
+
+  /* Mobile Cart Badge */
+  .mobile-cart-wrapper {
+    position: relative;
+  }
+
+  .mobile-cart-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #C8A165;
+    color: #FFFFFF;
+    font-size: 9px;
+    font-weight: 700;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(200, 161, 101, 0.3);
+    border: 1px solid #FFFFFF;
+  }
+}
+
