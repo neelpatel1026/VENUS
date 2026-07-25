@@ -300,6 +300,7 @@ const Checkout = () => {
   };
 
   const sendOtp = async () => {
+    if (sendingOtp) return;
     setSendingOtp(true);
     try {
       const { data } = await axios.post(
@@ -309,18 +310,24 @@ const Checkout = () => {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
+          timeout: 15000, // 15 seconds timeout
         }
       );
       setOtpSent(true);
       toast.success(data.message || "OTP sent successfully to your email!");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to send verification OTP");
+      if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
+        toast.error("Connection timed out. Please try sending OTP again.");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to send verification OTP");
+      }
     } finally {
       setSendingOtp(false);
     }
   };
 
   const verifyEmailOtp = async () => {
+    if (verifyingOtp) return;
     setVerifyingOtp(true);
     try {
       const res = await axios.post(
@@ -330,6 +337,7 @@ const Checkout = () => {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
+          timeout: 15000, // 15 seconds timeout
         }
       );
       if (res.data.success) {
@@ -337,7 +345,11 @@ const Checkout = () => {
         toast.success("Email verified successfully!");
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Invalid OTP code entered");
+      if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
+        toast.error("Connection timed out. Please verify again.");
+      } else {
+        toast.error(error.response?.data?.message || "Invalid OTP code entered");
+      }
     } finally {
       setVerifyingOtp(false);
     }

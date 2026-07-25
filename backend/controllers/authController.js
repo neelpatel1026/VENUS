@@ -310,15 +310,17 @@ const forgotPassword = async (req, res) => {
 // }  
 
     const { sendForgotPasswordOtp } = require("../utils/notificationService.js");
-    try {
-      await sendForgotPasswordOtp(user, otp);
-    } catch (otpErr) {
-      return res.status(500).json({
-        message: "Failed to send OTP email: " + otpErr.message,
+    
+    const emailStartTime = Date.now();
+    sendForgotPasswordOtp(user, otp)
+      .then(() => {
+        console.log(`[authController] Background forgot password email sent to ${user.email} in ${Date.now() - emailStartTime} ms`);
+      })
+      .catch((err) => {
+        console.error(`[authController] Background forgot password email failed:`, err);
       });
-    }
 
-    res.json({
+    return res.json({
       message: 'OTP sent to email',
     });
 

@@ -17,21 +17,35 @@ const sendEmailOtp = async (req, res) => {
 
     user.emailOtp = await bcrypt.hash(otp, 10);
 
-    user.emailOtpExpire = Date.now() + 5 * 60 * 1000;
+    const startTime = Date.now();
+    console.log(`[emailOtpController] Send OTP request received for user: ${req.user._id}`);
 
+    user.emailOtpExpire = Date.now() + 5 * 60 * 1000;
     user.emailVerified = false;
 
     await user.save();
+    console.log(`[emailOtpController] OTP hashed and saved in DB in ${Date.now() - startTime} ms`);
 
     const { sendEmailVerificationOtp } = require("../utils/notificationService.js");
-    await sendEmailVerificationOtp(user, otp);
+    
+    // Dispatch email dispatch asynchronously without blocking the client response
+    const emailStartTime = Date.now();
+    sendEmailVerificationOtp(user, otp)
+      .then(() => {
+        console.log(`[emailOtpController] Background email delivered successfully to ${user.email} in ${Date.now() - emailStartTime} ms`);
+      })
+      .catch((err) => {
+        console.error(`[emailOtpController] Background email delivery failed:`, err);
+      });
 
-    res.json({
+    console.log(`[emailOtpController] HTTP Response returned in ${Date.now() - startTime} ms`);
+    return res.json({
       success: true,
       message: "OTP sent to email",
     });
   } catch (error) {
-    res.status(500).json({
+    console.error(`[emailOtpController] Send OTP handler error: ${error.message}`);
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
