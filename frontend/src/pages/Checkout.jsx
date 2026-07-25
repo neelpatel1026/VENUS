@@ -57,9 +57,12 @@ const Checkout = () => {
     country: "",
   });
 
-  const [otp, setOtp] = useState("");
+  const [otpValues, setOtpValues] = useState(["", "", "", "", "", ""]);
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+  const [resendCount, setResendCount] = useState(0);
+  const [otpErrorMsg, setOtpErrorMsg] = useState("");
 
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -150,6 +153,15 @@ const Checkout = () => {
     const filtered = mockPlaces.filter(p => p.description.toLowerCase().includes(q));
     setCheckoutSuggestions(filtered);
   }, [checkoutSearchQuery, isMock]);
+
+  // Handle OTP resend countdown timer
+  useEffect(() => {
+    if (resendTimer <= 0) return;
+    const interval = setInterval(() => {
+      setResendTimer((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [resendTimer]);
 
   // Handle select suggestion in mock mode
   const handleSelectCheckoutMockSuggestion = (suggestion) => {
@@ -302,6 +314,7 @@ const Checkout = () => {
   const sendOtp = async () => {
     if (sendingOtp) return;
     setSendingOtp(true);
+    setOtpErrorMsg("");
     try {
       const { data } = await axios.post(
         "/api/email-otp/send",
@@ -310,16 +323,27 @@ const Checkout = () => {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
-          timeout: 15000, // 15 seconds timeout
+          timeout: 20000, // 20 seconds timeout
         }
       );
       setOtpSent(true);
+      setResendTimer(30); // Start 30 seconds countdown
+      setResendCount((prev) => prev + 1);
+      setOtpValues(["", "", "", "", "", ""]); // Reset input boxes
       toast.success(data.message || "OTP sent successfully to your email!");
+      
+      // Auto focus first OTP digit input box on next tick
+      setTimeout(() => {
+        const firstBox = document.getElementById("otp-input-0");
+        if (firstBox) firstBox.focus();
+      }, 100);
     } catch (error) {
       if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
         toast.error("Connection timed out. Please try sending OTP again.");
       } else {
-        toast.error(error.response?.data?.message || "Failed to send verification OTP");
+        const errText = error.response?.data?.message || "Failed to send verification OTP";
+        setOtpErrorMsg(errText);
+        toast.error(errText);
       }
     } finally {
       setSendingOtp(false);
@@ -328,16 +352,22 @@ const Checkout = () => {
 
   const verifyEmailOtp = async () => {
     if (verifyingOtp) return;
+    const otpString = otpValues.join("");
+    if (otpString.length < 6) {
+      toast.error("Please enter the full 6-digit OTP");
+      return;
+    }
     setVerifyingOtp(true);
+    setOtpErrorMsg("");
     try {
       const res = await axios.post(
         "/api/email-otp/verify",
-        { otp },
+        { otp: otpString },
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
-          timeout: 15000, // 15 seconds timeout
+          timeout: 20000, // 20 seconds timeout
         }
       );
       if (res.data.success) {
@@ -348,10 +378,54 @@ const Checkout = () => {
       if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
         toast.error("Connection timed out. Please verify again.");
       } else {
-        toast.error(error.response?.data?.message || "Invalid OTP code entered");
+        const errText = error.response?.data?.message || "Invalid OTP code entered";
+        setOtpErrorMsg(errText);
+        toast.error(errText);
       }
     } finally {
       setVerifyingOtp(false);
+    }
+  };
+
+  const handleOtpChange = (index, value) => {
+    // allow numbers only
+    if (value && !/^\d+$/.test(value)) return;
+    const newValues = [...otpValues];
+    newValues[index] = value.slice(-1); // only keep last character
+    setOtpValues(newValues);
+    setOtpErrorMsg("");
+
+    // Auto focus next box
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`otp-input-${index + 1}`);
+      if (nextInput) nextInput.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === "Backspace") {
+      if (!otpValues[index] && index > 0) {
+        const prevInput = document.getElementById(`otp-input-${index - 1}`);
+        if (prevInput) {
+          prevInput.focus();
+          const newValues = [...otpValues];
+          newValues[index - 1] = "";
+          setOtpValues(newValues);
+          setOtpErrorMsg("");
+        }
+      }
+    }
+  };
+
+  const handleOtpPaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text").trim();
+    if (/^\d{6}$/.test(pastedData)) {
+      const newValues = pastedData.split("");
+      setOtpValues(newValues);
+      setOtpErrorMsg("");
+      const lastInput = document.getElementById("otp-input-5");
+      if (lastInput) lastInput.focus();
     }
   };
 
@@ -995,37 +1069,88 @@ const Checkout = () => {
                   </div>
 
                   {otpVerified ? (
-                    <div className="email-verified-success-status-badge">
+                    <div className="otp-state-badge success-badge">
                       <LuCheck className="verified-success-icon" />
-                      <span>Email Verified Successfully</span>
+                      <span>Verified ✓</span>
                     </div>
                   ) : (
-                    <div className="otp-actions-block">
+                    <div className="otp-verification-container">
                       {!otpSent ? (
                         <button 
                           type="button" 
                           onClick={sendOtp} 
                           disabled={sendingOtp}
                           className="send-otp-primary-action-btn"
+                          style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
                         >
-                          {sendingOtp ? "Sending verification..." : "Send Verification OTP"}
+                          {sendingOtp ? (
+                            <>
+                              <span className="spinner-border animate-spin inline-block w-4 h-4 border-2 rounded-full mr-2"></span>
+                              Sending...
+                            </>
+                          ) : (
+                            "Send OTP"
+                          )}
                         </button>
                       ) : (
-                        <div className="otp-input-and-submit-row">
-                          <input 
-                            type="text" 
-                            placeholder="Enter 6-digit OTP code"
-                            value={otp} 
-                            onChange={(e) => setOtp(e.target.value)} 
-                          />
-                          <button 
-                            type="button" 
-                            onClick={verifyEmailOtp}
-                            disabled={verifyingOtp}
-                            className="verify-otp-action-submit-btn"
-                          >
-                            {verifyingOtp ? "Verifying..." : "Verify Code"}
-                          </button>
+                        <div style={{ width: "100%" }}>
+                          <span className="otp-timer-text font-outfit" style={{ display: "block", marginBottom: "8px" }}>
+                            We have sent a verification code to your email.
+                          </span>
+                          
+                          {/* 6 individual OTP digit boxes */}
+                          <div className="otp-boxes-wrapper">
+                            {otpValues.map((val, idx) => (
+                              <input
+                                key={idx}
+                                id={`otp-input-${idx}`}
+                                type="text"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                maxLength="1"
+                                value={val}
+                                onChange={(e) => handleOtpChange(idx, e.target.value)}
+                                onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                                onPaste={handleOtpPaste}
+                                className={`otp-digit-box ${otpErrorMsg ? "error-state" : ""} ${otpVerified ? "success-state" : ""}`}
+                                disabled={verifyingOtp}
+                                autoComplete="one-time-code"
+                              />
+                            ))}
+                          </div>
+
+                          {otpErrorMsg && (
+                            <div className="otp-state-badge error-badge" style={{ marginBottom: "12px" }}>
+                              <span>{otpErrorMsg}</span>
+                            </div>
+                          )}
+
+                          <div className="otp-row-controls">
+                            <button 
+                              type="button" 
+                              onClick={verifyEmailOtp}
+                              disabled={verifyingOtp || otpValues.some(v => v === "")}
+                              className="verify-otp-action-submit-btn"
+                              style={{ display: "flex", alignItems: "center", gap: "6px" }}
+                            >
+                              {verifyingOtp ? "Verifying..." : "Verify OTP"}
+                            </button>
+
+                            {resendTimer > 0 ? (
+                              <span className="otp-timer-text font-outfit" style={{ fontSize: "12.5px" }}>
+                                Resend OTP in <span className="otp-timer-highlight">{resendTimer}s</span>
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={sendOtp}
+                                disabled={resendCount >= 5 || sendingOtp}
+                                className="otp-resend-link-btn font-outfit"
+                              >
+                                {resendCount >= 5 ? "Resend Limit Reached" : "Resend OTP"}
+                              </button>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>

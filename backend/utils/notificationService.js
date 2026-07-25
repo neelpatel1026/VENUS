@@ -240,13 +240,17 @@ const sendEmailVerificationOtp = async (user, otp) => {
   const bodyContent = `
     To continue with your transaction or profile updates, please verify your email address.<br /><br />
     Use the following secure One-Time Password (OTP) to complete verification:
-    <div style="background: #FAF9F6; border: 1px solid #ECE7DF; padding: 18px; font-size: 24px; font-weight: bold; color: #C8A165; letter-spacing: 4px; text-align: center; border-radius: 8px; margin: 20px 0;">
+    <div style="background: #FAF9F6; border: 1px solid #ECE7DF; padding: 18px; font-size: 28px; font-weight: bold; color: #C8A165; letter-spacing: 6px; text-align: center; border-radius: 8px; margin: 20px 0; font-family: monospace;">
       ${otp}
     </div>
-    This code is valid for exactly <strong>5 minutes</strong>. If you did not initiate this request, please change your credentials immediately.
+    This code is valid for exactly <strong>5 minutes</strong>. If you did not initiate this request, please ignore this email.
+  `;
+  const baseUrl = process.env.CLIENT_URL || "http://localhost:5173";
+  const actionButtonsHtml = `
+    <a href="${baseUrl}/checkout" class="btn" style="color: #FFFFFF !important;">Verify Account</a>
   `;
 
-  const html = generateEmailHtml({ title, greeting, bodyContent });
+  const html = generateEmailHtml({ title, greeting, bodyContent, actionButtonsHtml });
   await sendEmail({ email: user.email, subject: "COD Verification OTP - VENUS CARE", message: html });
 };
 

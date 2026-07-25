@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
-const sendEmail = require("../utils/sendEmail");
+const mongoose = require("mongoose");
 
 const sendEmailOtp = async (req, res) => {
   try {
@@ -13,36 +13,73 @@ const sendEmailOtp = async (req, res) => {
       });
     }
 
+    const email = user.email;
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email required",
+      });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email",
+      });
+    }
+
+    // Rate limiting / Spam prevention (rolling 1-hour window)
+    const now = Date.now();
+    if (!user.otpSendResetTime || user.otpSendResetTime < now) {
+      user.otpSendCount = 0;
+      user.otpSendResetTime = now + 60 * 60 * 1000; // 1 hour window
+    }
+
+    if (user.otpSendCount >= 5) {
+      const waitTimeMins = Math.ceil((user.otpSendResetTime - now) / (60 * 1000));
+      return res.status(429).json({
+        success: false,
+        message: `Maximum resend attempts reached. Please try again after ${waitTimeMins} minutes.`,
+      });
+    }
+
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
+    // Store securely (hashed representation)
     user.emailOtp = await bcrypt.hash(otp, 10);
-
-    const startTime = Date.now();
-    console.log(`[emailOtpController] Send OTP request received for user: ${req.user._id}`);
-
-    user.emailOtpExpire = Date.now() + 5 * 60 * 1000;
+    user.emailOtpExpire = now + 5 * 60 * 1000; // 5 minutes expiry
     user.emailVerified = false;
+    user.otpSendCount += 1;
 
     await user.save();
-    console.log(`[emailOtpController] OTP hashed and saved in DB in ${Date.now() - startTime} ms`);
+    console.log(`[emailOtpController] OTP generated and saved in DB for user: ${user._id}`);
 
     const { sendEmailVerificationOtp } = require("../utils/notificationService.js");
     
-    // Dispatch email dispatch asynchronously without blocking the client response
-    const emailStartTime = Date.now();
-    sendEmailVerificationOtp(user, otp)
-      .then(() => {
-        console.log(`[emailOtpController] Background email delivered successfully to ${user.email} in ${Date.now() - emailStartTime} ms`);
-      })
-      .catch((err) => {
-        console.error(`[emailOtpController] Background email delivery failed:`, err);
+    // Await delivery to verify SMTP connection state immediately
+    try {
+      await sendEmailVerificationOtp(user, otp);
+      console.log(`[emailOtpController] Email delivered successfully to ${email}`);
+      return res.json({
+        success: true,
+        message: "OTP sent to email",
+        resendAttemptsLeft: 5 - user.otpSendCount,
       });
+    } catch (emailErr) {
+      console.error(`[emailOtpController] Nodemailer send failed:`, emailErr);
+      
+      // Rollback DB states on immediate SMTP connection errors so user is not penalized
+      user.otpSendCount = Math.max(0, user.otpSendCount - 1);
+      user.emailOtp = "";
+      user.emailOtpExpire = null;
+      await user.save();
 
-    console.log(`[emailOtpController] HTTP Response returned in ${Date.now() - startTime} ms`);
-    return res.json({
-      success: true,
-      message: "OTP sent to email",
-    });
+      return res.status(500).json({
+        success: false,
+        message: `SMTP delivery failed: ${emailErr.message}`,
+      });
+    }
   } catch (error) {
     console.error(`[emailOtpController] Send OTP handler error: ${error.message}`);
     return res.status(500).json({
@@ -56,8 +93,12 @@ const verifyEmailOtp = async (req, res) => {
   try {
     const { otp } = req.body;
 
-    // const user = await User.findById(req.user._id);
-    // const valid = await bcrypt.compare(otp, user.emailOtp);
+    if (!otp) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP required",
+      });
+    }
 
     const user = await User.findById(req.user._id);
 
@@ -68,6 +109,15 @@ const verifyEmailOtp = async (req, res) => {
       });
     }
 
+    // Check if OTP exists / has been used
+    if (!user.emailOtp) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP already used",
+      });
+    }
+
+    // Expiry verification
     if (!user.emailOtpExpire || user.emailOtpExpire < Date.now()) {
       return res.status(400).json({
         success: false,
@@ -75,27 +125,31 @@ const verifyEmailOtp = async (req, res) => {
       });
     }
 
+    // Hash comparison
     const valid = await bcrypt.compare(otp, user.emailOtp);
 
     if (!valid) {
       return res.status(400).json({
         success: false,
-        message: "Invalid OTP",
+        message: "Incorrect OTP",
       });
     }
 
+    // Verified state update - delete OTP fields to prevent replay
     user.emailVerified = true;
     user.emailOtp = "";
     user.emailOtpExpire = null;
+    user.otpAttempts = 0; // reset failed attempts if tracked
 
     await user.save();
 
-    res.json({
+    return res.json({
       success: true,
-      message: "Email verified",
+      message: "OTP verification successful",
     });
   } catch (error) {
-    res.status(500).json({
+    console.error(`[emailOtpController] Verify OTP handler error: ${error.message}`);
+    return res.status(500).json({
       success: false,
       message: error.message,
     });

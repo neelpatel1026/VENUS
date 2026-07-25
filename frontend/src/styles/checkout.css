@@ -1127,3 +1127,131 @@
     padding: 12px 10px !important;
   }
 }
+
+/* ==================================================
+   OTP INPUT FIELD STYLES
+   ================================================== */
+.otp-boxes-wrapper {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0;
+  width: 100%;
+  max-width: 360px;
+  justify-content: space-between;
+}
+
+.otp-digit-box {
+  width: 48px;
+  height: 48px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  border: 1.5px solid #ECECEC;
+  border-radius: 10px;
+  outline: none;
+  background: #FFFFFF;
+  color: #1A1A1A;
+  transition: all 0.2s ease;
+  font-family: monospace;
+}
+
+.otp-digit-box:focus {
+  border-color: #C8A165;
+  box-shadow: 0 0 0 3px rgba(200, 161, 101, 0.15);
+}
+
+.otp-digit-box.error-state {
+  border-color: #DC2626;
+  background-color: #FEF2F2;
+}
+
+.otp-digit-box.success-state {
+  border-color: #16A34A;
+  background-color: #F0FDF4;
+}
+
+/* Card Improvements */
+.otp-verification-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.otp-timer-text {
+  font-size: 13px;
+  color: #6B7280;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.otp-timer-highlight {
+  font-weight: 700;
+  color: #C8A165;
+}
+
+.otp-resend-link-btn {
+  background: none;
+  border: none;
+  color: #C8A165;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.otp-resend-link-btn:hover:not(:disabled) {
+  color: #B88C4A;
+}
+
+.otp-resend-link-btn:disabled {
+  color: #9CA3AF;
+  text-decoration: none;
+  cursor: not-allowed;
+}
+
+.otp-state-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.otp-state-badge.success-badge {
+  background: rgba(22, 163, 74, 0.08);
+  color: #16A34A;
+  border: 1px solid rgba(22, 163, 74, 0.15);
+}
+
+.otp-state-badge.error-badge {
+  background: rgba(220, 38, 38, 0.08);
+  color: #DC2626;
+  border: 1px solid rgba(220, 38, 38, 0.15);
+}
+
+.otp-row-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 360px;
+  margin-top: 8px;
+}
+
+@media (max-width: 480px) {
+  .otp-boxes-wrapper {
+    gap: 6px;
+  }
+  .otp-digit-box {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+  }
+}
