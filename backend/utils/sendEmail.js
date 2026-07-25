@@ -46,6 +46,8 @@ const sendEmail = async ({
     transporterOptions.connectionTimeout = 10000;
     transporterOptions.greetingTimeout = 10000;
     transporterOptions.socketTimeout = 15000;
+    transporterOptions.family = 4; // Force IPv4 to bypass cloud provider IPv6 routing limits
+
 
     const transporter = nodemailer.createTransport(transporterOptions);
 
