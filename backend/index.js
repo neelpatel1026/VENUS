@@ -93,14 +93,15 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get("/api/debug-env-keys", (req, res) => {
-  const safeKeys = Object.keys(process.env).filter(k => 
-    !k.toLowerCase().includes("secret") && 
-    !k.toLowerCase().includes("pass") && 
-    !k.toLowerCase().includes("key") && 
-    !k.toLowerCase().includes("token") && 
-    !k.toLowerCase().includes("uri")
-  );
-  res.json({ keys: safeKeys });
+  const keys = Object.keys(process.env);
+  const whitelist = [
+    "SENDGRID_API_KEY", "RESEND_API_KEY", "MAILGUN_API_KEY", "BREVO_API_KEY", "SIB_API_KEY",
+    "SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS",
+    "EMAIL_USER", "EMAIL_PASS", "EMAIL_HOST", "EMAIL_PORT", "EMAIL_SECURE",
+    "GMAIL_USER", "GMAIL_PASS", "NODE_ENV", "CLIENT_URL", "FRONTEND_URL", "MONGO_URI"
+  ];
+  const present = whitelist.filter(k => keys.includes(k));
+  res.json({ keys: present });
 });
 
 // CSRF Routes (exclude from protection middleware)
