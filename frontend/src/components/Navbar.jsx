@@ -277,7 +277,7 @@ const Navbar = () => {
             {/* Mobile-only Search Button */}
             <button 
               className="nav-icon-btn mobile-only-search-btn" 
-              onClick={() => setShowSearchOverlay(true)}
+              onClick={() => navigate("/search")}
               aria-label="Open search"
             >
               <FiSearch className="nav-icon" />

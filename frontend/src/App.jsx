@@ -153,6 +153,7 @@ const PrivacyPolicy = React.lazy(() => import("./pages/PrivacyPolicy.jsx"));
 const TermsConditions = React.lazy(() => import("./pages/TermsConditions.jsx"));
 const ShippingPolicy = React.lazy(() => import("./pages/ShippingPolicy.jsx"));
 const FAQ = React.lazy(() => import("./pages/FAQ.jsx"));
+const SearchMobile = React.lazy(() => import("./pages/SearchMobile.jsx"));
 
 /* ADMIN */
 
@@ -242,6 +243,7 @@ function App() {
               {/* USER ROUTES */}
               <Route path="/" element={<Home />} />
               <Route path="/shop" element={<Shop />} />
+              <Route path="/search" element={<SearchMobile />} />
               <Route path="/gifting" element={<Gifting />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/cart" element={<Cart />} />
