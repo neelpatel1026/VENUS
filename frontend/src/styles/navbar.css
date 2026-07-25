@@ -1549,100 +1549,256 @@
   text-transform: uppercase;
 }
 
-.drawer-categories-scroll-row {
+/* 2. Category Showcase & Header */
+.drawer-section-header-luxury {
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 4px;
+}
+
+.drawer-section-title-luxury {
+  font-family: 'Cinzel', serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #1A1A1A;
+  letter-spacing: 1.2px;
+  margin: 0 0 2px 0;
+  text-transform: uppercase;
+}
+
+.drawer-section-subtitle-luxury {
+  font-size: 9.5px;
+  color: #9CA3AF;
+  font-style: italic;
+  font-family: 'Inter', sans-serif;
+}
+
+.drawer-luxury-divider {
+  width: 32px;
+  height: 1.5px;
+  background: #C8A165;
+  margin-top: 6px;
+  border-radius: 1px;
+}
+
+.drawer-categories-scroll-row-luxury {
   display: flex;
   gap: 12px;
   overflow-x: auto;
-  padding-bottom: 8px;
-  margin-bottom: 24px;
+  padding: 4px 2px 14px 2px;
+  margin-bottom: 22px;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
 }
 
-.drawer-categories-scroll-row::-webkit-scrollbar {
+.drawer-categories-scroll-row-luxury::-webkit-scrollbar {
   display: none;
 }
 
-.category-scroll-pill-card {
+.category-luxury-card {
   flex-shrink: 0;
-  width: 68px;
+  width: 90px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   text-align: center;
   cursor: pointer;
+  background: #FFFFFF;
+  padding: 10px 6px;
+  border-radius: 16px;
+  border: 1px solid rgba(232, 223, 210, 0.4);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.01);
+  transition: all 0.25s ease;
 }
 
-.scroll-pill-img-box {
-  width: 56px;
-  height: 56px;
+.category-luxury-card:active {
+  border-color: #C8A165;
+  box-shadow: 0 6px 14px rgba(200, 161, 101, 0.08);
+}
+
+.category-luxury-img-wrapper {
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   overflow: hidden;
-  border: 1px solid #ECE7DF;
-  background: #FAF9F6;
+  border: 1px solid rgba(232, 223, 210, 0.6);
+  background: #FAF7F2;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
 }
 
-.scroll-pill-img-box img {
+.category-luxury-img-wrapper img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.category-scroll-pill-card span {
+.category-luxury-label {
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 600;
   color: #4B5563;
   white-space: nowrap;
+  font-family: 'Inter', sans-serif;
 }
 
 /* 3. Promotional Banner */
-.drawer-promotional-banner-card {
-  position: relative;
-  width: 100%;
-  height: 90px;
-  border-radius: 12px;
-  overflow: hidden;
-  margin-bottom: 28px;
+.drawer-promotional-banner-luxury {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #FAF8F5 0%, #F4ECE1 100%);
+  border: 1px solid rgba(200, 161, 101, 0.22);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 22px;
   cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 16px rgba(200, 161, 101, 0.03);
+  transition: all 0.25s ease;
 }
 
-.drawer-promotional-banner-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.drawer-promotional-banner-luxury:active {
+  transform: scale(0.99);
 }
 
-.promo-banner-overlay-text {
+.promo-banner-luxury-content {
+  flex: 1.25;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 2;
+}
+
+.promo-badge-tag-luxury {
+  background: #C8A165;
+  color: #FFFFFF;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+}
+
+.promo-title-luxury {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0 0 3px 0;
+  letter-spacing: 0.5px;
+}
+
+.promo-desc-luxury {
+  font-size: 9.5px;
+  color: #6B7280;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+  font-family: 'Inter', sans-serif;
+}
+
+.promo-cta-btn-luxury {
+  background: #1A1A1A;
+  color: #FFFFFF;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-family: 'Cinzel', serif;
+  font-size: 8.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.promo-cta-btn-luxury:hover {
+  background: #C8A165;
+}
+
+.promo-banner-luxury-img-holder {
+  flex: 0.75;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-height: 72px;
+}
+
+.promo-banner-luxury-img-holder img {
+  max-width: 100%;
+  max-height: 72px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.04));
+}
+
+/* 4. Small Horizontal Scrolling Promotional Cards */
+.drawer-promo-collections-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 2px 12px 2px;
+  margin-bottom: 22px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.drawer-promo-collections-row::-webkit-scrollbar {
+  display: none;
+}
+
+.promo-collection-mini-card {
+  flex-shrink: 0;
+  width: 150px;
+  height: 70px;
+  border-radius: 12px;
+  border: 1px solid rgba(232, 223, 210, 0.4);
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px 12px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.01);
+}
+
+.promo-collection-mini-bg {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.15));
+  background: radial-gradient(circle at 90% 10%, rgba(200, 161, 101, 0.05) 0%, transparent 65%);
+}
+
+.promo-collection-mini-content {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 0 16px;
-  color: #FFFFFF;
+  gap: 2px;
 }
 
-.promo-banner-overlay-text h3 {
-  margin: 0;
+.promo-collection-mini-content h5 {
   font-family: 'Cinzel', serif;
-  font-size: 14px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  color: #1A1A1A;
+  margin: 0;
+  letter-spacing: 0.2px;
 }
 
-.promo-banner-overlay-text p {
-  margin: 4px 0 0 0;
-  font-size: 9.5px;
-  color: #EFECE6;
+.promo-collection-mini-content p {
+  font-size: 8.5px;
+  color: #6B7280;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
 }
 
 /* 4. Luxury Navigation List & Submenus */

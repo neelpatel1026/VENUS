@@ -506,38 +506,74 @@ const Navbar = () => {
                   </div>
                 </div>
 
-                {/* 2. Category Shortcuts (Horizontal Scroll) */}
-                <div className="drawer-section-title">Shop by Category</div>
-                <div className="drawer-categories-scroll-row">
+                {/* 2. Category Showcase */}
+                <div className="drawer-section-header-luxury">
+                  <h3 className="drawer-section-title-luxury">SHOP BY CATEGORY</h3>
+                  <span className="drawer-section-subtitle-luxury">Explore premium collections</span>
+                  <div className="drawer-luxury-divider" />
+                </div>
+
+                <div className="drawer-categories-scroll-row-luxury">
                   {[
                     { label: "Face Care", img: "/about_hero.jpg", query: "Face Wash" },
+                    { label: "Serums", img: "/about_formulation.jpg", query: "Serums" },
+                    { label: "Sunscreen", img: "/about_avatar.jpg", query: "Sunscreen" },
                     { label: "Hair Care", img: "/about_lab.jpg", query: "Hair Care" },
-                    { label: "Perfume", img: "/about_cta.jpg", query: "Perfume" },
-                    { label: "Lipstick", img: "/cosmetic_1.avif", query: "Lipstick" },
-                    { label: "Serum", img: "/about_formulation.jpg", query: "Serums" },
-                    { label: "Body Care", img: "/about_avatar.jpg", query: "Moisturizers" },
-                    { label: "Gifting", img: "/hero3_mobile.jpg", query: "Gift Sets" }
+                    { label: "Fragrance", img: "/about_cta.jpg", query: "Perfume" },
+                    { label: "Cosmetics", img: "/about_avatar.jpg", query: "Lipstick" },
+                    { label: "Body Care", img: "/about_hero.jpg", query: "Moisturizers" },
+                    { label: "Gift Sets", img: "/hero3_mobile.jpg", query: "Gift Sets" }
                   ].map((cat, idx) => (
-                    <div 
+                    <motion.div 
                       key={idx} 
-                      className="category-scroll-pill-card"
+                      className="category-luxury-card"
+                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: 1.02 }}
                       onClick={() => { setMenuOpen(false); navigate(`/shop?search=${encodeURIComponent(cat.query)}`); }}
                     >
-                      <div className="scroll-pill-img-box">
-                        <img src={cat.img} alt={cat.label} loading="lazy" onError={(e) => { e.target.src = "/cosmetic_1.avif"; }} />
+                      <div className="category-luxury-img-wrapper">
+                        <img src={cat.img} alt={cat.label} loading="lazy" onError={(e) => { e.target.src = "/about_hero.jpg"; }} />
                       </div>
-                      <span>{cat.label}</span>
-                    </div>
+                      <span className="category-luxury-label">{cat.label}</span>
+                    </motion.div>
                   ))}
                 </div>
 
                 {/* 3. Promotional Banner */}
-                <div className="drawer-promotional-banner-card" onClick={() => { setMenuOpen(false); navigate("/shop"); }}>
-                  <img src="/hero1_mobile.jpg" alt="Promo collection banner" onError={(e) => { e.target.src = "/about_hero.jpg"; }} />
-                  <div className="promo-banner-overlay-text">
-                    <h3>BUY 2 GET 1 FREE</h3>
-                    <p>Free Shipping Above ₹499 • Luxury Skincare</p>
+                <div className="drawer-promotional-banner-luxury" onClick={() => { setMenuOpen(false); navigate("/offers"); }}>
+                  <div className="promo-banner-luxury-content">
+                    <span className="promo-badge-tag-luxury">LIMITED OFFER</span>
+                    <h4 className="promo-title-luxury">BUY 2 GET 1 FREE</h4>
+                    <p className="promo-desc-luxury">Free Shipping Above ₹499 • Luxury Skincare</p>
+                    <button className="promo-cta-btn-luxury">Shop Now →</button>
                   </div>
+                  <div className="promo-banner-luxury-img-holder">
+                    <img src="/about_formulation.jpg" alt="Promo product" onError={(e) => { e.target.src = "/about_hero.jpg"; }} />
+                  </div>
+                </div>
+
+                {/* 4. Small Horizontal Scrolling Promotional Cards */}
+                <div className="drawer-promo-collections-row">
+                  {[
+                    { title: "Vitamin C Collection", subtitle: "Super Radiant Skin", link: "/shop?search=Vitamin C" },
+                    { title: "Summer Essentials", subtitle: "UV Shield & Hydration", link: "/shop?search=Sunscreen" },
+                    { title: "Glow Collection", subtitle: "Overnight Repair Serum", link: "/shop?search=Serums" },
+                    { title: "Luxury Gift Sets", subtitle: "Perfect Present for Loved Ones", link: "/shop?search=Gift Sets" },
+                    { title: "Anti-Aging Collection", subtitle: "Rewind Fine Lines", link: "/shop?search=Moisturizers" }
+                  ].map((collection, cIdx) => (
+                    <motion.div 
+                      key={cIdx} 
+                      className="promo-collection-mini-card"
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => { setMenuOpen(false); navigate(collection.link); }}
+                    >
+                      <div className="promo-collection-mini-bg" />
+                      <div className="promo-collection-mini-content">
+                        <h5>{collection.title}</h5>
+                        <p>{collection.subtitle}</p>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
 
                 {/* 4. Luxury Navigation List with Accordion Submenus */}
