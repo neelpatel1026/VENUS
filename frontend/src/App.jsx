@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import axios from "axios";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import toast from "react-hot-toast";
+import toast, { useToasterStore } from "react-hot-toast";
 
 // 1. Axios global configurations and request/response interceptors
 axios.defaults.withCredentials = true;
@@ -204,6 +204,24 @@ const PageLoader = () => (
 );
 
 function App() {
+  const { toasts } = useToasterStore();
+
+  useEffect(() => {
+    const visibleToasts = toasts.filter((t) => t.visible);
+    if (visibleToasts.length > 2) {
+      const oldest = visibleToasts[0];
+      toast.dismiss(oldest.id);
+    }
+
+    const messages = new Set();
+    visibleToasts.forEach((t) => {
+      if (typeof t.message === "string") {
+        messages.add(t.message);
+      }
+    });
+    window._activeToastMessages = messages;
+  }, [toasts]);
+
   return (
     <Router>
       {/* AUTO SCROLL TOP */}
