@@ -19,7 +19,7 @@
   display: flex !important;
   align-items: center !important;
   gap: 12px !important;
-  max-width: 380px !important;
+  max-width: 360px !important;
   width: 100% !important;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
@@ -136,8 +136,9 @@
 
 @media (min-width: 769px) {
   .premium-toast-container {
-    top: 24px !important;
-    right: 24px !important;
+    top: 20px !important;
+    left: 20px !important;
+    right: auto !important;
   }
 }
 

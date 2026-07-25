@@ -57,7 +57,7 @@ root.render(
           {/* TOAST NOTIFICATIONS */}
 
           <Toaster
-            position="top-right"
+            position="top-left"
             containerClassName="premium-toast-container"
             reverseOrder={false}
             toastOptions={{
