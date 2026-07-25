@@ -5,6 +5,10 @@ import "../styles/policy.css";
 const PrivacyPolicy = () => {
   return (
     <div className="policy-container route-fade-in">
+      <div className="policy-hero">
+        <h1>Privacy Policy</h1>
+        <p>How We Protect & Process Your Personal Data</p>
+      </div>
       <div className="policy-card">
         <div className="policy-section">
           <h2>

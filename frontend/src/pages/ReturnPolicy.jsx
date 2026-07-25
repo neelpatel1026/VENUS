@@ -8,6 +8,10 @@ const ReturnPolicy = () => {
 
   return (
     <div className="policy-container route-fade-in">
+      <div className="policy-hero">
+        <h1>Return & Refund Policy</h1>
+        <p>Venus Care Customer Satisfaction Guarantee</p>
+      </div>
       <div className="policy-card">
         {/* Eligibility Section */}
         <div className="policy-section">

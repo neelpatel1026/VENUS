@@ -4,7 +4,11 @@ import "../styles/policy.css";
 
 const TermsConditions = () => {
   return (
-    <div className="policy-container route-fade-in" style={{ padding: "40px 20px" }}>
+    <div className="policy-container route-fade-in">
+      <div className="policy-hero">
+        <h1>Terms & Conditions</h1>
+        <p>Agreement & Terms of Use for Venus Care</p>
+      </div>
       <div className="policy-card">
         <div className="policy-section">
           <h2>
