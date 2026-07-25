@@ -62,9 +62,9 @@ const registerUser = async (req, res) => {
     }
 
     // PASSWORD VALIDATION
-    if (password.length < 6) {
+    if (!password || password.length < 6 || password.length > 50) {
       return res.status(400).json({
-        message: 'Password must be at least 6 characters',
+        message: 'Password must be at least 6 characters.',
       });
     }
 
@@ -349,12 +349,9 @@ const resetPassword = async (req, res) => {
     }
 
     // PASSWORD VALIDATION
-
-    if (newPassword.length < 6) {
-
+    if (!newPassword || newPassword.length < 6 || newPassword.length > 50) {
       return res.status(400).json({
-        message:
-          'Password must be at least 6 characters',
+        message: 'Password must be at least 6 characters.',
       });
     }
 

@@ -38,17 +38,13 @@ const Register = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Password rules verification
+  // Password rules verification (Length: 6-50 characters)
   const rules = {
-    length: password.length >= 8,
-    uppercase: /[A-Z]/.test(password),
-    lowercase: /[a-z]/.test(password),
-    number: /[0-9]/.test(password),
-    special: /[^A-Za-z0-9]/.test(password),
+    length: password.length >= 6 && password.length <= 50,
     match: password === confirmPassword && confirmPassword !== "",
   };
 
-  const isPasswordStrong = Object.values(rules).every(Boolean);
+  const isPasswordStrong = rules.length;
 
   const handleNameChange = (val) => {
     setName(val);
@@ -95,21 +91,24 @@ const Register = () => {
 
   const handlePasswordChange = (val) => {
     setPassword(val);
-    const hasLength = val.length >= 8;
-    const hasUpper = /[A-Z]/.test(val);
-    const hasLower = /[a-z]/.test(val);
-    const hasNum = /[0-9]/.test(val);
-    const hasSpecial = /[^A-Za-z0-9]/.test(val);
-    const matches = val === confirmPassword && confirmPassword !== "";
+    const hasMinLength = val.length >= 6;
+    const hasMaxLength = val.length <= 50;
 
-    if (hasLength && hasUpper && hasLower && hasNum && hasSpecial) {
+    if (!val) {
+      setPasswordError("Password is required");
+      setIsPasswordValid(false);
+    } else if (!hasMinLength) {
+      setPasswordError("Password must be at least 6 characters.");
+      setIsPasswordValid(false);
+    } else if (!hasMaxLength) {
+      setPasswordError("Password cannot exceed 50 characters.");
+      setIsPasswordValid(false);
+    } else {
       setPasswordError("");
       setIsPasswordValid(true);
-    } else {
-      setPasswordError("Password is too weak");
-      setIsPasswordValid(false);
     }
 
+    const matches = val === confirmPassword && confirmPassword !== "";
     if (matches) {
       setConfirmPasswordError("");
       setIsConfirmPasswordValid(true);
@@ -172,8 +171,12 @@ const Register = () => {
       setIsPhoneValid(true);
     }
 
-    if (!isPasswordStrong) {
-      setPasswordError("Please meet all password strength rules");
+    if (password.length < 6) {
+      setPasswordError("Password must be at least 6 characters.");
+      setIsPasswordValid(false);
+      hasErrors = true;
+    } else if (password.length > 50) {
+      setPasswordError("Password cannot exceed 50 characters.");
       setIsPasswordValid(false);
       hasErrors = true;
     } else {
@@ -304,47 +307,7 @@ const Register = () => {
               style={{ marginBottom: "24px" }}
             />
 
-            {/* PASSWORD LIVE VALIDATION CHECKLIST */}
-            {password.length > 0 && (
-              <div className="auth-validation-list">
-                <div className={`auth-validation-item ${rules.length ? "valid" : ""}`}>
-                  <span className="auth-validation-icon">
-                    {rules.length ? <FiCheck color="#16A34A" /> : <FiX color="#DC2626" />}
-                  </span>
-                  <span>Minimum 8 characters</span>
-                </div>
-                <div className={`auth-validation-item ${rules.uppercase ? "valid" : ""}`}>
-                  <span className="auth-validation-icon">
-                    {rules.uppercase ? <FiCheck color="#16A34A" /> : <FiX color="#DC2626" />}
-                  </span>
-                  <span>At least 1 uppercase letter (A-Z)</span>
-                </div>
-                <div className={`auth-validation-item ${rules.lowercase ? "valid" : ""}`}>
-                  <span className="auth-validation-icon">
-                    {rules.lowercase ? <FiCheck color="#16A34A" /> : <FiX color="#DC2626" />}
-                  </span>
-                  <span>At least 1 lowercase letter (a-z)</span>
-                </div>
-                <div className={`auth-validation-item ${rules.number ? "valid" : ""}`}>
-                  <span className="auth-validation-icon">
-                    {rules.number ? <FiCheck color="#16A34A" /> : <FiX color="#DC2626" />}
-                  </span>
-                  <span>At least 1 number (0-9)</span>
-                </div>
-                <div className={`auth-validation-item ${rules.special ? "valid" : ""}`}>
-                  <span className="auth-validation-icon">
-                    {rules.special ? <FiCheck color="#16A34A" /> : <FiX color="#DC2626" />}
-                  </span>
-                  <span>At least 1 special character (@, $, !, etc.)</span>
-                </div>
-                <div className={`auth-validation-item ${rules.match ? "valid" : ""}`}>
-                  <span className="auth-validation-icon">
-                    {rules.match ? <FiCheck color="#16A34A" /> : <FiX color="#DC2626" />}
-                  </span>
-                  <span>Passwords match</span>
-                </div>
-              </div>
-            )}
+
 
             {/* TERMS & PRIVACY */}
             <div style={{ marginBottom: "26px" }}>

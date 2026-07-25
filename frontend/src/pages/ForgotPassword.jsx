@@ -58,21 +58,24 @@ const ForgotPassword = () => {
 
   const handlePasswordChange = (val) => {
     setNewPassword(val);
-    const hasLength = val.length >= 8;
-    const hasUpper = /[A-Z]/.test(val);
-    const hasLower = /[a-z]/.test(val);
-    const hasNum = /[0-9]/.test(val);
-    const hasSpecial = /[^A-Za-z0-9]/.test(val);
-    const matches = val === confirmPassword && confirmPassword !== "";
+    const hasMinLength = val.length >= 6;
+    const hasMaxLength = val.length <= 50;
 
-    if (hasLength && hasUpper && hasLower && hasNum && hasSpecial) {
+    if (!val) {
+      setPasswordError("Password is required");
+      setIsPasswordValid(false);
+    } else if (!hasMinLength) {
+      setPasswordError("Password must be at least 6 characters.");
+      setIsPasswordValid(false);
+    } else if (!hasMaxLength) {
+      setPasswordError("Password cannot exceed 50 characters.");
+      setIsPasswordValid(false);
+    } else {
       setPasswordError("");
       setIsPasswordValid(true);
-    } else {
-      setPasswordError("Password is too weak");
-      setIsPasswordValid(false);
     }
 
+    const matches = val === confirmPassword && confirmPassword !== "";
     if (matches) {
       setConfirmPasswordError("");
       setIsConfirmPasswordValid(true);
@@ -111,15 +114,11 @@ const ForgotPassword = () => {
 
   // PASSWORD VALIDATION RULES
   const passwordRules = {
-    length: newPassword.length >= 8,
-    uppercase: /[A-Z]/.test(newPassword),
-    lowercase: /[a-z]/.test(newPassword),
-    number: /[0-9]/.test(newPassword),
-    special: /[^A-Za-z0-9]/.test(newPassword),
+    length: newPassword.length >= 6 && newPassword.length <= 50,
     match: newPassword === confirmPassword && confirmPassword !== "",
   };
 
-  const isPasswordStrong = Object.values(passwordRules).every(Boolean);
+  const isPasswordStrong = passwordRules.length;
 
   // 1. SEND OTP REQUEST
   const handleSendOtp = async (e) => {
@@ -222,8 +221,12 @@ const ForgotPassword = () => {
     if (loading) return;
 
     let hasErrors = false;
-    if (!isPasswordStrong) {
-      setPasswordError("Password does not meet premium strength rules");
+    if (newPassword.length < 6) {
+      setPasswordError("Password must be at least 6 characters.");
+      setIsPasswordValid(false);
+      hasErrors = true;
+    } else if (newPassword.length > 50) {
+      setPasswordError("Password cannot exceed 50 characters.");
       setIsPasswordValid(false);
       hasErrors = true;
     } else {
@@ -466,47 +469,7 @@ const ForgotPassword = () => {
                     style={{ marginBottom: "24px" }}
                   />
 
-                  {/* PASSWORD RULES */}
-                  {newPassword.length > 0 && (
-                    <div className="auth-validation-list">
-                      <div className={`auth-validation-item ${passwordRules.length ? "valid" : ""}`}>
-                        <span className="auth-validation-icon">
-                          {passwordRules.length ? <FiCheck color="#16A34A" /> : <FiX color="#DC2626" />}
-                        </span>
-                        <span>Minimum 8 characters</span>
-                      </div>
-                      <div className={`auth-validation-item ${passwordRules.uppercase ? "valid" : ""}`}>
-                        <span className="auth-validation-icon">
-                          {passwordRules.uppercase ? <FiCheck color="#16A34A" /> : <FiX color="#DC2626" />}
-                        </span>
-                        <span>At least 1 uppercase letter (A-Z)</span>
-                      </div>
-                      <div className={`auth-validation-item ${passwordRules.lowercase ? "valid" : ""}`}>
-                        <span className="auth-validation-icon">
-                          {passwordRules.lowercase ? <FiCheck color="#16A34A" /> : <FiX color="#DC2626" />}
-                        </span>
-                        <span>At least 1 lowercase letter (a-z)</span>
-                      </div>
-                      <div className={`auth-validation-item ${passwordRules.number ? "valid" : ""}`}>
-                        <span className="auth-validation-icon">
-                          {passwordRules.number ? <FiCheck color="#16A34A" /> : <FiX color="#DC2626" />}
-                        </span>
-                        <span>At least 1 number (0-9)</span>
-                      </div>
-                      <div className={`auth-validation-item ${passwordRules.special ? "valid" : ""}`}>
-                        <span className="auth-validation-icon">
-                          {passwordRules.special ? <FiCheck color="#16A34A" /> : <FiX color="#DC2626" />}
-                        </span>
-                        <span>At least 1 special character</span>
-                      </div>
-                      <div className={`auth-validation-item ${passwordRules.match ? "valid" : ""}`}>
-                        <span className="auth-validation-icon">
-                          {passwordRules.match ? <FiCheck color="#16A34A" /> : <FiX color="#DC2626" />}
-                        </span>
-                        <span>Passwords match</span>
-                      </div>
-                    </div>
-                  )}
+
 
                   <button type="submit" className="auth-btn" disabled={loading || !isPasswordStrong}>
                     {loading ? (
