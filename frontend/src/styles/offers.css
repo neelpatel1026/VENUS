@@ -1,0 +1,978 @@
+/* ==========================================================================
+   PREMIUM LUXURY OFFERS PAGE STYLES - VENUS CARE
+   ========================================================================== */
+
+.offers-page-container {
+  width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  background: #FFFFFF;
+}
+
+/* ================= HERO SECTION ================= */
+.offers-hero-section {
+  position: relative;
+  width: 100%;
+  height: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.hero-banner-image-background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.hero-luxury-banner-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-overlay-darkening-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.offers-hero-content-box {
+  position: relative;
+  z-index: 5;
+  text-align: center;
+  color: #FFFFFF;
+  padding: 0 24px;
+  max-width: 700px;
+}
+
+.offers-hero-content-box h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin: 0 0 12px 0;
+  color: #FFFFFF;
+}
+
+.offers-hero-content-box p {
+  font-size: 16px;
+  font-weight: 500;
+  color: #E8DFD2;
+  margin: 0 0 32px 0;
+  line-height: 1.5;
+  letter-spacing: 0.5px;
+}
+
+.hero-buttons-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.offers-cta-btn {
+  background: #C8A96B;
+  color: #FFFFFF;
+  border: none;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 14px 28px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(200, 169, 107, 0.25);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.offers-cta-btn:hover {
+  background: #B39255;
+  box-shadow: 0 6px 16px rgba(200, 169, 107, 0.35);
+  transform: translateY(-2px);
+}
+
+.offers-cta-btn:active {
+  transform: translateY(0);
+}
+
+.secondary-gold-outline-btn {
+  background: transparent;
+  color: #C8A96B;
+  border: 1.5px solid #C8A96B;
+  box-shadow: none;
+}
+
+.secondary-gold-outline-btn:hover {
+  background: rgba(200, 169, 107, 0.08);
+  color: #FFFFFF;
+  border-color: #FFFFFF;
+  box-shadow: none;
+}
+
+/* ================= SECTION HEADERS ================= */
+.offers-grid-section-layout {
+  padding: 64px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.background-cream-tint {
+  background: #FAF7F2;
+  max-width: 100% !important;
+  width: 100%;
+}
+
+.offers-section-header-centered {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.offers-section-header-centered h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0 0 12px 0;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.gold-accent-line {
+  width: 60px;
+  height: 2.5px;
+  background: #C8A96B;
+  margin: 0 auto;
+}
+
+/* ================= CURRENT LIVE OFFERS GRID ================= */
+.live-offers-cards-masonry-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.live-offer-card-item {
+  background: #FFFFFF;
+  border: 1px solid #E8DFD2;
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.015);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.live-offer-card-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(200, 169, 107, 0.08);
+  border-color: #C8A96B;
+}
+
+.live-card-badge-top {
+  position: absolute;
+  top: -10px;
+  background: #C8A96B;
+  color: #FFFFFF;
+  font-size: 9px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 4px 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(200,169,107,0.2);
+}
+
+.live-card-icon-emoji {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.live-offer-card-item h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0 0 10px 0;
+  letter-spacing: 0.5px;
+}
+
+.live-offer-card-item p {
+  font-size: 13.5px;
+  color: #6B7280;
+  line-height: 1.5;
+  margin: 0 0 20px 0;
+  flex: 1;
+}
+
+.live-offer-card-action-btn {
+  background: #FAF7F2;
+  color: #1A1A1A;
+  border: 1px solid #E8DFD2;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.live-offer-card-action-btn:hover {
+  background: #C8A96B;
+  color: #FFFFFF;
+  border-color: #C8A96B;
+}
+
+.live-card-coupon-display-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FAF7F2;
+  border: 1px dashed #C8A96B;
+  border-radius: 8px;
+  padding: 8px 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.live-card-coupon-display-box span {
+  font-family: monospace;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1A1A1A;
+  letter-spacing: 1.5px;
+}
+
+.live-copy-code-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #C8A96B;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: transform 0.15s ease;
+}
+
+.live-copy-code-btn:active {
+  transform: scale(0.85);
+}
+
+/* ================= LIMITED TIME DEALS ================= */
+.deals-timer-countdown-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.timer-title-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+
+.countdown-digits-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.digit-unit {
+  background: #111112;
+  color: #FFFFFF;
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-width: 48px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.digit-unit strong {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.digit-unit span {
+  font-size: 8px;
+  text-transform: uppercase;
+  color: #A1A1A1;
+  margin-top: 1px;
+}
+
+.digit-separator {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.deals-products-cards-grid-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.limited-deal-card-item {
+  background: #FFFFFF;
+  border: 1px solid #E8DFD2;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.015);
+  display: flex;
+  flex-direction: column;
+}
+
+.deal-discount-badge-top {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #DC2626;
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  z-index: 5;
+}
+
+.deal-image-wrapper {
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+}
+
+.deal-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.limited-deal-card-item:hover .deal-image-wrapper img {
+  transform: scale(1.05);
+}
+
+.deal-details-box {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.deal-details-box h4 {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0 0 10px 0;
+  letter-spacing: 0.5px;
+}
+
+.deal-prices-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.price-current {
+  font-size: 16px;
+  font-weight: 700;
+  color: #DC2626;
+}
+
+.price-original {
+  font-size: 13.5px;
+  color: #9CA3AF;
+  text-decoration: line-through;
+}
+
+.deal-shop-btn {
+  background: #111112;
+  color: #FFFFFF;
+  border: none;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 11px;
+  border-radius: 20px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.25s ease;
+}
+
+.deal-shop-btn:hover {
+  background: #C8A96B;
+}
+
+/* ================= CATEGORY OFFERS ROW ================= */
+.category-offers-horizontal-flex-grid {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.category-offers-horizontal-flex-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.category-offer-card-item {
+  flex-shrink: 0;
+  width: 160px;
+  background: #FFFFFF;
+  border: 1px solid #E8DFD2;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.25s ease;
+}
+
+.category-offer-card-item:hover {
+  border-color: #C8A96B;
+}
+
+.cat-offer-image-box {
+  width: 100%;
+  height: 120px;
+  overflow: hidden;
+}
+
+.cat-offer-image-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cat-offer-meta-box {
+  padding: 12px;
+  text-align: center;
+}
+
+.cat-offer-discount-tag {
+  font-size: 9px;
+  font-weight: 700;
+  color: #C8A96B;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.cat-offer-meta-box h4 {
+  font-family: 'Cinzel', serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0 0 4px 0;
+}
+
+.cat-offer-meta-box p {
+  font-size: 10.5px;
+  color: #9CA3AF;
+  margin: 0 0 10px 0;
+}
+
+.cat-offer-action-link {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #C8A96B;
+  display: block;
+}
+
+/* ================= PROMOTION BANNERS ================= */
+.offers-promotional-banners-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding: 40px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.offers-promotional-banner-card-item {
+  position: relative;
+  height: 220px;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.promo-banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.offers-promotional-banner-card-item:hover .promo-banner-img {
+  transform: scale(1.03);
+}
+
+.promo-banner-darkening-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.2));
+}
+
+.promo-banner-content-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 28px;
+  color: #FFFFFF;
+}
+
+.banner-badge-text {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  color: #C8A96B;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.promo-banner-content-inner h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  letter-spacing: 0.5px;
+}
+
+.promo-banner-content-inner p {
+  font-size: 12.5px;
+  color: #E8DFD2;
+  margin: 0 0 16px 0;
+  line-height: 1.4;
+}
+
+.banner-cta-link {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  letter-spacing: 1px;
+  border-bottom: 1.5px solid #C8A96B;
+  width: fit-content;
+  padding-bottom: 2px;
+}
+
+/* ================= COUPON CARDS LIST ================= */
+.coupons-cards-flex-grid-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.coupon-item-card-display {
+  background: #FFFFFF;
+  border: 1px solid #E8DFD2;
+  border-radius: 14px;
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.01);
+}
+
+.coupon-left-dashed-section {
+  background: #FAF7F2;
+  border-right: 2px dashed #E8DFD2;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-width: 140px;
+  box-sizing: border-box;
+}
+
+.coupon-code-badge-text {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1A1A1A;
+  letter-spacing: 1.5px;
+  background: #FFFFFF;
+  border: 1px solid #E8DFD2;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.coupon-copy-icon-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #C8A96B;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: transform 0.15s ease;
+  outline: none;
+}
+
+.coupon-copy-icon-btn:active {
+  transform: scale(0.85);
+}
+
+.coupon-right-details-section {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+
+.coupon-desc-text {
+  font-size: 13.5px;
+  color: #4B5563;
+  line-height: 1.5;
+  margin: 0 0 12px 0;
+}
+
+.coupon-metadata-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #9CA3AF;
+}
+
+/* ================= HOW TO AVAIL TIMER TIMELINE ================= */
+.avail-process-timeline-layout {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.avail-timeline-step-card {
+  background: #FAF7F2;
+  border: 1px solid #E8DFD2;
+  border-radius: 12px;
+  padding: 24px 16px;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.step-card-number-badge {
+  background: #C8A96B;
+  color: #FFFFFF;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.avail-timeline-step-card h4 {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  color: #1A1A1A;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.avail-timeline-step-card p {
+  font-size: 12px;
+  color: #6B7280;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ================= FAQ SECTION ================= */
+.offers-faqs-accordion-container {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-accordion-item-box {
+  background: #FFFFFF;
+  border: 1px solid #E8DFD2;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.faq-accordion-trigger-button {
+  width: 100%;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Cinzel', serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #1A1A1A;
+  cursor: pointer;
+  outline: none;
+  text-align: left;
+}
+
+.faq-accordion-trigger-button:hover {
+  background: #FAF7F2;
+}
+
+.faq-accordion-content-panel {
+  padding: 0 20px 16px 20px;
+  font-size: 13.5px;
+  color: #4B5563;
+  line-height: 1.6;
+  border-top: 1px solid #F3F4F6;
+}
+
+/* ================= NEWSLETTER ================= */
+.offers-newsletter-subscribe-section {
+  padding: 64px 24px;
+  background: #FFFFFF;
+}
+
+.newsletter-card-inner-box {
+  max-width: 800px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #1C1C1C 0%, #2D2D2D 100%);
+  border: 1.5px solid #C8A96B;
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  color: #FFFFFF;
+  box-sizing: border-box;
+}
+
+.newsletter-card-inner-box h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #C8A96B;
+  margin: 0 0 10px 0;
+  letter-spacing: 1px;
+}
+
+.newsletter-card-inner-box p {
+  font-size: 14px;
+  color: #E8DFD2;
+  margin: 0 0 28px 0;
+}
+
+.newsletter-email-form-control {
+  display: flex;
+  max-width: 500px;
+  margin: 0 auto;
+  gap: 12px;
+}
+
+.newsletter-email-text-input {
+  flex: 1;
+  padding: 12px 18px;
+  border-radius: 25px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
+  font-size: 13.5px;
+  outline: none;
+}
+
+.newsletter-email-text-input:focus {
+  border-color: #C8A96B;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.newsletter-subscribe-submit-btn {
+  background: #C8A96B;
+  color: #FFFFFF;
+  border: none;
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 0 24px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.newsletter-subscribe-submit-btn:hover {
+  background: #B39255;
+}
+
+/* ================= MOBILE RESPONSIVE MEDIA QUERIES ================= */
+@media (max-width: 1024px) {
+  .live-offers-cards-masonry-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .deals-products-cards-grid-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .offers-hero-section {
+    height: 360px;
+  }
+  
+  .offers-hero-content-box h1 {
+    font-size: 32px;
+  }
+
+  .offers-hero-content-box p {
+    font-size: 14.5px;
+  }
+
+  .offers-grid-section-layout {
+    padding: 40px 16px;
+  }
+
+  .offers-section-header-centered {
+    margin-bottom: 28px;
+  }
+
+  .offers-section-header-centered h2 {
+    font-size: 20px;
+  }
+
+  .live-offers-cards-masonry-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .deals-products-cards-grid-list {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .offers-promotional-banners-section {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 20px 16px;
+  }
+
+  .offers-promotional-banner-card-item {
+    height: 180px;
+  }
+
+  .promo-banner-content-inner h2 {
+    font-size: 16px;
+  }
+
+  .coupons-cards-flex-grid-list {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .avail-process-timeline-layout {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .newsletter-card-inner-box {
+    padding: 24px 16px;
+  }
+
+  .newsletter-card-inner-box h2 {
+    font-size: 20px;
+  }
+
+  .newsletter-email-form-control {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .newsletter-subscribe-submit-btn {
+    height: 44px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .offers-hero-section {
+    height: 300px;
+  }
+
+  .offers-hero-content-box h1 {
+    font-size: 26px;
+    letter-spacing: 2px;
+  }
+
+  .hero-buttons-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .offers-cta-btn {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  .deals-timer-countdown-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .coupon-item-card-display {
+    flex-direction: column;
+  }
+
+  .coupon-left-dashed-section {
+    border-right: none;
+    border-bottom: 2px dashed #E8DFD2;
+    padding: 16px;
+    min-width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .coupon-right-details-section {
+    padding: 16px;
+  }
+}

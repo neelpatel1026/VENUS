@@ -251,6 +251,9 @@ const Navbar = () => {
               <Link className="nav-link-item" to="/gifting">Gifting</Link>
             </li>
             <li>
+              <Link className="nav-link-item" to="/offers">Offers</Link>
+            </li>
+            <li>
               <Link className="nav-link-item" to="/about">About</Link>
             </li>
             <li>
@@ -669,7 +672,7 @@ const Navbar = () => {
                   </div>
 
                   {/* Offers */}
-                  <div className="drawer-menu-list-row-item" onClick={() => { setMenuOpen(false); navigate("/shop"); }}>
+                  <div className="drawer-menu-list-row-item" onClick={() => { setMenuOpen(false); navigate("/offers"); }}>
                     <span className="row-icon-title"><FiTag className="row-icon-main" /> Special Offers</span>
                     <FiChevronRight className="row-chevron-right" />
                   </div>

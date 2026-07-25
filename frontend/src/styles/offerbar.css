@@ -24,6 +24,13 @@
   text-align: center;
 }
 
+.offer-content-link {
+  text-decoration: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .offer-text {
   color: rgba(255, 255, 255, 0.95);
   margin: 0;

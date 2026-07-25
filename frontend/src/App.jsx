@@ -154,6 +154,7 @@ const TermsConditions = React.lazy(() => import("./pages/TermsConditions.jsx"));
 const ShippingPolicy = React.lazy(() => import("./pages/ShippingPolicy.jsx"));
 const FAQ = React.lazy(() => import("./pages/FAQ.jsx"));
 const SearchMobile = React.lazy(() => import("./pages/SearchMobile.jsx"));
+const Offers = React.lazy(() => import("./pages/Offers.jsx"));
 
 /* ADMIN */
 
@@ -286,6 +287,7 @@ function App() {
               <Route path="/edit-profile" element={<EditProfile />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/offers" element={<Offers />} />
               <Route
                 path="/my-complaints"
                 element={
