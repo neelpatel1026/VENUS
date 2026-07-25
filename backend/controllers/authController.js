@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const sendEmail = require('../utils/sendEmail.js');
 const { OAuth2Client } = require('google-auth-library');
+const mongoose = require('mongoose');
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -168,8 +169,11 @@ const user = await User.create({
 // LOGIN WITH EMAIL OR PHONE
 const loginUser = async (req, res) => {
   try {
-
     const { emailOrPhone, password } = req.body;
+
+    console.log(`[AUTH DEBUG] Login request received for key: "${emailOrPhone}"`);
+    console.log(`[AUTH DEBUG] Database connection status: ${mongoose.connection.readyState === 1 ? "Connected" : "Disconnected"}`);
+
     const user = await User.findOne({
       $or: [
         { email: emailOrPhone.toLowerCase().trim() },
@@ -178,22 +182,32 @@ const loginUser = async (req, res) => {
     });
 
     if (!user) {
+      console.warn(`[AUTH DEBUG] Login failed: User not found for key "${emailOrPhone}"`);
       return res.status(401).json({
         message: 'User not found',
       });
     }
 
+    console.log(`[AUTH DEBUG] User record located: id=${user._id}, email=${user.email}, role=${user.role}`);
+
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log(`[AUTH DEBUG] Password check result: matches = ${isMatch}`);
 
     if (!isMatch) {
+      console.warn(`[AUTH DEBUG] Login failed: Password mismatch for key "${emailOrPhone}"`);
       return res.status(401).json({
         message: 'Invalid password',
       });
     }
 
     const token = generateToken(user._id);
+    console.log(`[AUTH DEBUG] Generated auth token for user: ${user._id}`);
 
-    res.cookie("token", token, getCookieOptions());
+    const cookieOpts = getCookieOptions();
+    res.cookie("token", token, cookieOpts);
+    console.log(`[AUTH DEBUG] Placed token cookie with options:`, JSON.stringify(cookieOpts));
+
+    console.log(`[AUTH DEBUG] User successfully logged in: ${user.email}`);
 
     res.json({
       _id: user._id,
@@ -204,6 +218,7 @@ const loginUser = async (req, res) => {
       token,
     });
   } catch (error) {
+    console.error(`[AUTH DEBUG] Unexpected login controller exception:`, error);
     res.status(500).json({ message: error.message });
   }
 };
