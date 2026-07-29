@@ -1585,12 +1585,13 @@
 
 .drawer-categories-scroll-row-luxury {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   overflow-x: auto;
-  padding: 4px 2px 14px 2px;
-  margin-bottom: 22px;
+  padding: 6px 4px 18px 4px;
+  margin-bottom: 24px;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 
 .drawer-categories-scroll-row-luxury::-webkit-scrollbar {
@@ -1599,50 +1600,74 @@
 
 .category-luxury-card {
   flex-shrink: 0;
-  width: 90px;
+  width: 110px;
+  height: 136px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 10px;
   text-align: center;
   cursor: pointer;
-  background: #FFFFFF;
-  padding: 10px 6px;
-  border-radius: 16px;
-  border: 1px solid rgba(232, 223, 210, 0.4);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.01);
-  transition: all 0.25s ease;
+  background: linear-gradient(135deg, #FDFBF7 0%, #FAF5EE 100%) !important;
+  padding: 14px 10px !important;
+  border-radius: 18px !important;
+  border: 1px solid #E8DFD2 !important;
+  box-shadow: 0 4px 16px rgba(200, 161, 101, 0.05) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  scroll-snap-align: start;
+  box-sizing: border-box;
 }
 
 .category-luxury-card:active {
-  border-color: #C8A165;
-  box-shadow: 0 6px 14px rgba(200, 161, 101, 0.08);
+  transform: scale(0.96) !important;
+  border-color: #C8A165 !important;
+  box-shadow: 0 8px 24px rgba(200, 161, 101, 0.12) !important;
 }
 
 .category-luxury-img-wrapper {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  width: 76px !important;
+  height: 76px !important;
+  border-radius: 14px !important;
   overflow: hidden;
-  border: 1px solid rgba(232, 223, 210, 0.6);
-  background: #FAF7F2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #FFFFFF !important;
+  border: 1px solid rgba(232, 223, 210, 0.5) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative;
+  box-sizing: border-box;
 }
 
 .category-luxury-img-wrapper img {
+  width: 85% !important;
+  height: 85% !important;
+  object-fit: contain !important;
+}
+
+.category-shimmer-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  background: linear-gradient(90deg, #FAF7F2 25%, #E8DFD2 50%, #FAF7F2 75%);
+  background-size: 200% 100%;
+  animation: categoryShimmerMove 1.5s infinite linear;
+}
+
+@keyframes categoryShimmerMove {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .category-luxury-label {
-  font-size: 10px;
-  font-weight: 600;
-  color: #4B5563;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #1A1A1A !important;
   white-space: nowrap;
   font-family: 'Inter', sans-serif;
+  letter-spacing: 0.2px;
 }
 
 /* 3. Promotional Banner */

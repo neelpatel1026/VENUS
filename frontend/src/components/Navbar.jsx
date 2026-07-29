@@ -19,6 +19,7 @@ const Navbar = () => {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState({});
 
   // Profile Dropdown state & Refs
   const [profileOpen, setProfileOpen] = useState(false);
@@ -540,7 +541,20 @@ const Navbar = () => {
                       onClick={() => { setMenuOpen(false); navigate(`/shop?search=${encodeURIComponent(cat.query)}`); }}
                     >
                       <div className="category-luxury-img-wrapper">
-                        <img src={cat.img} alt={cat.label} loading="lazy" onError={(e) => { e.target.src = "/about_hero.jpg"; }} />
+                        {!imagesLoaded[idx] && (
+                          <div className="category-shimmer-placeholder" />
+                        )}
+                        <img 
+                          src={cat.img} 
+                          alt={cat.label} 
+                          loading="lazy" 
+                          onLoad={() => setImagesLoaded(prev => ({ ...prev, [idx]: true }))}
+                          onError={(e) => { 
+                            e.target.src = "/about_hero.jpg"; 
+                            setImagesLoaded(prev => ({ ...prev, [idx]: true }));
+                          }} 
+                          style={{ display: imagesLoaded[idx] ? "block" : "none" }}
+                        />
                       </div>
                       <span className="category-luxury-label">{cat.label}</span>
                     </motion.div>

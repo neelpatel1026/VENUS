@@ -606,7 +606,7 @@ const ProductDetail = () => {
           {/* Delivery & Timeline metadata */}
           <div style={{ borderTop: "1px solid #ECE6DC", paddingTop: "20px" }}>
             <h4 style={{ fontSize: "0.95rem", fontWeight: "700", color: "#1F2937", marginBottom: "12px" }}>Fulfillment Information</h4>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", fontSize: "0.85rem", color: "#4B5563" }}>
+            <div className="fulfillment-grid">
               <div>🚚 Delivery ETA: <strong>3-4 business days</strong></div>
               <div>🛡️ Return Policy: <strong>7-Days Returns</strong></div>
               <div>⚡ Payments: <strong>COD & Online available</strong></div>
@@ -617,7 +617,7 @@ const ProductDetail = () => {
       </div>
 
       {/* Highlights checklist & How to use below details */}
-      <div style={{ marginTop: "60px", display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "50px" }}>
+      <div className="detail-standards-apply-row">
         
         {/* Why choose us */}
         <div style={{ background: "#FAF7F2", padding: "35px", borderRadius: "24px", border: "1px solid #E8DFD2" }}>

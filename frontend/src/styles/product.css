@@ -550,6 +550,21 @@
   }
 }
 
+.fulfillment-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  font-size: 0.85rem;
+  color: #4B5563;
+}
+
+.detail-standards-apply-row {
+  margin-top: 60px;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 50px;
+}
+
 @media (max-width: 768px) {
   .product-detail {
     grid-template-columns: 1fr;
@@ -582,6 +597,42 @@
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
     padding: 0 10px !important;
+  }
+  .fulfillment-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  .detail-standards-apply-row {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    margin-top: 30px !important;
+  }
+  .reviews-layout-grid-luxury {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+  .reviews-summary-panel-luxury {
+    position: static !important;
+    gap: 20px !important;
+  }
+  .review-card-header-luxury {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  .review-stars-date-luxury {
+    align-items: flex-start !important;
+  }
+  .toolbar-search-sort-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+  .luxury-custom-sort-dropdown-container {
+    width: 100% !important;
+  }
+  .btn-write-review-luxury-gold {
+    width: 100% !important;
   }
 }
 
