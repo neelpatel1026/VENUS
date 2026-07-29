@@ -205,7 +205,7 @@ const Footer = () => {
                 <FaEnvelope style={{ color: "#C8A165" }} />
                 <span>support@venuscare.com</span>
               </div>
-              <div className="contact-detail-line" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#B8BEC8", fontSize: "13px" }}>
+              <div className="contact-detail-line" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#B8BEC8", fontSize: "13px", whiteSpace: "nowrap" }}>
                 <FaRegClock style={{ color: "#C8A165" }} />
                 <span>Business Hours: Mon–Sat: 10 AM – 6 PM</span>
               </div>
