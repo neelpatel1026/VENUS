@@ -15,10 +15,13 @@ const {
   forgotPassword,
   resetPassword,
   getUsers,
+  updateProfile,
 } = require('../controllers/authController.js');
 
 const { protect } = require('../middleware/authMiddleware.js');
 const User = require('../models/User.js');
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 router.get("/users", getUsers);
 router.post('/register', registerLimiter, registerUser);
@@ -26,6 +29,7 @@ router.post('/login', loginLimiter, loginUser);
 router.post('/google-login', loginLimiter, googleLogin);
 router.post('/forgot-password', forgotPasswordLimiter, forgotPassword);
 router.post('/reset-password', resetPasswordLimiter, resetPassword);
+router.put('/profile', protect, upload.single('avatar'), updateProfile);
 
 // GET CURRENT LOGGED IN USER
 router.get('/me', protect, async (req, res) => {

@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const sendEmail = require('../utils/sendEmail.js');
 const { OAuth2Client } = require('google-auth-library');
 const mongoose = require('mongoose');
+const cloudinary = require('../config/cloudinary');
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -464,6 +465,71 @@ const getUsers = async (req, res) => {
   }
 };
 
+const updateProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const { name, phone, password } = req.body;
+
+    if (name) {
+      if (name.trim().length < 3) {
+        return res.status(400).json({ message: "Name must be at least 3 characters" });
+      }
+      user.name = name.trim();
+    }
+
+    if (phone) {
+      const phoneRegex = /^[0-9]{10}$/;
+      if (!phoneRegex.test(phone)) {
+        return res.status(400).json({ message: "Phone number must be 10 digits" });
+      }
+      const phoneExists = await User.findOne({ phone, _id: { $ne: user._id } });
+      if (phoneExists) {
+        return res.status(400).json({ message: "Phone number already registered by another user" });
+      }
+      user.phone = phone;
+    }
+
+    if (password) {
+      if (password.length < 6 || password.length > 50) {
+        return res.status(400).json({ message: "Password must be at least 6 characters" });
+      }
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
+    }
+
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "venus-avatars",
+      });
+      user.avatarUrl = result.secure_url;
+      const fs = require("fs");
+      fs.unlinkSync(req.file.path);
+    }
+
+    const updatedUser = await user.save();
+    
+    const token = generateToken(updatedUser._id);
+    res.cookie("token", token, getCookieOptions());
+
+    res.status(200).json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      phone: updatedUser.phone,
+      avatarUrl: updatedUser.avatarUrl,
+      role: updatedUser.role,
+      token,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -471,5 +537,6 @@ module.exports = {
   forgotPassword,
   resetPassword,
   getUsers,
+  updateProfile,
 };
 

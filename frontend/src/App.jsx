@@ -288,7 +288,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/edit-profile" element={<EditProfile />} />
+              <Route
+                path="/edit-profile"
+                element={
+                  <ProtectedRoute>
+                    <EditProfile />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/offers" element={<Offers />} />

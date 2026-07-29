@@ -310,7 +310,15 @@ const Navbar = () => {
                   >
                     <div className="dropdown-user-header">
                       <div className="dropdown-avatar">
-                        {user.name.charAt(0).toUpperCase()}
+                        {user.avatarUrl ? (
+                          <img 
+                            src={user.avatarUrl} 
+                            alt="Navbar Avatar" 
+                            style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} 
+                          />
+                        ) : (
+                          user.name.charAt(0).toUpperCase()
+                        )}
                       </div>
                       <div className="dropdown-user-info">
                         <h4>{user.name}</h4>

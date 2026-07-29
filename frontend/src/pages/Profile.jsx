@@ -349,7 +349,15 @@ const Profile = () => {
       <div className="profile-hero-section">
         <div className="profile-avatar-row">
           <div className="profile-avatar-circle">
-            {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+            {user.avatarUrl ? (
+              <img 
+                src={user.avatarUrl} 
+                alt="Profile Avatar" 
+                style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} 
+              />
+            ) : (
+              user.name ? user.name.charAt(0).toUpperCase() : "U"
+            )}
           </div>
           <div className="profile-user-info-text">
             <div className="membership-row">
