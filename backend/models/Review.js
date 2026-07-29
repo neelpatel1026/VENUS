@@ -107,10 +107,6 @@ const reviewSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    ageGroup: {
-      type: String,
-      default: "",
-    },
     pros: {
       type: String,
       default: "",

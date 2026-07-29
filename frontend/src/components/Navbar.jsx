@@ -540,16 +540,14 @@ const Navbar = () => {
                 </div>
 
                 {/* 3. Promotional Banner */}
-                <div className="drawer-promotional-banner-luxury" onClick={() => { setMenuOpen(false); navigate("/offers"); }}>
-                  <div className="promo-banner-luxury-content">
-                    <span className="promo-badge-tag-luxury">LIMITED OFFER</span>
-                    <h4 className="promo-title-luxury">BUY 2 GET 1 FREE</h4>
-                    <p className="promo-desc-luxury">Free Shipping Above ₹499 • Luxury Skincare</p>
-                    <button className="promo-cta-btn-luxury">Shop Now →</button>
-                  </div>
-                  <div className="promo-banner-luxury-img-holder">
-                    <img src="/about_formulation.jpg" alt="Promo product" onError={(e) => { e.target.src = "/about_hero.jpg"; }} />
-                  </div>
+                <div className="drawer-promotional-banner-luxury" onClick={() => { setMenuOpen(false); navigate("/offers"); }} style={{ padding: 0, overflow: "hidden", background: "none", border: "none", boxShadow: "none", display: "block", width: "100%" }}>
+                  <img 
+                    src="/hero1_mobile.jpg" 
+                    alt="Venus Care Luxury Promotion" 
+                    style={{ width: "100%", height: "auto", display: "block", borderRadius: "16px", objectFit: "cover" }} 
+                    loading="lazy"
+                    onError={(e) => { e.target.src = "/about_hero.jpg"; }}
+                  />
                 </div>
 
                 {/* 4. Small Horizontal Scrolling Promotional Cards */}

@@ -10,7 +10,7 @@ const exportOrders = require("../utils/exportOrders");
 // @access  Private
 
 const addOrderItems = async (req, res) => {
-  const { items, totalAmount, address, paymentId } = req.body;
+  const { items, totalAmount, address, paymentId, couponCode } = req.body;
   const deductedItems = [];
 
   try {
@@ -63,6 +63,63 @@ const addOrderItems = async (req, res) => {
       }
     }
 
+    // Recalculate and verify pricing + coupons
+    const calculatedSubtotal = items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    if (calculatedSubtotal <= 0) {
+      // Rollback stocks since validation failed!
+      for (const rolledBackItem of deductedItems) {
+        await Product.findByIdAndUpdate(rolledBackItem.productId, {
+          $inc: { stock: rolledBackItem.qty },
+        });
+      }
+      return res.status(400).json({ message: "Cart total cannot be ₹0" });
+    }
+
+    let calculatedDiscount = 0;
+    let appliedCoupon = null;
+
+    if (couponCode) {
+      const Coupon = require("../models/Coupon");
+      const { checkCouponValidity, calculateCouponDiscount } = require("./couponController");
+
+      appliedCoupon = await Coupon.findOne({ code: couponCode.toUpperCase() });
+      if (!appliedCoupon) {
+        // Rollback stocks since validation failed!
+        for (const rolledBackItem of deductedItems) {
+          await Product.findByIdAndUpdate(rolledBackItem.productId, {
+            $inc: { stock: rolledBackItem.qty },
+          });
+        }
+        return res.status(400).json({ message: "Invalid coupon code" });
+      }
+
+      const validation = await checkCouponValidity(appliedCoupon, items, req.user._id);
+      if (!validation.valid) {
+        // Rollback stocks since validation failed!
+        for (const rolledBackItem of deductedItems) {
+          await Product.findByIdAndUpdate(rolledBackItem.productId, {
+            $inc: { stock: rolledBackItem.qty },
+          });
+        }
+        return res.status(400).json({ message: validation.message });
+      }
+
+      calculatedDiscount = calculateCouponDiscount(appliedCoupon, items);
+    }
+
+    const calculatedTotal = parseFloat(Math.max(0, calculatedSubtotal - calculatedDiscount).toFixed(2));
+
+    // Verify against request tampering
+    if (Math.abs(calculatedTotal - totalAmount) > 0.05) {
+      // Rollback stocks since validation failed!
+      for (const rolledBackItem of deductedItems) {
+        await Product.findByIdAndUpdate(rolledBackItem.productId, {
+          $inc: { stock: rolledBackItem.qty },
+        });
+      }
+      return res.status(400).json({ message: "Price verification mismatch" });
+    }
+
     const order = new Order({
       userId: req.user._id,
       customerName: req.user.name,
@@ -75,10 +132,12 @@ const addOrderItems = async (req, res) => {
         qty: item.qty,
         price: item.price,
       })),
-      subtotal: totalAmount,
+      subtotal: calculatedSubtotal,
+      discountAmount: calculatedDiscount,
+      couponCode: couponCode ? couponCode.toUpperCase() : "",
       shippingCharge: 0,
       taxAmount: 0,
-      totalAmount,
+      totalAmount: calculatedTotal,
       shippingAddress: {
         fullName: address.fullName,
         phone: address.phone,
@@ -109,6 +168,12 @@ const addOrderItems = async (req, res) => {
 
     // Save order
     const createdOrder = await order.save();
+
+    // Increment coupon usage
+    if (appliedCoupon) {
+      appliedCoupon.totalUsage += 1;
+      await appliedCoupon.save();
+    }
 
     // Send confirmation email asynchronously (non-blocking)
     const { sendTimelineStatusEmailAsync } = require("../utils/notificationService.js");

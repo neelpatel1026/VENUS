@@ -9,6 +9,9 @@ const fs = require('fs');
 // GET ALL PRODUCTS
 const getProducts = async (req, res) => {
   try {
+    // Cache products list for 60s with stale-while-revalidate for instant subsequent loads
+    res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=30");
+    
     const products = await Product.find({})
       .sort({ createdAt: -1 })
       .lean();

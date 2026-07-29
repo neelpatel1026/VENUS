@@ -310,8 +310,22 @@ const Register = () => {
 
 
             {/* TERMS & PRIVACY */}
-            <div style={{ marginBottom: "26px" }}>
-              <label className="auth-checkbox-label" style={{ fontSize: "13px", display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
+            <div style={{ marginBottom: "20px" }}>
+              <label 
+                className="auth-checkbox-label" 
+                style={{ 
+                  fontSize: "13.5px", 
+                  display: "flex", 
+                  alignItems: "flex-start", 
+                  gap: "12px", 
+                  cursor: "pointer",
+                  minHeight: "44px",
+                  padding: "10px 4px",
+                  boxSizing: "border-box",
+                  width: "100%"
+                }}
+                aria-label="I agree to the Terms and Conditions and Privacy Policy"
+              >
                 <input
                   type="checkbox"
                   className="auth-checkbox"
@@ -322,8 +336,15 @@ const Register = () => {
                     setTermsAccepted(val);
                     setPrivacyAccepted(val);
                   }}
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    marginTop: "2px",
+                    flexShrink: 0,
+                    cursor: "pointer"
+                  }}
                 />
-                <span style={{ userSelect: "none" }}>
+                <span style={{ userSelect: "none", lineHeight: "1.4" }}>
                   I agree to the{" "}
                   <Link to="/terms" target="_blank" className="auth-link" onClick={(e) => e.stopPropagation()}>
                     Terms & Conditions

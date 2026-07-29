@@ -835,6 +835,9 @@
     padding: 18px !important;
     margin-bottom: 20px !important;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03) !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
   
   .inline-add-address-form-box-luxury {
@@ -845,10 +848,32 @@
     margin-top: 12px !important;
     margin-bottom: 16px !important;
   }
+
+  .form-inputs-grid-luxury {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .form-inputs-grid-luxury input,
+  .form-inputs-grid-luxury select,
+  .form-inputs-grid-luxury textarea,
+  .form-input-block input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
   
   .checkout-address-cards-grid {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .address-card-luxury {
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   
   .empty-addresses-box-luxury {
@@ -870,10 +895,19 @@
   
   .payment-option-card {
     padding: 16px 14px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .payment-card-details p {
+    word-break: break-word !important;
+    white-space: normal !important;
   }
   
   .email-otp-verification-card {
     padding: 18px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
   }
   .email-status-container {
     width: 100% !important;
@@ -1013,9 +1047,32 @@
   .checkout-two-columns-layout {
     gap: 20px !important;
   }
+
+  .address-actions-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .btn-card-action.select-btn {
+    grid-column: span 2 !important;
+    height: 40px !important;
+  }
+  .btn-card-action.default-btn {
+    grid-column: span 2 !important;
+    height: 38px !important;
+  }
+
+  /* Keyboard overlap safety: return fixed submit button to block flow when inputs are focused */
+  .checkout-two-columns-layout:focus-within .summary-checkout-place-order-action-submit-btn {
+    position: static !important;
+    width: 100% !important;
+    margin-top: 20px !important;
+    box-shadow: 0 4px 14px rgba(200, 161, 101, 0.25) !important;
+    background: #C8A165 !important;
+  }
 }
 
-@media (max-width: 359px) {
+@media (max-width: 360px) {
   .coupon-input-and-button-row {
     flex-direction: column !important;
     gap: 10px !important;
@@ -1025,6 +1082,34 @@
   }
   .coupon-input-and-button-row button {
     width: 100% !important;
+  }
+  .otp-boxes-wrapper {
+    gap: 4px !important;
+  }
+  .otp-digit-box {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 16px !important;
+    border-radius: 8px !important;
+  }
+  .otp-row-controls {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    max-width: 100% !important;
+  }
+  .otp-row-controls button {
+    width: 100% !important;
+    height: 40px !important;
+    justify-content: center !important;
+  }
+  .address-actions-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .btn-card-action.select-btn,
+  .btn-card-action.default-btn,
+  .btn-card-action {
+    grid-column: span 1 !important;
   }
 }
 

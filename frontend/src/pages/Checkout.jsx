@@ -66,6 +66,7 @@ const Checkout = () => {
 
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [appliedCouponDetails, setAppliedCouponDetails] = useState(null);
   const [couponApplied, setCouponApplied] = useState(false);
   const [applyingCoupon, setApplyingCoupon] = useState(false);
   const [sendingOtp, setSendingOtp] = useState(false);
@@ -501,24 +502,57 @@ const Checkout = () => {
     0
   );
 
-  const discountAmount = (totalPrice * discount) / 100;
-  const finalTotal = totalPrice - discountAmount;
+  const discountAmount = appliedCouponDetails
+    ? (appliedCouponDetails.discountType === "percentage"
+        ? Math.min(appliedCouponDetails.maxDiscount > 0 ? appliedCouponDetails.maxDiscount : Infinity, (totalPrice * appliedCouponDetails.discountValue) / 100)
+        : appliedCouponDetails.discountValue)
+    : 0;
+
+  const finalTotal = parseFloat(Math.max(0, totalPrice - discountAmount).toFixed(2));
 
   const applyCoupon = async () => {
     if (!couponCode.trim()) {
       toast.error("Please enter a valid coupon code");
       return;
     }
+    if (cartItems.length === 0 || totalPrice <= 0) {
+      toast.error("Cart is empty or total is ₹0");
+      return;
+    }
+
+    setApplyingCoupon(true);
     try {
       const res = await axios.post("/api/coupons/validate", {
         code: couponCode,
+        items: cartItems
       });
-      setDiscount(res.data.discount);
+
+      const data = res.data;
+      setAppliedCouponDetails({
+        code: data.code,
+        discountType: data.discountType,
+        discountValue: data.discountValue,
+        discountAmount: data.discountAmount,
+        maxDiscount: data.maxDiscount || 0
+      });
+      setDiscount(data.discountValue);
       setCouponApplied(true);
-      toast.success(`${res.data.discount}% coupon applied successfully!`);
+      toast.success(data.message || "Coupon Applied Successfully! 🎉");
     } catch (error) {
       toast.error(error.response?.data?.message || "Invalid coupon code");
+      setCouponApplied(false);
+      setAppliedCouponDetails(null);
+    } finally {
+      setApplyingCoupon(false);
     }
+  };
+
+  const removeCoupon = () => {
+    setCouponApplied(false);
+    setAppliedCouponDetails(null);
+    setCouponCode("");
+    setDiscount(0);
+    toast.success("Coupon Removed Successfully");
   };
 
   // Razorpay Payment Gateway integration
@@ -583,6 +617,7 @@ const Checkout = () => {
                 address,
                 paymentMethod,
                 paymentId: response.razorpay_payment_id,
+                couponCode: couponApplied ? couponCode.toUpperCase() : "",
                 isGift: cartItems.some(i => i.isGift),
                 giftWrap: cartItems.some(i => i.giftWrap),
                 giftBox: cartItems.some(i => i.giftBox),
@@ -634,7 +669,7 @@ const Checkout = () => {
   // Cash on Delivery Order placement
   const placeCODOrder = async () => {
     try {
-      const saveOrderRes = await fetch("/api/orders", {
+       const saveOrderRes = await fetch("/api/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -647,6 +682,7 @@ const Checkout = () => {
           customerPhone: address.phone,
           paymentMethod: "COD",
           paymentId: "COD_" + Date.now(),
+          couponCode: couponApplied ? couponCode.toUpperCase() : "",
           isGift: cartItems.some(i => i.isGift),
           giftWrap: cartItems.some(i => i.giftWrap),
           giftBox: cartItems.some(i => i.giftBox),
@@ -1223,20 +1259,40 @@ const Checkout = () => {
                     placeholder="ENTER COUPON CODE" 
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                    disabled={couponApplied}
+                    disabled={couponApplied || applyingCoupon}
                   />
-                  <button 
-                    type="button" 
-                    onClick={applyCoupon}
-                    disabled={couponApplied}
-                  >
-                    Apply
-                  </button>
+                  {couponApplied ? (
+                    <button 
+                      type="button" 
+                      onClick={removeCoupon}
+                      className="coupon-remove-btn"
+                      style={{ background: "#DC2626", color: "#FFFFFF" }}
+                    >
+                      Remove
+                    </button>
+                  ) : (
+                    <button 
+                      type="button" 
+                      onClick={applyCoupon}
+                      disabled={applyingCoupon || !couponCode.trim()}
+                      style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+                    >
+                      {applyingCoupon ? (
+                        <span className="spinner-border animate-spin inline-block w-4 h-4 border-2 border-t-transparent border-white rounded-full"></span>
+                      ) : (
+                        "Apply"
+                      )}
+                    </button>
+                  )}
                 </div>
-                {couponApplied && (
-                  <div className="applied-coupon-success-pill">
-                    <LuCheck className="success-icon" />
-                    <span>Coupon Applied ({discount}% off)</span>
+                {couponApplied && appliedCouponDetails && (
+                  <div className="applied-coupon-success-pill" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <LuCheck className="success-icon" style={{ color: "#16A34A" }} />
+                      <span style={{ fontWeight: "600", color: "#16A34A" }}>
+                        Applied: {appliedCouponDetails.code} (₹{discountAmount.toFixed(2)} off)
+                      </span>
+                    </div>
                   </div>
                 )}
               </div>
@@ -1257,7 +1313,9 @@ const Checkout = () => {
 
                 {couponApplied && (
                   <div className="breakdown-item-line discount-amount-row">
-                    <span>Coupon Discount ({discount}%)</span>
+                    <span>
+                      Coupon Discount {appliedCouponDetails?.discountType === "percentage" ? `(${discount}%)` : ""}
+                    </span>
                     <span>-₹{discountAmount.toFixed(2)}</span>
                   </div>
                 )}

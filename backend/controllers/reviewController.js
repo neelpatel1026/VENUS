@@ -43,7 +43,7 @@ const updateProductRatingStats = async (productId) => {
  */
 const createReview = async (req, res) => {
   try {
-    const { productId, orderId, rating, title, review, images, video, location, variant, recommend, isAnonymous, skinType, ageGroup, pros, cons } = req.body;
+    const { productId, orderId, rating, title, review, images, video, location, variant, recommend, isAnonymous, skinType, pros, cons } = req.body;
     const userId = req.user._id;
 
     // 1. Validation
@@ -102,7 +102,6 @@ const createReview = async (req, res) => {
       recommend: recommend !== false,
       isAnonymous: isAnonymous === true,
       skinType: typeof skinType === "string" ? skinType : "",
-      ageGroup: typeof ageGroup === "string" ? ageGroup : "",
       pros: typeof pros === "string" ? pros : "",
       cons: typeof cons === "string" ? cons : "",
       isHidden: false,
@@ -144,7 +143,7 @@ const createReview = async (req, res) => {
  */
 const editReview = async (req, res) => {
   try {
-    const { rating, title, review, images, video, location, variant, recommend, isAnonymous, skinType, ageGroup, pros, cons } = req.body;
+    const { rating, title, review, images, video, location, variant, recommend, isAnonymous, skinType, pros, cons } = req.body;
     const reviewId = req.params.id;
     const userId = req.user._id;
 
@@ -181,7 +180,6 @@ const editReview = async (req, res) => {
       reviewObj.customerName = isAnonymous ? "Anonymous" : req.user.name;
     }
     if (typeof skinType === "string") reviewObj.skinType = skinType;
-    if (typeof ageGroup === "string") reviewObj.ageGroup = ageGroup;
     if (typeof pros === "string") reviewObj.pros = pros;
     if (typeof cons === "string") reviewObj.cons = cons;
     
@@ -218,7 +216,6 @@ const getProductReviews = async (req, res) => {
     const verifiedFilter = req.query.verified; // "true"
     const searchFilter = req.query.search; // search query string
     const skinTypeFilter = req.query.skinType;
-    const ageGroupFilter = req.query.ageGroup;
 
     const skipIndex = (page - 1) * limit;
 
@@ -237,9 +234,7 @@ const getProductReviews = async (req, res) => {
       query.skinType = skinTypeFilter;
     }
 
-    if (ageGroupFilter) {
-      query.ageGroup = ageGroupFilter;
-    }
+
 
     if (mediaFilter === "photos") {
       query.images = { $exists: true, $not: { $size: 0 } };

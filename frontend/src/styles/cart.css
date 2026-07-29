@@ -562,3 +562,38 @@
 .stepper-loading {
   border-color: rgba(200, 161, 101, 0.4);
 }
+
+/* Interactive luxury hover animations for clickable product detail areas */
+.cart-item-img-link,
+.cart-item-info-link {
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: all 0.25s ease;
+}
+
+.cart-item-img-link:hover .cart-item-img-container {
+  border-color: rgba(200, 161, 101, 0.5);
+  box-shadow: 0 4px 12px rgba(200, 161, 101, 0.08);
+}
+
+.cart-item-img-link:hover img {
+  transform: scale(1.03);
+}
+
+.cart-item-img-container img {
+  transition: transform 0.3s ease;
+}
+
+.cart-item-info-link:hover .cart-item-name-lux {
+  color: #C8A165;
+}
+
+@media (hover: none) {
+  /* Tap feedback on mobile screens */
+  .cart-item-img-link:active .cart-item-img-container,
+  .cart-item-info-link:active {
+    opacity: 0.7;
+  }
+}

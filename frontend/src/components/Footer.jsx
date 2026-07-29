@@ -6,7 +6,7 @@ import {
   FaFacebookF, 
   FaYoutube, 
   FaLinkedinIn, 
-  FaPinterestP,
+  FaTwitter,
   FaEnvelope, 
   FaPhone, 
   FaMapMarkerAlt, 
@@ -16,8 +16,7 @@ import {
   FaShippingFast,
   FaHeart,
   FaCheck,
-  FaLeaf,
-  FaHeadphones
+  FaLeaf
 } from "react-icons/fa";
 import "../styles/footer.css";
 
@@ -27,13 +26,27 @@ const Footer = () => {
 
   const handleSubscribe = (e) => {
     e.preventDefault();
-    if (!email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const trimmedEmail = email.trim().toLowerCase();
+
+    if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
       toast.error("Please enter a valid email address.");
       return;
     }
+
     setLoading(true);
+    
+    // Check localStorage for duplicate subscription
     setTimeout(() => {
       setLoading(false);
+      const subscribedEmails = JSON.parse(localStorage.getItem("subscribedEmails") || "[]");
+      if (subscribedEmails.includes(trimmedEmail)) {
+        toast.error("This email address is already subscribed!");
+        return;
+      }
+      
+      subscribedEmails.push(trimmedEmail);
+      localStorage.setItem("subscribedEmails", JSON.stringify(subscribedEmails));
       toast.success("Subscribed successfully! Welcome to VENUS CARE Club. 🎁");
       setEmail("");
     }, 800);
@@ -68,7 +81,9 @@ const Footer = () => {
           
           {/* Column 1: Brand Story */}
           <div className="footer-col footer-col-brand">
-            <h2 className="footer-logo-title">VENUS CARE</h2>
+            <Link to="/" style={{ textDecoration: "none" }}>
+              <h2 className="footer-logo-title">VENUS CARE</h2>
+            </Link>
             <p className="footer-brand-desc">
               Premium skincare crafted using science, purity, and botanical ingredients.
             </p>
@@ -100,8 +115,8 @@ const Footer = () => {
               <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="social-circle-btn" aria-label="Follow us on YouTube">
                 <FaYoutube />
               </a>
-              <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" className="social-circle-btn" aria-label="Follow us on Pinterest">
-                <FaPinterestP />
+              <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="social-circle-btn" aria-label="Follow us on X">
+                <FaTwitter />
               </a>
               <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-circle-btn" aria-label="Follow us on LinkedIn">
                 <FaLinkedinIn />
@@ -113,46 +128,42 @@ const Footer = () => {
           <div className="footer-col">
             <h4>Shop</h4>
             <div className="footer-links-stack">
-              <Link to="/shop" className="footer-link-item">Shop</Link>
-              <Link to="/shop" className="footer-link-item">Best Sellers</Link>
-              <Link to="/shop" className="footer-link-item">New Arrivals</Link>
-              <Link to="/shop" className="footer-link-item">Offers</Link>
+              <Link to="/shop" className="footer-link-item">All Products</Link>
+              <Link to="/shop?sort=newest" className="footer-link-item">New Arrivals</Link>
+              <Link to="/shop?sort=best-selling" className="footer-link-item">Best Sellers</Link>
+              <Link to="/shop" className="footer-link-item">Categories</Link>
+              <Link to="/offers" className="footer-link-item">Offers</Link>
               <Link to="/gifting" className="footer-link-item">Gifting</Link>
             </div>
           </div>
 
-          {/* Column 3: Customer Care links */}
+          {/* Column 3: Customer Care & Company */}
           <div className="footer-col">
-            <h4>Customer Care</h4>
+            <h4>Customer</h4>
             <div className="footer-links-stack">
-              <Link to="/faq" className="footer-link-item">FAQ</Link>
-              <Link to="/shipping-policy" className="footer-link-item">Shipping Policy</Link>
-              <Link to="/return-policy" className="footer-link-item">Return & Refund Policy</Link>
-              <Link to="/privacy-policy" className="footer-link-item">Privacy Policy</Link>
-              <Link to="/terms" className="footer-link-item">Terms & Conditions</Link>
+              <Link to="/profile" className="footer-link-item">My Account</Link>
+              <Link to="/profile?tab=orders" className="footer-link-item">Orders</Link>
+              <Link to="/profile?tab=wishlist" className="footer-link-item">Wishlist</Link>
+              <Link to="/cart" className="footer-link-item">Cart</Link>
+              <Link to="/profile?tab=orders" className="footer-link-item">Track Order</Link>
+              <Link to="/about" className="footer-link-item">About Us</Link>
+              <Link to="/about" className="footer-link-item">Careers</Link>
+              <Link to="/about" className="footer-link-item">Blogs</Link>
             </div>
           </div>
 
-          {/* Column 4: Contact details */}
+          {/* Column 4: Support */}
           <div className="footer-col">
-            <h4>Contact</h4>
-            <div className="footer-contact-details">
-              <div className="contact-detail-line">
-                <FaMapMarkerAlt />
-                <span>Ahmedabad, Gujarat, India</span>
-              </div>
-              <div className="contact-detail-line">
-                <FaPhone />
-                <span>+91 96726 81026</span>
-              </div>
-              <div className="contact-detail-line">
-                <FaEnvelope />
-                <span>support@venuscare.com</span>
-              </div>
-              <div className="contact-detail-line">
-                <FaRegClock />
-                <span>Business Hours: Mon–Sat: 9 AM - 7 PM</span>
-              </div>
+            <h4>Support</h4>
+            <div className="footer-links-stack">
+              <Link to="/contact" className="footer-link-item">Contact Us</Link>
+              <Link to="/faq" className="footer-link-item">Help Center</Link>
+              <Link to="/faq" className="footer-link-item">FAQ</Link>
+              <Link to="/shipping-policy" className="footer-link-item">Shipping Policy</Link>
+              <Link to="/return-policy" className="footer-link-item">Return Policy</Link>
+              <Link to="/return-policy" className="footer-link-item">Refund Policy</Link>
+              <Link to="/privacy-policy" className="footer-link-item">Privacy Policy</Link>
+              <Link to="/terms" className="footer-link-item">Terms & Conditions</Link>
             </div>
           </div>
 
@@ -178,6 +189,26 @@ const Footer = () => {
                 </button>
               </form>
               <span className="newsletter-spam-notice">By subscribing, you agree to our privacy policy.</span>
+            </div>
+            
+            {/* Business Contact Section inside newsletter column for balanced spacing */}
+            <div className="footer-contact-details" style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div className="contact-detail-line" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#B8BEC8", fontSize: "13px" }}>
+                <FaMapMarkerAlt style={{ color: "#C8A165" }} />
+                <span>Ahmedabad, Gujarat, India</span>
+              </div>
+              <div className="contact-detail-line" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#B8BEC8", fontSize: "13px" }}>
+                <FaPhone style={{ color: "#C8A165" }} />
+                <span>+91 96726 81026</span>
+              </div>
+              <div className="contact-detail-line" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#B8BEC8", fontSize: "13px" }}>
+                <FaEnvelope style={{ color: "#C8A165" }} />
+                <span>support@venuscare.com</span>
+              </div>
+              <div className="contact-detail-line" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#B8BEC8", fontSize: "13px" }}>
+                <FaRegClock style={{ color: "#C8A165" }} />
+                <span>Business Hours: Mon–Sat: 10 AM – 6 PM</span>
+              </div>
             </div>
           </div>
 

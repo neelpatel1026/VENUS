@@ -270,6 +270,145 @@ const ForgotPassword = () => {
 
   return (
     <>
+      <style dangerouslySetInnerHTML={{__html: `
+        /* Perfectly centered vertical & horizontal input icon alignment */
+        .auth-card .premium-input-wrapper {
+          display: flex;
+          align-items: center;
+          position: relative;
+        }
+        .auth-card .premium-input-icon {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 18px;
+          margin: auto 0;
+          height: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transform: none;
+          color: #9CA3AF;
+          transition: color 0.25s ease;
+        }
+        .auth-card .premium-input-wrapper:focus-within .premium-input-icon {
+          color: #C8A165;
+        }
+
+        /* Improved input height & baseline matching */
+        .auth-card input.premium-input {
+          height: 54px;
+          padding-left: 50px;
+          border-radius: 12px;
+          border: 1px solid #E5E7EB;
+          font-size: 15px;
+          transition: all 0.25s ease;
+        }
+        .auth-card input.premium-input:focus {
+          border-color: #C8A165;
+          box-shadow: 0 0 0 4px rgba(200, 161, 101, 0.08);
+        }
+
+        /* Card responsiveness and maximum screen sizing rules */
+        .auth-card {
+          width: 100%;
+          max-width: 440px;
+          border-radius: 20px;
+          padding: 40px 32px;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
+          border: 1px solid #F0ECE4;
+          background: #FFFFFF;
+        }
+
+        /* Typography & Luxury Spacings */
+        .auth-logo-text {
+          font-family: 'Cinzel', serif;
+          font-size: 26px;
+          letter-spacing: 3px;
+          color: #1A1A1A;
+          margin-bottom: 4px;
+        }
+        .auth-tagline-text {
+          color: #C8A165;
+          font-size: 10px;
+          letter-spacing: 2px;
+          font-weight: 600;
+        }
+
+        /* Premium Buttons */
+        .auth-card .auth-btn {
+          height: 52px;
+          font-size: 14px;
+          font-weight: 700;
+          border-radius: 12px;
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .auth-card .auth-btn:hover:not(:disabled) {
+          background-color: #B68E54;
+          transform: translateY(-1px);
+          box-shadow: 0 8px 20px rgba(200, 161, 101, 0.2);
+        }
+        .auth-card .auth-btn:disabled {
+          background-color: #F3F4F6;
+          color: #9CA3AF;
+        }
+
+        /* Custom OTP Input grid responsiveness */
+        .auth-card .auth-otp-grid {
+          display: grid;
+          grid-template-columns: repeat(6, 1fr);
+          gap: 8px;
+          margin-bottom: 24px;
+        }
+        .auth-card .auth-otp-input {
+          height: 50px;
+          border-radius: 10px;
+          border: 1px solid #D1D5DB;
+          font-size: 18px;
+          transition: all 0.25s ease;
+        }
+        .auth-card .auth-otp-input:focus {
+          border-color: #C8A165;
+          box-shadow: 0 0 0 4px rgba(200, 161, 101, 0.08);
+        }
+
+        /* Focus outline indicators for accessibility */
+        .auth-card button:focus-visible,
+        .auth-card a:focus-visible,
+        .auth-card input:focus-visible {
+          outline: 2px solid #C8A165;
+          outline-offset: 2px;
+        }
+
+        /* Mobile viewport compatibility overrides */
+        @media (max-width: 480px) {
+          .auth-card {
+            padding: 32px 24px;
+            border-radius: 16px;
+          }
+          .auth-logo-text {
+            font-size: 22px;
+          }
+          .auth-card .auth-otp-grid {
+            gap: 6px;
+          }
+          .auth-card .auth-otp-input {
+            height: 44px;
+            font-size: 16px;
+          }
+        }
+        @media (max-width: 360px) {
+          .auth-card {
+            padding: 24px 16px;
+          }
+          .auth-card .auth-otp-grid {
+            gap: 4px;
+          }
+          .auth-card .auth-otp-input {
+            height: 40px;
+          }
+        }
+      `}} />
       <div className="auth-background-radial" />
       <div className="auth-container">
         <motion.div

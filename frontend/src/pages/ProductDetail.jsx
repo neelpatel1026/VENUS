@@ -48,7 +48,6 @@ const ProductDetail = () => {
   const [recommend, setRecommend] = useState(true);
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [submitSkinType, setSubmitSkinType] = useState("");
-  const [submitAgeGroup, setSubmitAgeGroup] = useState("");
   const [submitPros, setSubmitPros] = useState("");
   const [submitCons, setSubmitCons] = useState("");
 
@@ -58,7 +57,6 @@ const ProductDetail = () => {
   const [verifiedFilter, setVerifiedFilter] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [skinTypeFilter, setSkinTypeFilter] = useState("");
-  const [ageGroupFilter, setAgeGroupFilter] = useState("");
 
   // Extracted statistics states
   const [customerGallery, setCustomerGallery] = useState([]);
@@ -107,7 +105,7 @@ const ProductDetail = () => {
       setReviewsLoading(true);
       const nextPage = resetPage ? 1 : page;
       const res = await fetch(
-        `/api/reviews/product/${id}?page=${nextPage}&limit=5&sort=${sortBy}&rating=${ratingFilter}&media=${mediaFilter}&verified=${verifiedFilter}&search=${searchQuery}&skinType=${skinTypeFilter}&ageGroup=${ageGroupFilter}`
+        `/api/reviews/product/${id}?page=${nextPage}&limit=5&sort=${sortBy}&rating=${ratingFilter}&media=${mediaFilter}&verified=${verifiedFilter}&search=${searchQuery}&skinType=${skinTypeFilter}`
       );
       if (res.ok) {
         const data = await res.json();
@@ -157,7 +155,7 @@ const ProductDetail = () => {
 
   useEffect(() => {
     fetchReviews(true);
-  }, [id, sortBy, ratingFilter, mediaFilter, verifiedFilter, searchQuery, skinTypeFilter, ageGroupFilter]);
+  }, [id, sortBy, ratingFilter, mediaFilter, verifiedFilter, searchQuery, skinTypeFilter]);
 
   useEffect(() => {
     if (page > 1) {
@@ -322,7 +320,6 @@ const ProductDetail = () => {
         recommend,
         isAnonymous,
         skinType: submitSkinType,
-        ageGroup: submitAgeGroup,
         pros: submitPros,
         cons: submitCons
       };
@@ -356,7 +353,6 @@ const ProductDetail = () => {
         setRecommend(true);
         setIsAnonymous(false);
         setSubmitSkinType("");
-        setSubmitAgeGroup("");
         setSubmitPros("");
         setSubmitCons("");
         fetchReviews(true);
@@ -384,7 +380,6 @@ const ProductDetail = () => {
     setRecommend(true);
     setIsAnonymous(false);
     setSubmitSkinType("");
-    setSubmitAgeGroup("");
     setSubmitPros("");
     setSubmitCons("");
     setImageInputText("");
@@ -404,7 +399,6 @@ const ProductDetail = () => {
     setRecommend(reviewObj.recommend !== false);
     setIsAnonymous(reviewObj.isAnonymous === true);
     setSubmitSkinType(reviewObj.skinType || "");
-    setSubmitAgeGroup(reviewObj.ageGroup || "");
     setSubmitPros(reviewObj.pros || "");
     setSubmitCons(reviewObj.cons || "");
     setImageInputText("");
@@ -1001,25 +995,7 @@ const ProductDetail = () => {
                   ))}
                 </div>
 
-                {/* Age Group filter chips */}
-                <div className="filter-chips-flex">
-                  <span className="row-label">Age:</span>
-                  <button 
-                    className={`filter-chip-pill ${ageGroupFilter === "" ? "active" : ""}`}
-                    onClick={() => setAgeGroupFilter("")}
-                  >
-                    All Ages
-                  </button>
-                  {["Under 18", "18-24", "25-34", "35-44", "45+"].map(group => (
-                    <button 
-                      key={group}
-                      className={`filter-chip-pill ${ageGroupFilter === group ? "active" : ""}`}
-                      onClick={() => setAgeGroupFilter(ageGroupFilter === group ? "" : group)}
-                    >
-                      {group}
-                    </button>
-                  ))}
-                </div>
+
               </div>
             </div>
 
@@ -1174,15 +1150,8 @@ const ProductDetail = () => {
                         )}
 
                         {/* Metadata tags (Skin Type / Age Group) */}
-                        {(rev.skinType || rev.ageGroup) && (
-                          <div className="meta-tags-flex font-outfit">
-                            {rev.skinType && (
-                              <span className="meta-tag-pill">Skin: {rev.skinType}</span>
-                            )}
-                            {rev.ageGroup && (
-                              <span className="meta-tag-pill">Age: {rev.ageGroup}</span>
-                            )}
-                          </div>
+                        {rev.skinType && (
+                          <span className="meta-tag-pill">Skin: {rev.skinType}</span>
                         )}
 
                         {/* Media Attached Gallery List */}
@@ -1423,21 +1392,7 @@ const ProductDetail = () => {
                   </div>
                 </div>
 
-                <div className="form-input-group font-outfit" style={{ marginBottom: "12px" }}>
-                  <label>Select Age Group</label>
-                  <div className="pills-selection-row">
-                    {["Under 18", "18-24", "25-34", "35-44", "45+"].map(group => (
-                      <button
-                        type="button"
-                        key={group}
-                        onClick={() => setSubmitAgeGroup(submitAgeGroup === group ? "" : group)}
-                        className={`pill-selection-btn ${submitAgeGroup === group ? "active" : ""}`}
-                      >
-                        {group}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+
 
                 {/* Mock Upload Section */}
                 <div className="form-upload-section-luxury">

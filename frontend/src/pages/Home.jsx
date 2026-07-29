@@ -20,30 +20,48 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
+  const fetchProducts = async (signal) => {
+    try {
+      setLoading(true);
+      setError("");
 
-        const res = await fetch("/api/products");
+      const res = await fetch("/api/products", { signal });
 
-        if (!res.ok) {
-          throw new Error("Failed to fetch products");
-        }
-
-        const data = await res.json();
-
-        setProducts(data);
-      } catch (err) {
-        console.error(err);
-        setError("Unable to load products.");
-      } finally {
-        setLoading(false);
+      if (!res.ok) {
+        throw new Error("Unable to fetch collections. Please try again.");
       }
-    };
 
-    fetchProducts();
+      const data = await res.json();
+      setProducts(data);
+    } catch (err) {
+      if (err.name === "AbortError") {
+        console.log("Fetch products request aborted");
+        return;
+      }
+      console.error(err);
+      setError("Products loading timed out or service is unavailable.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s request timeout safety
+
+    fetchProducts(controller.signal).finally(() => clearTimeout(timeoutId));
+
+    return () => {
+      controller.abort();
+      clearTimeout(timeoutId);
+    };
   }, []);
+
+  const handleRetry = () => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    fetchProducts(controller.signal).finally(() => clearTimeout(timeoutId));
+  };
 
   return (
     <div className="home-container route-fade-in">
@@ -101,7 +119,23 @@ const Home = () => {
             ))}
           </div>
         ) : error ? (
-          <p className="error-message">{error}</p>
+          <div className="error-fallback-luxury" style={{ textAlign: "center", padding: "40px 20px", background: "#FFF8F8", border: "1px dashed #EF4444", borderRadius: "16px", maxWidth: "450px", margin: "0 auto" }}>
+            <span style={{ fontSize: "28px" }}>⚠️</span>
+            <h4 style={{ fontFamily: "Cinzel, serif", fontSize: "16px", margin: "12px 0 6px 0", color: "#1A1A1A" }}>Connection Delayed</h4>
+            <p style={{ fontSize: "13px", color: "#6B7280", margin: "0 0 16px 0", lineHeight: "1.5" }}>{error}</p>
+            <button 
+              onClick={handleRetry} 
+              style={{ padding: "10px 24px", background: "#C8A165", color: "#FFFFFF", border: "none", borderRadius: "20px", fontSize: "12px", fontWeight: "700", textTransform: "uppercase", cursor: "pointer", boxShadow: "0 4px 10px rgba(200, 161, 101, 0.2)" }}
+            >
+              Retry Loading
+            </button>
+          </div>
+        ) : products.length === 0 ? (
+          <div className="empty-fallback-luxury" style={{ textAlign: "center", padding: "40px 20px", background: "#FAF9F6", border: "1px dashed #E8DFD2", borderRadius: "16px", maxWidth: "450px", margin: "0 auto", color: "#6B7280" }}>
+            <span style={{ fontSize: "28px" }}>✨</span>
+            <h4 style={{ fontFamily: "Cinzel, serif", fontSize: "16px", margin: "12px 0 6px 0", color: "#1A1A1A" }}>Products Coming Soon</h4>
+            <p style={{ fontSize: "13px", color: "#6B7280", margin: 0 }}>We are currently updating our luxury skincare catalog. Please check back shortly!</p>
+          </div>
         ) : (
           <div className="featured-products-grid">
             {products.slice(0, 8).map((product) => (

@@ -108,6 +108,8 @@ const OrderDetails = () => {
   }, [id, user]);
 
   // Auto-trigger cancellation wizard if navigated from Profile with triggerCancel state
+  const isCancelable = order ? ["Pending", "Processing"].includes(order.status) : false;
+
   useEffect(() => {
     if (location.state?.triggerCancel && order && isCancelable) {
       setShowCancelModal(true);
@@ -349,8 +351,8 @@ const OrderDetails = () => {
   const orderDate = new Date(order.createdAt);
   const today = new Date();
   const daysDiff = Math.floor((today - orderDate) / (1000 * 60 * 60 * 24));
-  const isReturnPeriodActive = order.status === "Delivered" && daysDiff <= 7;
-  const isReturnExpired = order.status === "Delivered" && daysDiff > 7;
+  const isReturnPeriodActive = order?.status === "Delivered" && daysDiff <= 7;
+  const isReturnExpired = order?.status === "Delivered" && daysDiff > 7;
 
   // ETA Calculation (4 days after order date)
   const getEtaDateString = () => {
@@ -360,9 +362,8 @@ const OrderDetails = () => {
   };
 
   const stepsList = ["Pending", "Processing", "Packed", "Shipped", "Out For Delivery", "Delivered"];
-  const currentIdx = stepsList.indexOf(order.status);
-  const isCancelled = order.status === "Cancelled";
-  const isCancelable = ["Pending", "Processing"].includes(order.status);
+  const currentIdx = stepsList.indexOf(order?.status);
+  const isCancelled = order?.status === "Cancelled";
 
   // Status Colors & Badge Mapping
   const getStatusBadgeStyle = (status) => {
@@ -394,7 +395,7 @@ const OrderDetails = () => {
     }
   };
 
-  const badgeStyle = getStatusBadgeStyle(order.status);
+  const badgeStyle = getStatusBadgeStyle(order?.status);
 
   // Status Descriptions Dictionary
   const statusDescriptions = {
@@ -445,7 +446,7 @@ const OrderDetails = () => {
             </div>
 
             <div className="portal-status-badge-wrap">
-              <span className={`status-badge-luxury status-${order.status.toLowerCase().replace(/\s+/g, "-")}`}>
+              <span className={`status-badge-luxury status-${(order?.status || "Pending").toLowerCase().replace(/\s+/g, "-")}`}>
                 {badgeStyle.label}
               </span>
             </div>
@@ -456,7 +457,7 @@ const OrderDetails = () => {
             <div className="metrics-summary-block">
               <span className="summary-block-label">Estimated Delivery</span>
               <strong className="summary-block-value">
-                {isCancelled ? "Cancelled" : order.status === "Delivered" ? "Delivered" : getEtaDateString()}
+                {isCancelled ? "Cancelled" : order?.status === "Delivered" ? "Delivered" : getEtaDateString()}
               </strong>
               <span className="summary-block-sub">Delhivery Express Service</span>
             </div>
@@ -475,7 +476,7 @@ const OrderDetails = () => {
             <div className="metrics-summary-block">
               <span className="summary-block-label">Payment Method</span>
               <strong className="summary-block-value">{order.paymentMethod}</strong>
-              <span className={`summary-block-sub payment-status-${order.paymentStatus.toLowerCase()}`}>
+              <span className={`summary-block-sub payment-status-${(order?.paymentStatus || "Pending").toLowerCase()}`}>
                 Status: {order.paymentStatus}
               </span>
             </div>
@@ -504,7 +505,7 @@ const OrderDetails = () => {
               <LuReceipt size={14} /> <span>Download Invoice</span>
             </button>
 
-            {order.status === "Delivered" && (
+            {order?.status === "Delivered" && (
               <button onClick={handleReorder} className="btn-portal-secondary-action">
                 <LuRefreshCw size={14} /> <span>Buy Again</span>
               </button>
@@ -533,7 +534,7 @@ const OrderDetails = () => {
         </motion.div>
 
         {/* CANCELLATION & REFUND DETAILS CARD */}
-        {(order.status === "Cancellation Requested" || order.status === "Cancelled" || order.refundStatus) && (
+        {(order?.status === "Cancellation Requested" || order?.status === "Cancelled" || order?.refundStatus) && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -543,8 +544,8 @@ const OrderDetails = () => {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "24px", marginTop: "16px" }}>
               <div>
                 <span className="summary-block-label">Cancellation Status</span>
-                <strong style={{ fontSize: "15px", color: order.status === "Cancelled" ? "#DC2626" : "#C8A165" }}>
-                  {order.status === "Cancellation Requested" ? "Pending Approval" : "Approved & Cancelled"}
+                <strong style={{ fontSize: "15px", color: order?.status === "Cancelled" ? "#DC2626" : "#C8A165" }}>
+                  {order?.status === "Cancellation Requested" ? "Pending Approval" : "Approved & Cancelled"}
                 </strong>
                 {order.cancelledAt && (
                   <p style={{ margin: "4px 0 0 0", fontSize: "12px", color: "#9CA3AF" }}>
@@ -667,13 +668,13 @@ const OrderDetails = () => {
                     <h4 className="purchased-item-title-luxury">{item.productName}</h4>
                     <div className="purchased-item-meta-row-luxury">
                       <span>Qty: <strong>{item.qty}</strong></span>
-                      <span>Unit Price: <strong>₹{item.price.toFixed(2)}</strong></span>
-                      <span className="subtotal-luxury">Subtotal: <strong>₹{(item.qty * item.price).toFixed(2)}</strong></span>
+                      <span>Unit Price: <strong>₹{item.price?.toFixed(2)}</strong></span>
+                      <span className="subtotal-luxury">Subtotal: <strong>₹{(item.qty * item.price)?.toFixed(2)}</strong></span>
                     </div>
                   </div>
 
                   <div className="purchased-item-actions-luxury">
-                    {order.status === "Delivered" && (
+                    {order?.status === "Delivered" && (
                       hasReviewed ? (
                         <span className="btn-purchased-reviewed-badge-luxury">
                           <LuShieldCheck size={13} /> Reviewed

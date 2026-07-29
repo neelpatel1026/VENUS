@@ -20,9 +20,12 @@ const connectDB = async () => {
       throw new Error("MONGO_URI is missing");
     }
 
-    const conn = await mongoose.connect(
-      process.env.MONGO_URI
-    );
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      maxPoolSize: 100,
+      minPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
 
     console.log(
       `MongoDB Connected: ${conn.connection.host}`

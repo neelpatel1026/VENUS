@@ -138,52 +138,56 @@ const Cart = () => {
               return (
                 <div key={item.productId} className="cart-item-luxury">
                   {/* Product Image */}
-                  <div className="cart-item-img-container">
-                    <img
-                      src={getThumbnailUrl(item.imageUrl || item.image || item.productImage || "/cosmetic_1.avif")}
-                      alt={item.name}
-                      className="cart-item-img-lux"
-                      loading="lazy"
-                      onError={(e) => { e.target.src = "/cosmetic_1.avif"; }}
-                    />
-                  </div>
+                  <Link to={`/product/${item.productId}`} className="cart-item-img-link" aria-label={`View ${item.name} details`}>
+                    <div className="cart-item-img-container">
+                      <img
+                        src={getThumbnailUrl(item.imageUrl || item.image || item.productImage || "/cosmetic_1.avif")}
+                        alt={item.name}
+                        className="cart-item-img-lux"
+                        loading="lazy"
+                        onError={(e) => { e.target.src = "/cosmetic_1.avif"; }}
+                      />
+                    </div>
+                  </Link>
 
                   {/* Product Info details */}
                   <div className="cart-item-details-lux">
-                    {item.category && (
-                      <span className="cart-item-category-label">
-                        {item.category.toUpperCase()}
-                      </span>
-                    )}
-                    <h3 className="cart-item-name-lux">
-                      <Link to={`/product/${item.productId}`}>{item.name}</Link>
-                    </h3>
-
-                    {/* Ratings */}
-                    <div className="cart-item-ratings">
-                      <FaStar className="cart-star" />
-                      <span>{item.rating || 4.8}</span>
-                    </div>
-
-                    {/* Pricing */}
-                    <div className="cart-item-pricing">
-                      <span className="cart-sale-price">₹{item.price}</span>
-                      {discount > 0 && (
-                        <>
-                          <span className="cart-old-price">₹{item.originalPrice}</span>
-                          <span className="cart-discount-badge">-{discount}% Off</span>
-                        </>
+                    <Link to={`/product/${item.productId}`} className="cart-item-info-link" aria-label={`View ${item.name} details`}>
+                      {item.category && (
+                        <span className="cart-item-category-label">
+                          {item.category.toUpperCase()}
+                        </span>
                       )}
-                    </div>
+                      <h3 className="cart-item-name-lux">
+                        {item.name}
+                      </h3>
 
-                    {/* Availability */}
-                    <div className="cart-item-availability">
-                      {item.stock === 0 ? (
-                        <span className="stock-badge out-of-stock">Out Of Stock</span>
-                      ) : (
-                        <span className="stock-badge in-stock">In Stock ({item.stock})</span>
-                      )}
-                    </div>
+                      {/* Ratings */}
+                      <div className="cart-item-ratings">
+                        <FaStar className="cart-star" />
+                        <span>{item.rating || 4.8}</span>
+                      </div>
+
+                      {/* Pricing */}
+                      <div className="cart-item-pricing">
+                        <span className="cart-sale-price">₹{item.price}</span>
+                        {discount > 0 && (
+                          <>
+                            <span className="cart-old-price">₹{item.originalPrice}</span>
+                            <span className="cart-discount-badge">-{discount}% Off</span>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Availability */}
+                      <div className="cart-item-availability">
+                        {item.stock === 0 ? (
+                          <span className="stock-badge out-of-stock">Out Of Stock</span>
+                        ) : (
+                          <span className="stock-badge in-stock">In Stock ({item.stock})</span>
+                        )}
+                      </div>
+                    </Link>
 
                     {/* Quantity and Actions container */}
                     <div className="cart-item-actions-row">
