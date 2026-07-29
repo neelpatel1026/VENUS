@@ -83,8 +83,19 @@ const Shop = () => {
 
   return (
     <div className="shop-page-wrapper route-fade-in" style={{ background: '#FFFFFF', minHeight: '100vh' }}>
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '36px 20px 60px 20px' }}>
+      <div className="shop-container-inner">
         
+        {/* MOBILE PROMOTIONAL OFFER BANNER */}
+        <div className="shop-promo-banner-mobile">
+          <div className="shop-promo-content">
+            <div className="shop-promo-badge">Limited Time Offer</div>
+            <h3 className="shop-promo-title">FLAT ₹200 OFF</h3>
+            <p className="shop-promo-subtitle">On Orders Above ₹999 • Code: VENUS200</p>
+            <button className="shop-promo-cta" onClick={() => setSelectedCategory("All")}>Shop Now</button>
+          </div>
+          <div className="shop-promo-decor">🌿</div>
+        </div>
+
         {/* 2. DYNAMIC CATEGORY PILLS BAR */}
         <div className="category-scroll-relative-wrapper" style={{ marginBottom: '36px' }}>
           <div className="category-scroll-wrapper" style={{ marginBottom: '0px' }}>

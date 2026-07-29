@@ -3118,3 +3118,105 @@
     display: none; /* Hide reviews count to fit mobile width */
   }
 }
+
+.shop-container-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 36px 20px 60px 20px;
+}
+
+.shop-promo-banner-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .shop-container-inner {
+    padding: 12px 14px 40px 14px !important;
+  }
+
+  .shop-promo-banner-mobile {
+    display: flex !important;
+    background: linear-gradient(135deg, #FAF6F0 0%, #F5EDE0 100%) !important;
+    border: 1px solid #E8DFD2 !important;
+    border-radius: 20px !important;
+    padding: 20px 24px !important;
+    margin-bottom: 24px !important;
+    position: relative !important;
+    overflow: hidden !important;
+    min-height: 120px !important;
+    box-sizing: border-box !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    box-shadow: 0 4px 16px rgba(200, 161, 101, 0.04) !important;
+  }
+
+  .shop-promo-content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    z-index: 2 !important;
+    text-align: left !important;
+  }
+
+  .shop-promo-badge {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 9px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    color: #C8A165 !important;
+    background: #FFFFFF !important;
+    padding: 3px 8px !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(200, 161, 101, 0.2) !important;
+    width: fit-content !important;
+  }
+
+  .shop-promo-title {
+    font-family: 'Cinzel', serif !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #1A1A1A !important;
+    margin: 4px 0 0 0 !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  .shop-promo-subtitle {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: #6B7280 !important;
+    margin: 0 0 8px 0 !important;
+  }
+
+  .shop-promo-cta {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    color: #FFFFFF !important;
+    background: #C8A165 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 8px 18px !important;
+    cursor: pointer !important;
+    width: fit-content !important;
+    box-shadow: 0 4px 10px rgba(200, 161, 101, 0.2) !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .shop-promo-cta:active {
+    transform: scale(0.96) !important;
+  }
+
+  .shop-promo-decor {
+    font-size: 54px !important;
+    opacity: 0.15 !important;
+    user-select: none !important;
+    position: absolute !important;
+    right: 16px !important;
+    bottom: -6px !important;
+    transform: rotate(15deg) !important;
+    z-index: 1 !important;
+  }
+}
