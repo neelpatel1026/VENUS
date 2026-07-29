@@ -529,7 +529,7 @@ const ProductDetail = () => {
             <span style={{ color: "#8B7355", fontSize: "0.8rem", letterSpacing: "2px", textTransform: "uppercase", fontWeight: "700" }}>
               {product.category}
             </span>
-            <h1 style={{ fontSize: "2.4rem", fontWeight: "700", color: "#1F2937", margin: "8px 0 12px 0", lineHeight: "1.2" }}>
+            <h1 className="product-detail-title">
               {product.name}
             </h1>
             
@@ -544,15 +544,15 @@ const ProductDetail = () => {
           </div>
 
           {/* Pricing Details */}
-          <div style={{ background: "#FAF7F2", padding: "20px 24px", borderRadius: "16px", border: "1px solid #E8DFD2" }}>
-            <div style={{ display: "flex", alignItems: "baseline", gap: "12px" }}>
+          <div className="product-detail-price-card">
+            <div className="product-detail-price-row">
               <span className="detail-price" style={{ color: "#1F2937" }}>₹{product.price.toFixed(2)}</span>
               {discount > 0 && (
                 <>
-                  <span style={{ textDecoration: "line-through", color: "#9CA3AF", fontSize: "1.25rem" }}>
+                  <span className="product-detail-original-price">
                     ₹{product.originalPrice.toFixed(2)}
                   </span>
-                  <span style={{ color: "#16A34A", fontSize: "0.95rem", fontWeight: "700" }}>
+                  <span className="product-detail-save-amount">
                     Save ₹{(product.originalPrice - product.price).toFixed(2)}
                   </span>
                 </>
@@ -566,7 +566,7 @@ const ProductDetail = () => {
             <h3 style={{ fontSize: "1.1rem", fontWeight: "700", color: "#1F2937", marginBottom: "10px" }}>
               Product Formula Overview
             </h3>
-            <p style={{ color: "#6B7280", lineHeight: "1.8", margin: 0 }}>
+            <p className="product-detail-description">
               {product.description}
             </p>
           </div>
@@ -586,8 +586,7 @@ const ProductDetail = () => {
                 ) : (
                   <button
                     onClick={handleAddToCart}
-                    className="add-to-cart-btn"
-                    style={{ background: "#C8A165", padding: "18px", fontSize: "1rem", borderRadius: "14px", transition: "0.3s" }}
+                    className="product-detail-add-btn"
                   >
                     Add to Shopping Cart
                   </button>

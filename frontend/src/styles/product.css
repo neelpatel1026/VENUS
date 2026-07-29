@@ -550,6 +550,64 @@
   }
 }
 
+.product-detail-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #1F2937;
+  margin: 8px 0 12px 0;
+  line-height: 1.2;
+  font-family: 'Cinzel', serif;
+}
+
+.product-detail-price-card {
+  background: #FAF7F2;
+  padding: 20px 24px;
+  border-radius: 16px;
+  border: 1px solid #E8DFD2;
+}
+
+.product-detail-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.product-detail-original-price {
+  text-decoration: line-through;
+  color: #9CA3AF;
+  font-size: 1.25rem;
+}
+
+.product-detail-save-amount {
+  color: #16A34A;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.product-detail-description {
+  color: #6B7280;
+  line-height: 1.8;
+  margin: 0;
+  font-size: 16px;
+}
+
+.product-detail-add-btn {
+  background: #C8A165;
+  padding: 18px;
+  font-size: 1rem;
+  border-radius: 14px;
+  transition: 0.3s;
+  color: #FFFFFF;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.product-detail-add-btn:hover {
+  background: #1F2937;
+}
+
 .fulfillment-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -571,6 +629,42 @@
     padding: 20px !important;
     gap: 24px !important;
   }
+  .product-detail-title {
+    font-size: 28px !important;
+    line-height: 1.3 !important;
+    margin: 6px 0 10px 0 !important;
+  }
+  .product-detail-price-card {
+    padding: 16px !important;
+  }
+  .product-detail-price-row {
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  .product-detail-original-price {
+    font-size: 16px !important;
+  }
+  .product-detail-save-amount {
+    font-size: 13px !important;
+    width: 100% !important;
+    margin-top: 2px !important;
+  }
+  .product-detail-description {
+    font-size: 14.5px !important;
+    line-height: 1.7 !important;
+  }
+  .product-detail-add-btn {
+    height: 52px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    border-radius: 12px !important;
+  }
   .detail-image-container {
     background: linear-gradient(135deg, #FDFBF7 0%, #FAF5EE 100%) !important;
     border: 1px solid #E8DFD2 !important;
@@ -580,8 +674,8 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 88% !important;
-    max-width: 320px !important;
+    width: 92% !important;
+    max-width: 420px !important;
     margin: 0 auto 12px auto !important;
     height: 300px !important;
     box-sizing: border-box !important;
