@@ -41,6 +41,18 @@ const Checkout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const handleBackClick = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      if (cartItems.length > 0) {
+        navigate("/cart");
+      } else {
+        navigate("/shop");
+      }
+    }
+  };
+
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState("");
@@ -792,6 +804,16 @@ const Checkout = () => {
   return (
     <div className="checkout-main-wrapper route-fade-in">
       <div className="checkout-page-container">
+        
+        {/* BACK NAV ACTION */}
+        <button 
+          type="button" 
+          onClick={handleBackClick}
+          className="checkout-back-nav-btn font-outfit"
+        >
+          ← Continue Shopping
+        </button>
+
         <form className="checkout-two-columns-layout" onSubmit={handleSubmit}>
           
           {/* LEFT COLUMN: Shipping details, Payments, OTP */}

@@ -14,6 +14,28 @@
   padding: 40px 24px;
 }
 
+.checkout-back-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #C8A165;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 10px 0;
+  margin-bottom: 24px;
+  height: 44px;
+  box-sizing: border-box;
+  transition: all 0.25s ease;
+  font-family: var(--font-sans, 'Outfit', sans-serif);
+}
+
+.checkout-back-nav-btn:hover {
+  color: #1A1A1A;
+}
+
 /* ==================================================
    TWO-COLUMN SPLIT GRID LAYOUT
    ================================================== */
@@ -822,9 +844,15 @@
   .checkout-page-container {
     width: 100% !important;
     max-width: 100% !important;
-    padding: 20px 16px 110px 16px !important;
+    padding: 12px 16px 110px 16px !important; /* Spacing below header */
     box-sizing: border-box !important;
     overflow-x: hidden !important;
+  }
+  .checkout-back-nav-btn {
+    padding: 10px 16px !important;
+    margin-bottom: 16px !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
   }
   .checkout-main-wrapper {
     overflow-x: hidden !important;
