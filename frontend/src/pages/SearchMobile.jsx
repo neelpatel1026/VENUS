@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiArrowLeft, FiSearch, FiX, FiTrendingUp, FiTrash2 } from "react-icons/fi";
-import { FaStar } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { FiArrowLeft, FiSearch, FiX, FiTrendingUp, FiChevronRight } from "react-icons/fi";
+import { FaStar, FaShoppingBag } from "react-icons/fa";
+import { addToCart } from "../redux/cartSlice";
+import toast from "react-hot-toast";
 import "../styles/searchMobile.css";
 
 const SearchMobile = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const searchInputRef = useRef(null);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,7 +28,13 @@ const SearchMobile = () => {
   });
 
   const popularCategories = ["Face Wash", "Serums", "Perfume", "Hair Care", "Gift Sets", "Lipstick", "Moisturizers"];
-  const trendingSearches = ["Vitamin C Face Wash", "Niacinamide Serum", "Sunscreen", "Lipstick", "Hair Care"];
+  const trendingSearches = [
+    { title: "Vitamin C Face Wash", subtitle: "Popular Today" },
+    { title: "Niacinamide Serum", subtitle: "Trending Now" },
+    { title: "Sunscreen SPF 50", subtitle: "Highly Rated" },
+    { title: "Lipstick Velvet Matte", subtitle: "Best Seller" },
+    { title: "Hair Growth Oil", subtitle: "New Arrival" }
+  ];
 
   // Cache object for search queries
   const searchCache = useRef({});
@@ -125,6 +135,23 @@ const SearchMobile = () => {
     localStorage.removeItem("venus_recent_searches");
   };
 
+  const handleAddToCart = (e, product) => {
+    e.stopPropagation();
+    dispatch(
+      addToCart({
+        productId: product._id,
+        name: product.name,
+        price: product.price,
+        image: product.imageUrl || product.image,
+        qty: 1,
+        stock: product.stock || 10,
+        category: product.category,
+        originalPrice: product.originalPrice || product.price,
+      })
+    );
+    toast.success("Added to Shopping Bag! 🛍️");
+  };
+
   // Highlight matching text in search results
   const renderHighlightedText = (text, highlight) => {
     if (!highlight.trim()) return text;
@@ -140,8 +167,8 @@ const SearchMobile = () => {
   };
 
   return (
-    <div className="mobile-search-page-wrapper">
-      {/* 1. STICKY TOP HEADER */}
+    <div className="mobile-search-page-wrapper font-outfit">
+      {/* 1. PREMIUM STICKY TOP HEADER */}
       <header className="mobile-search-header-sticky">
         <button 
           className="search-header-back-arrow-btn" 
@@ -210,9 +237,19 @@ const SearchMobile = () => {
               </div>
               <div className="trending-links-stack-list">
                 {trendingSearches.map((term, index) => (
-                  <div key={index} className="trending-link-row-item" onClick={() => handleTermSearchSubmit(term)}>
-                    <FiTrendingUp className="trend-arrow-up-icon" />
-                    <span>{term}</span>
+                  <div 
+                    key={index} 
+                    className="trending-link-row-item" 
+                    onClick={() => handleTermSearchSubmit(term.title)}
+                  >
+                    <div className="trending-item-left">
+                      <FiTrendingUp className="trend-arrow-up-icon" />
+                      <div className="trending-text-col">
+                        <span className="trending-title-span">{term.title}</span>
+                        <span className="trending-subtitle-span">{term.subtitle}</span>
+                      </div>
+                    </div>
+                    <FiChevronRight className="trending-chevron-icon" />
                   </div>
                 ))}
               </div>
@@ -237,11 +274,11 @@ const SearchMobile = () => {
               </div>
             </section>
 
-            {/* 2.4 Best Sellers */}
+            {/* 2.4 Recommended Products */}
             {bestSellers.length > 0 && (
               <section className="search-landing-section-block">
                 <div className="section-title-line-row">
-                  <h3>Best Sellers</h3>
+                  <h3>✨ Recommended Products</h3>
                 </div>
                 <div className="bestsellers-horizontal-scroll-row">
                   {bestSellers.map((prod) => {
@@ -276,6 +313,13 @@ const SearchMobile = () => {
                               </div>
                             )}
                           </div>
+                          <button 
+                            type="button"
+                            className="mini-card-add-to-cart-btn"
+                            onClick={(e) => handleAddToCart(e, prod)}
+                          >
+                            Add to Bag
+                          </button>
                         </div>
                       </div>
                     );
@@ -319,8 +363,17 @@ const SearchMobile = () => {
               </div>
             ) : (
               <div className="live-search-no-match-box">
+                <div className="no-result-illustration">🔍</div>
                 <p>No products match "{searchQuery}"</p>
                 <small>Try checking your spelling or search for general ingredients like Niacinamide or Vitamin C.</small>
+                <button 
+                  type="button" 
+                  className="btn-continue-shopping font-serif"
+                  style={{ marginTop: "24px", display: "inline-block", padding: "12px 28px", background: "#C8A165", color: "#FFF", border: "none", borderRadius: "30px", cursor: "pointer", fontWeight: "600" }}
+                  onClick={() => navigate("/shop")}
+                >
+                  Continue Shopping
+                </button>
               </div>
             )}
           </div>
