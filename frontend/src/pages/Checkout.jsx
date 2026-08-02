@@ -769,7 +769,7 @@ const Checkout = () => {
             <div className="checkout-left-column">
               <div className="checkout-section-block" style={{ padding: "24px" }}>
                 <div className="shimmer-bg" style={{ height: "24px", width: "180px", borderRadius: "4px", marginBottom: "16px" }} />
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                <div className="checkout-address-cards-grid">
                   <div className="shimmer-bg" style={{ height: "120px", borderRadius: "12px" }} />
                   <div className="shimmer-bg" style={{ height: "120px", borderRadius: "12px" }} />
                 </div>

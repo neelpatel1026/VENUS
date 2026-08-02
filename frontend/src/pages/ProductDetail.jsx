@@ -459,11 +459,11 @@ const ProductDetail = () => {
   if (loading) {
     return (
       <div className="product-detail-wrapper route-fade-in">
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "40px" }}>
-          <div>
-            <div className="shimmer-bg" style={{ width: "100%", height: "400px", borderRadius: "20px" }} />
+        <div className="product-detail">
+          <div className="detail-image-container">
+            <div className="shimmer-bg" style={{ width: "100%", height: "100%", minHeight: "300px", borderRadius: "20px" }} />
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          <div className="detail-info" style={{ gap: "20px" }}>
             <div className="shimmer-bg" style={{ height: "12px", width: "80px", borderRadius: "4px" }} />
             <div className="shimmer-bg" style={{ height: "36px", width: "80%", borderRadius: "4px" }} />
             <div className="shimmer-bg" style={{ height: "24px", width: "150px", borderRadius: "4px" }} />

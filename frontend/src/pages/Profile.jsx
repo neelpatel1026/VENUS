@@ -290,39 +290,39 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="profile-dashboard-wrapper route-fade-in" style={{ padding: "40px 20px" }}>
+      <div className="profile-dashboard-wrapper route-fade-in">
         {/* Simple Profile Header Skeleton */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "40px", borderBottom: "1px solid #ECE7DF", paddingBottom: "24px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <div className="profile-hero-section skeleton-hero-section">
+          <div className="profile-avatar-row">
             <div className="shimmer-bg" style={{ width: "64px", height: "64px", borderRadius: "50%" }} />
             <div>
               <div className="shimmer-bg" style={{ height: "24px", width: "150px", borderRadius: "4px", marginBottom: "8px" }} />
               <div className="shimmer-bg" style={{ height: "14px", width: "180px", borderRadius: "4px" }} />
             </div>
           </div>
-          <div style={{ display: "flex", gap: "12px" }}>
+          <div className="header-actions" style={{ display: "flex", gap: "12px" }}>
             <div className="shimmer-bg" style={{ height: "40px", width: "100px", borderRadius: "8px" }} />
             <div className="shimmer-bg" style={{ height: "40px", width: "100px", borderRadius: "8px" }} />
           </div>
         </div>
 
         {/* Dual column skeleton layout */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "40px" }}>
+        <div className="profile-main-layout">
           {/* Left Column */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-            <div style={{ border: "1px solid #ECE7DF", padding: "20px", borderRadius: "16px" }}>
+          <div className="profile-sidebar-col">
+            <div className="sidebar-info-card">
               <div className="shimmer-bg" style={{ height: "20px", width: "120px", borderRadius: "4px", marginBottom: "16px" }} />
               <div className="shimmer-bg" style={{ height: "14px", width: "80%", borderRadius: "4px", marginBottom: "8px" }} />
               <div className="shimmer-bg" style={{ height: "14px", width: "60%", borderRadius: "4px" }} />
             </div>
-            <div style={{ border: "1px solid #ECE7DF", padding: "20px", borderRadius: "16px" }}>
+            <div className="sidebar-info-card">
               <div className="shimmer-bg" style={{ height: "20px", width: "120px", borderRadius: "4px", marginBottom: "16px" }} />
               <div className="shimmer-bg" style={{ height: "40px", width: "100%", borderRadius: "8px" }} />
             </div>
           </div>
           {/* Right Column */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-            <div style={{ border: "1px solid #ECE7DF", padding: "20px", borderRadius: "16px" }}>
+          <div className="profile-content-col">
+            <div className="dashboard-order-history-section" style={{ padding: "20px", borderRadius: "16px", background: "#FFFFFF", border: "1px solid #ECE7DF" }}>
               <div className="shimmer-bg" style={{ height: "20px", width: "150px", borderRadius: "4px", marginBottom: "20px" }} />
               {[1, 2].map((i) => (
                 <div key={i} style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #ECE7DF", paddingBottom: "16px", marginBottom: "16px" }}>
