@@ -710,6 +710,7 @@
     height: 300px !important;
     box-sizing: border-box !important;
     position: relative !important;
+    top: 0 !important;
   }
   .detail-image {
     width: 85% !important;
