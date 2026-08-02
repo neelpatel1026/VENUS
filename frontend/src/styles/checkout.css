@@ -905,41 +905,105 @@
   }
   
   .email-otp-verification-card {
-    padding: 18px !important;
+    padding: 28px 24px !important;
     box-sizing: border-box !important;
     width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+  .email-otp-verification-card .section-header-row {
+    margin-bottom: 0 !important;
+  }
+  .email-otp-verification-card .section-desc-subtext {
+    margin-bottom: 0 !important;
   }
   .email-status-container {
     width: 100% !important;
-    align-items: stretch !important;
+    align-items: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
   }
   .email-address-badge {
     width: 100% !important;
     justify-content: center !important;
     box-sizing: border-box !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    padding: 8px 16px !important;
+  }
+  .email-address-badge span {
+    display: block !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: calc(100% - 24px) !important;
+  }
+  .otp-verification-container {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 20px !important;
   }
   .otp-actions-block {
     width: 100% !important;
   }
   .send-otp-primary-action-btn {
     width: 100% !important;
-    height: 48px !important;
+    height: 52px !important;
+    border-radius: 26px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
   }
-  .otp-input-and-submit-row {
-    flex-direction: column !important;
-    width: 100% !important;
+  .otp-boxes-wrapper {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    margin: 20px auto !important;
     max-width: 100% !important;
-    gap: 12px !important;
+    flex-wrap: wrap !important;
   }
-  .otp-input-and-submit-row input {
-    width: 100% !important;
+  .otp-digit-box {
+    width: 46px !important;
+    height: 54px !important;
+    font-size: 22px !important;
+    border-radius: 12px !important;
+    text-align: center !important;
+    padding: 0 !important;
+    line-height: 54px !important;
     box-sizing: border-box !important;
-    height: 48px !important;
+    border: 1.5px solid #ECECEC !important;
+  }
+  .otp-digit-box:focus {
+    border-color: #C8A165 !important;
+    box-shadow: 0 0 0 3px rgba(200, 161, 101, 0.15) !important;
+  }
+  .otp-row-controls {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 16px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-top: 16px !important;
   }
   .verify-otp-action-submit-btn {
     width: 100% !important;
-    height: 48px !important;
-    border-radius: 30px !important;
+    height: 52px !important;
+    border-radius: 26px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+  }
+  .otp-resend-link-btn, .otp-timer-text {
+    font-size: 13.5px !important;
+    text-align: center !important;
+    margin: 0 auto !important;
+    display: block !important;
   }
   
   .summary-item-row {
@@ -1084,24 +1148,27 @@
     width: 100% !important;
   }
   .otp-boxes-wrapper {
-    gap: 4px !important;
+    gap: 6px !important;
+    justify-content: center !important;
   }
   .otp-digit-box {
-    width: 36px !important;
-    height: 36px !important;
-    font-size: 16px !important;
-    border-radius: 8px !important;
+    width: 44px !important;
+    height: 52px !important;
+    font-size: 20px !important;
+    border-radius: 10px !important;
   }
   .otp-row-controls {
     flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 10px !important;
+    align-items: center !important;
+    gap: 16px !important;
     max-width: 100% !important;
+    width: 100% !important;
   }
   .otp-row-controls button {
     width: 100% !important;
-    height: 40px !important;
+    height: 52px !important;
     justify-content: center !important;
+    border-radius: 26px !important;
   }
   .address-actions-grid {
     grid-template-columns: 1fr !important;
@@ -1332,11 +1399,12 @@
 
 @media (max-width: 480px) {
   .otp-boxes-wrapper {
-    gap: 6px;
+    gap: 8px !important;
+    justify-content: center !important;
   }
   .otp-digit-box {
-    width: 42px;
-    height: 42px;
-    font-size: 18px;
+    width: 46px !important;
+    height: 54px !important;
+    font-size: 20px !important;
   }
 }
