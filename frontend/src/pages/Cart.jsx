@@ -78,6 +78,14 @@ const Cart = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const handleBackClick = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/shop");
+    }
+  };
+
   // Remove Item
   const handleRemove = (id) => {
     dispatch(removeFromCart(id));
@@ -109,6 +117,30 @@ const Cart = () => {
 
   return (
     <div className="cart-container route-fade-in font-outfit">
+      {/* BACK NAV ACTION */}
+      <button 
+        type="button" 
+        onClick={handleBackClick}
+        className="cart-back-nav-btn"
+        aria-label="Go Back"
+      >
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          width="20" 
+          height="20" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round" 
+          className="back-icon"
+        >
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+
       <div className="cart-header-title">
         <h2 className="font-serif">Shopping Bag</h2>
         <span className="cart-count-badge">{cartItems.length} {cartItems.length === 1 ? 'item' : 'items'}</span>
