@@ -458,7 +458,7 @@ const ProductDetail = () => {
 
   if (loading) {
     return (
-      <div className="product-detail-wrapper route-fade-in" style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px" }}>
+      <div className="product-detail-wrapper route-fade-in">
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "40px" }}>
           <div>
             <div className="shimmer-bg" style={{ width: "100%", height: "400px", borderRadius: "20px" }} />
@@ -491,9 +491,9 @@ const ProductDetail = () => {
       : 0;
 
   return (
-    <div className="product-detail-wrapper route-fade-in" style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px" }}>
+    <div className="product-detail-wrapper route-fade-in">
       {/* Breadcrumb */}
-      <div style={{ color: "#6B7280", marginBottom: "30px", fontSize: "0.85rem", letterSpacing: "0.5px" }}>
+      <div className="product-detail-breadcrumb">
         <Link to="/" style={{ color: "#C8A165", textDecoration: "none" }}>Home</Link>
         {" / "}
         <Link to="/shop" style={{ color: "#C8A165", textDecoration: "none" }}>Shop</Link>
@@ -506,7 +506,7 @@ const ProductDetail = () => {
       {/* Main product detail */}
       <div className="product-detail">
         {/* Left Column: Image wrapper */}
-        <div className="detail-image-container" style={{ position: "sticky", top: "120px" }}>
+        <div className="detail-image-container">
           {discount > 0 && (
             <span className="discount-badge" style={{ top: "20px", left: "20px" }}>
               {discount}% OFF
