@@ -709,7 +709,7 @@
     margin: 0 auto 12px auto !important;
     height: 300px !important;
     box-sizing: border-box !important;
-    position: static !important;
+    position: relative !important;
   }
   .detail-image {
     width: 85% !important;
