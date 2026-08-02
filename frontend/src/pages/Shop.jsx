@@ -1,13 +1,22 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { FiSearch } from 'react-icons/fi';
 import '../styles/product.css';
 
 const Shop = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
+
+  const handleBackClick = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/");
+    }
+  };
 
   // Filter & Sort States
   const [searchQuery, setSearchQuery] = useState('');
@@ -85,6 +94,15 @@ const Shop = () => {
     <div className="shop-page-wrapper route-fade-in" style={{ background: '#FFFFFF', minHeight: '100vh' }}>
       <div className="shop-container-inner">
         
+        {/* BACK NAV ACTION */}
+        <button 
+          type="button" 
+          onClick={handleBackClick}
+          className="shop-back-nav-btn font-outfit"
+        >
+          ← Back
+        </button>
+
         {/* MOBILE PROMOTIONAL OFFER BANNER */}
         <div className="shop-promo-banner-mobile">
           <div className="shop-promo-content">

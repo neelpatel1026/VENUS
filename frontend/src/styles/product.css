@@ -3219,6 +3219,28 @@
   padding: 36px 20px 60px 20px;
 }
 
+.shop-back-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #C8A165;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 10px 0;
+  margin-bottom: 16px;
+  height: 44px;
+  box-sizing: border-box;
+  transition: all 0.25s ease;
+  font-family: var(--font-sans, 'Outfit', sans-serif);
+}
+
+.shop-back-nav-btn:hover {
+  color: #1A1A1A;
+}
+
 .shop-promo-banner-mobile {
   display: none;
 }
@@ -3226,6 +3248,19 @@
 @media (max-width: 768px) {
   .shop-container-inner {
     padding: 12px 14px 40px 14px !important;
+  }
+
+  .shop-back-nav-btn {
+    position: sticky !important;
+    top: 70px !important; /* Locks just below fixed mobile navbar */
+    z-index: 100 !important;
+    background: #FFFFFF !important;
+    width: 100% !important;
+    padding: 10px 16px !important;
+    margin-bottom: 16px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    border-radius: 0 0 10px 10px !important;
+    justify-content: flex-start !important;
   }
 
   .shop-promo-banner-mobile {
