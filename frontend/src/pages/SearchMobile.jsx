@@ -179,7 +179,6 @@ const SearchMobile = () => {
         </button>
 
         <form onSubmit={handleFormSubmit} className="search-bar-input-form-control">
-          <FiSearch className="search-bar-left-icon" />
           <input
             ref={searchInputRef}
             type="text"
