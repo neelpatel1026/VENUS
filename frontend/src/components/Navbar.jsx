@@ -515,51 +515,7 @@ const Navbar = () => {
                   </div>
                 </div>
 
-                {/* 2. Category Showcase */}
-                <div className="drawer-section-header-luxury">
-                  <h3 className="drawer-section-title-luxury">SHOP BY CATEGORY</h3>
-                  <span className="drawer-section-subtitle-luxury">Explore premium collections</span>
-                  <div className="drawer-luxury-divider" />
-                </div>
 
-                <div className="drawer-categories-scroll-row-luxury">
-                  {[
-                    { label: "Face Care", img: "/about_hero.jpg", query: "Face Wash" },
-                    { label: "Serums", img: "/about_formulation.jpg", query: "Serums" },
-                    { label: "Sunscreen", img: "/about_avatar.jpg", query: "Sunscreen" },
-                    { label: "Hair Care", img: "/about_lab.jpg", query: "Hair Care" },
-                    { label: "Fragrance", img: "/about_cta.jpg", query: "Perfume" },
-                    { label: "Cosmetics", img: "/about_avatar.jpg", query: "Lipstick" },
-                    { label: "Body Care", img: "/about_hero.jpg", query: "Moisturizers" },
-                    { label: "Gift Sets", img: "/hero3_mobile.jpg", query: "Gift Sets" }
-                  ].map((cat, idx) => (
-                    <motion.div 
-                      key={idx} 
-                      className="category-luxury-card"
-                      whileTap={{ scale: 0.95 }}
-                      whileHover={{ scale: 1.02 }}
-                      onClick={() => { setMenuOpen(false); navigate(`/shop?search=${encodeURIComponent(cat.query)}`); }}
-                    >
-                      <div className="category-luxury-img-wrapper">
-                        {!imagesLoaded[idx] && (
-                          <div className="category-shimmer-placeholder" />
-                        )}
-                        <img 
-                          src={cat.img} 
-                          alt={cat.label} 
-                          loading="lazy" 
-                          onLoad={() => setImagesLoaded(prev => ({ ...prev, [idx]: true }))}
-                          onError={(e) => { 
-                            e.target.src = "/about_hero.jpg"; 
-                            setImagesLoaded(prev => ({ ...prev, [idx]: true }));
-                          }} 
-                          style={{ display: imagesLoaded[idx] ? "block" : "none" }}
-                        />
-                      </div>
-                      <span className="category-luxury-label">{cat.label}</span>
-                    </motion.div>
-                  ))}
-                </div>
 
                 {/* 3. Promotional Banner */}
                 <div className="drawer-promotional-banner-luxury" onClick={() => { setMenuOpen(false); navigate("/offers"); }} style={{ padding: 0, overflow: "hidden", background: "none", border: "none", boxShadow: "none", display: "block", width: "100%" }}>
