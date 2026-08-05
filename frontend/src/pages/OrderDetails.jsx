@@ -361,8 +361,24 @@ const OrderDetails = () => {
     return etaDate.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
   };
 
-  const stepsList = ["Pending", "Processing", "Packed", "Shipped", "Out For Delivery", "Delivered"];
-  const currentIdx = stepsList.indexOf(order?.status);
+  // Simplify the backend's detailed statuses to the 3 required milestones:
+  // Confirmed -> Shipped -> Delivered
+  // Backend statuses mapping:
+  // 'Pending', 'Processing', 'Packed' -> 'Confirmed'
+  // 'Shipped', 'Out For Delivery' -> 'Shipped'
+  // 'Delivered' -> 'Delivered'
+  const stepsList = ["Confirmed", "Shipped", "Delivered"];
+  
+  // Calculate correct current index based on backend order.status
+  let mappedStatus = "Confirmed";
+  if (order?.status === "Delivered") {
+    mappedStatus = "Delivered";
+  } else if (["Shipped", "Out For Delivery"].includes(order?.status)) {
+    mappedStatus = "Shipped";
+  } else {
+    mappedStatus = "Confirmed";
+  }
+  const currentIdx = stepsList.indexOf(mappedStatus);
   const isCancelled = order?.status === "Cancelled";
 
   // Status Colors & Badge Mapping
@@ -399,11 +415,8 @@ const OrderDetails = () => {
 
   // Status Descriptions Dictionary
   const statusDescriptions = {
-    Pending: "Order placed successfully and confirmed by merchant.",
-    Processing: "Payment verified; items sent to warehouse fulfillment desk.",
-    Packed: "Items packed in eco-friendly luxury box with protective cushion.",
+    Confirmed: "Order placed successfully and confirmed by merchant.",
     Shipped: "Parcel handed over to logistics carrier partner for transit.",
-    "Out For Delivery": "Courier agent dispatched for final destination delivery.",
     Delivered: "Parcel delivered safely to recipient address.",
   };
 
@@ -604,41 +617,53 @@ const OrderDetails = () => {
           
           <div style={{ display: "flex", flexDirection: "column", paddingLeft: "10px", marginTop: "20px" }}>
             {stepsList.map((stepName, idx) => {
-              const timelineEntry = (order.orderTimeline || []).find(t => t.status === stepName);
-              const isCompleted = idx < currentIdx;
-              const isCurrent = idx === currentIdx;
+               const timelineEntry = (order.orderTimeline || []).find(t => {
+                 if (stepName === "Confirmed") {
+                   return ["Pending", "Processing", "Packed"].includes(t.status);
+                 }
+                 if (stepName === "Shipped") {
+                   return ["Shipped", "Out For Delivery"].includes(t.status);
+                 }
+                 if (stepName === "Delivered") {
+                   return t.status === "Delivered";
+                 }
+                 return t.status === stepName;
+               });
 
-              return (
-                <div key={stepName} className="timeline-step-row-luxury">
-                  {idx < stepsList.length - 1 && (
-                    <div className={`timeline-step-connector-luxury ${isCompleted ? "completed" : ""}`} />
-                  )}
+               const isCompleted = idx < currentIdx;
+               const isCurrent = idx === currentIdx;
 
-                  <div className={`timeline-step-bullet-luxury ${isCompleted ? "completed" : (isCurrent ? "current" : "")}`}>
-                    {isCompleted ? <LuCheck size={11} /> : "○"}
-                  </div>
+               return (
+                 <div key={stepName} className="timeline-step-row-luxury">
+                   {idx < stepsList.length - 1 && (
+                     <div className={`timeline-step-connector-luxury ${isCompleted ? "completed" : ""}`} />
+                   )}
 
-                  <div style={{ flex: 1, marginTop: "1px" }}>
-                    <h4 style={{ margin: 0, fontSize: "14.5px", fontWeight: "700", color: isCompleted || isCurrent ? "#1A1A1A" : "#9CA3AF" }}>
-                      {stepName === "Pending" ? "Order Confirmed" : stepName}
-                    </h4>
-                    
-                    {timelineEntry ? (
-                      <p style={{ margin: "4px 0 0 0", fontSize: "13px", color: "#4B5563", lineHeight: "1.5" }}>
-                        {statusDescriptions[stepName] || "Milestone completed."}<br />
-                        <span style={{ fontSize: "11.5px", color: "#9CA3AF" }}>
-                          {new Date(timelineEntry.timestamp).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })} at {new Date(timelineEntry.timestamp).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} • {timelineEntry.updatedBy || "Logistics Hub"}
-                        </span>
-                      </p>
-                    ) : (
-                      <p style={{ margin: "4px 0 0 0", fontSize: "12.5px", color: "#9CA3AF" }}>
-                        Waiting for update
-                      </p>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                   <div className={`timeline-step-bullet-luxury ${isCompleted ? "completed" : (isCurrent ? "current" : "")}`}>
+                     {isCompleted ? <LuCheck size={11} /> : "○"}
+                   </div>
+
+                   <div style={{ flex: 1, marginTop: "1px" }}>
+                     <h4 style={{ margin: 0, fontSize: "14.5px", fontWeight: "700", color: isCompleted || isCurrent ? "#1A1A1A" : "#9CA3AF" }}>
+                       {stepName}
+                     </h4>
+                     
+                     {timelineEntry ? (
+                       <p style={{ margin: "4px 0 0 0", fontSize: "13px", color: "#4B5563", lineHeight: "1.5" }}>
+                         {statusDescriptions[stepName] || "Milestone completed."}<br />
+                         <span style={{ fontSize: "11.5px", color: "#9CA3AF" }}>
+                           {new Date(timelineEntry.timestamp).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })} at {new Date(timelineEntry.timestamp).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} • {timelineEntry.updatedBy || "Logistics Hub"}
+                         </span>
+                       </p>
+                     ) : (
+                       <p style={{ margin: "4px 0 0 0", fontSize: "12.5px", color: "#9CA3AF" }}>
+                         Waiting for update
+                       </p>
+                     )}
+                   </div>
+                 </div>
+               );
+             })}
           </div>
         </motion.div>
 
