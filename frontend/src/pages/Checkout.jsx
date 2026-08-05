@@ -19,6 +19,7 @@ import {
 } from "react-icons/lu";
 import AddressCard from "../components/AddressCard";
 import { useGoogleMaps } from "../components/GoogleMapLoader";
+import { motion } from "framer-motion";
 import { 
   FaSearch, 
   FaMapMarkerAlt, 
@@ -83,6 +84,11 @@ const Checkout = () => {
   const [applyingCoupon, setApplyingCoupon] = useState(false);
   const [sendingOtp, setSendingOtp] = useState(false);
   const [verifyingOtp, setVerifyingOtp] = useState(false);
+  
+  // Subtle coupon micro-interaction states
+  const [couponShake, setCouponShake] = useState(false);
+  const [couponFocused, setCouponFocused] = useState(false);
+  const [couponErrorMsgState, setCouponErrorMsgState] = useState("");
 
   const { isLoaded, isMock, apiKey, mockPlaces, reverseGeocodeMock } = useGoogleMaps();
   const [checkoutSearchQuery, setCheckoutSearchQuery] = useState("");
@@ -546,6 +552,7 @@ const Checkout = () => {
     }
 
     setApplyingCoupon(true);
+    setCouponErrorMsgState("");
     try {
       const res = await axios.post("/api/coupons/validate", {
         code: couponCode,
@@ -568,9 +575,15 @@ const Checkout = () => {
       setCouponApplied(true);
       toast.success(data.message || "Coupon Applied Successfully! 🎉");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Invalid coupon code");
+      const msg = error.response?.data?.message || "Invalid coupon code";
+      toast.error(msg);
+      setCouponErrorMsgState(msg);
       setCouponApplied(false);
       setAppliedCouponDetails(null);
+      
+      // Fire subtle Apple/Stripe-like error shake
+      setCouponShake(true);
+      setTimeout(() => setCouponShake(false), 500);
     } finally {
       setApplyingCoupon(false);
     }
@@ -1335,51 +1348,87 @@ const Checkout = () => {
               <hr className="summary-divider-line" />
 
               {/* Coupon code apply inputs */}
-              <div className="summary-coupon-box">
+              <motion.div 
+                className={`summary-coupon-box ${couponShake ? "coupon-shake-active" : ""}`}
+                animate={{
+                  scale: couponFocused ? 1.02 : 1.00,
+                  boxShadow: couponFocused ? "0 8px 24px rgba(200, 161, 101, 0.08)" : "0 0 0 rgba(0,0,0,0)",
+                  borderColor: couponErrorMsgState ? "#DC2626" : (couponFocused ? "#C8A165" : "rgba(0,0,0,0.05)")
+                }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                style={{
+                  borderRadius: "12px",
+                  border: "1px solid",
+                  padding: "10px",
+                  transformOrigin: "center"
+                }}
+              >
                 <label><LuTicket className="coupon-label-icon" /> Have a Coupon?</label>
                 <div className="coupon-input-and-button-row">
                   <input 
                     type="text" 
                     placeholder="ENTER COUPON CODE" 
                     value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    onChange={(e) => {
+                      setCouponCode(e.target.value.toUpperCase());
+                      setCouponErrorMsgState("");
+                    }}
+                    onFocus={() => setCouponFocused(true)}
+                    onBlur={() => setCouponFocused(false)}
                     disabled={couponApplied || applyingCoupon}
                   />
                   {couponApplied ? (
-                    <button 
+                    <motion.button 
                       type="button" 
                       onClick={removeCoupon}
                       className="coupon-remove-btn"
                       style={{ background: "#DC2626", color: "#FFFFFF" }}
+                      whileTap={{ scale: 0.96 }}
                     >
                       Remove
-                    </button>
+                    </motion.button>
                   ) : (
-                    <button 
+                    <motion.button 
                       type="button" 
                       onClick={applyCoupon}
                       disabled={applyingCoupon || !couponCode.trim()}
                       style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+                      whileTap={{ scale: 0.96 }}
                     >
                       {applyingCoupon ? (
                         <span className="spinner-border animate-spin inline-block w-4 h-4 border-2 border-t-transparent border-white rounded-full"></span>
                       ) : (
                         "Apply"
                       )}
-                    </button>
+                    </motion.button>
                   )}
                 </div>
+                {couponErrorMsgState && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="coupon-error-notice-message"
+                    style={{ fontSize: "11px", color: "#DC2626", marginTop: "6px", fontWeight: "600" }}
+                  >
+                    ⚠️ {couponErrorMsgState}
+                  </motion.div>
+                )}
                 {couponApplied && appliedCouponDetails && (
-                  <div className="applied-coupon-success-pill" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px" }}>
+                  <motion.div 
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="applied-coupon-success-pill" 
+                    style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px" }}
+                  >
                     <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                       <LuCheck className="success-icon" style={{ color: "#16A34A" }} />
                       <span style={{ fontWeight: "600", color: "#16A34A" }}>
                         Applied: {appliedCouponDetails.code} (₹{discountAmount.toFixed(2)} off)
                       </span>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
-              </div>
+              </motion.div>
 
               <hr className="summary-divider-line" />
 

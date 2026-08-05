@@ -1523,3 +1523,16 @@
     font-size: 20px !important;
   }
 }
+
+/* Subtle Apple/Stripe-like shake interaction keyframes */
+.coupon-shake-active {
+  animation: couponSubtleShake 0.4s ease-in-out;
+  border-color: #DC2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+}
+
+@keyframes couponSubtleShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
