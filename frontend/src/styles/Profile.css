@@ -1033,8 +1033,16 @@
 }
 
 @media (max-width: 768px) {
+  .profile-dashboard-wrapper {
+    margin-top: 10px !important; /* Move content closer to header */
+  }
   .profile-back-nav-btn {
     display: inline-flex !important;
+    margin-top: 10px !important; /* Premium minimal spacing */
+    margin-bottom: 12px !important;
+  }
+  .profile-hero-section {
+    margin-bottom: 20px !important; /* Bring profile card content closer */
   }
   .profile-back-nav-btn:active {
     transform: scale(0.97);
