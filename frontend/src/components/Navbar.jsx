@@ -499,14 +499,14 @@ const Navbar = () => {
                 </div>
                 
                 <div className="drawer-quick-cards-grid">
-                  <div className="quick-action-card" onClick={() => { setMenuOpen(false); navigate(user ? "/profile" : "/login"); }}>
+                  <div className="quick-action-card" onClick={() => { setMenuOpen(false); navigate(user ? "/MyOrders" : "/login"); }}>
                     <div className="quick-card-icon-box">📦</div>
                     <div className="quick-card-text-box">
                       <h4>My Orders</h4>
                       <p>View All</p>
                     </div>
                   </div>
-                  <div className="quick-action-card" onClick={() => { setMenuOpen(false); navigate(user ? "/profile" : "/login"); }}>
+                  <div className="quick-action-card" onClick={() => { setMenuOpen(false); navigate(user ? "/TrackOrder" : "/login"); }}>
                     <div className="quick-card-icon-box">🚚</div>
                     <div className="quick-card-text-box">
                       <h4>Track Order</h4>

@@ -155,6 +155,8 @@ const TermsConditions = React.lazy(() => import("./pages/TermsConditions.jsx"));
 const ShippingPolicy = React.lazy(() => import("./pages/ShippingPolicy.jsx"));
 const FAQ = React.lazy(() => import("./pages/FAQ.jsx"));
 const SearchMobile = React.lazy(() => import("./pages/SearchMobile.jsx"));
+const MyOrders = React.lazy(() => import("./pages/MyOrders.jsx"));
+const TrackOrder = React.lazy(() => import("./pages/TrackOrder.jsx"));
 const Offers = React.lazy(() => import("./pages/Offers.jsx"));
 
 /* ADMIN */
@@ -316,6 +318,22 @@ function App() {
               <Route path="/return" element={<ReturnPolicy />} />
               <Route path="/return-policy" element={<ReturnPolicy />} />
               <Route path="/return/:id" element={<ReturnRequest />} />
+              <Route
+                path="/MyOrders"
+                element={
+                  <ProtectedRoute>
+                    <MyOrders />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/TrackOrder"
+                element={
+                  <ProtectedRoute>
+                    <TrackOrder />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* ADMIN ROUTES */}
               <Route path="/admin" element={<AdminDashboard />} />
