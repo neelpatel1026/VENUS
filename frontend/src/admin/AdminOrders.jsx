@@ -997,10 +997,14 @@ const AdminOrders = () => {
                       </div>
                     </td>
 
-                    <td style={{ textAlign: "right" }}>
-                      <div style={{ display: "inline-flex", gap: "6px" }}>
-                        <button onClick={() => handleOpenDrawer(order)} className="btn-admin-outline" style={{ display: "flex", alignItems: "center", gap: "4px", padding: "6px 12px" }}>
-                          <LuEye /> Process
+                    <td style={{ textAlign: "right", position: "relative" }}>
+                      <div className="admin-action-dropdown-wrapper" style={{ display: "inline-block" }}>
+                        <button
+                          onClick={() => handleOpenDrawer(order)}
+                          className="btn-admin-outline"
+                          style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 12px", fontSize: "12px", border: "1px solid #ECE7DF", color: "#1F2937", background: "#FFFFFF", borderRadius: "6px", cursor: "pointer" }}
+                        >
+                          <LuEye size={13} /> View & Process
                         </button>
                       </div>
                     </td>
