@@ -379,6 +379,12 @@ const Profile = () => {
               <span className="status-verification-badge verified">✓ Verified Email</span>
             </div>
             <p className="hero-subtext">{user.email}</p>
+            {/* VENUS COINS DYNAMIC BALANCE */}
+            <div style={{ marginTop: "6px", display: "flex", gap: "8px", alignItems: "center" }} onClick={() => navigate("/Rewards")}>
+              <span style={{ fontSize: "12px", color: "#C8A165", fontWeight: "700", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "4px", background: "rgba(200, 161, 101, 0.08)", padding: "3px 10px", borderRadius: "12px" }}>
+                ⭐ {user.walletBalance || 0} Coins
+              </span>
+            </div>
           </div>
         </div>
         

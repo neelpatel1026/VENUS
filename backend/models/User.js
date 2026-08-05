@@ -108,6 +108,51 @@ const userSchema = new mongoose.Schema(
         isVerified: { type: Boolean, default: false }
       },
     ],
+    walletBalance: {
+      type: Number,
+      default: 0,
+    },
+    totalEarned: {
+      type: Number,
+      default: 0,
+    },
+    totalRedeemed: {
+      type: Number,
+      default: 0,
+    },
+    isWalletFrozen: {
+      type: Boolean,
+      default: false,
+    },
+    rewardTransactions: [
+      {
+        transactionType: {
+          type: String,
+          enum: ["Earned", "Used", "Expired", "Adjusted", "Refund Reversal"],
+          required: true,
+        },
+        coins: {
+          type: Number,
+          required: true,
+        },
+        orderId: {
+          type: String,
+          default: "",
+        },
+        adminName: {
+          type: String,
+          default: "",
+        },
+        description: {
+          type: String,
+          default: "",
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        }
+      }
+    ]
   },
   { timestamps: true },
 );

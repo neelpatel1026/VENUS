@@ -157,6 +157,7 @@ const FAQ = React.lazy(() => import("./pages/FAQ.jsx"));
 const SearchMobile = React.lazy(() => import("./pages/SearchMobile.jsx"));
 const MyOrders = React.lazy(() => import("./pages/MyOrders.jsx"));
 const TrackOrder = React.lazy(() => import("./pages/TrackOrder.jsx"));
+const Rewards = React.lazy(() => import("./pages/Rewards.jsx"));
 const Offers = React.lazy(() => import("./pages/Offers.jsx"));
 
 /* ADMIN */
@@ -331,6 +332,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <TrackOrder />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/Rewards"
+                element={
+                  <ProtectedRoute>
+                    <Rewards />
                   </ProtectedRoute>
                 }
               />

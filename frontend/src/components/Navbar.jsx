@@ -506,6 +506,13 @@ const Navbar = () => {
                       <p>View All</p>
                     </div>
                   </div>
+                  <div className="quick-action-card" onClick={() => { setMenuOpen(false); navigate(user ? "/Rewards" : "/login"); }}>
+                    <div className="quick-card-icon-box">⭐</div>
+                    <div className="quick-card-text-box">
+                      <h4>VENUS Rewards</h4>
+                      <p>View Coins</p>
+                    </div>
+                  </div>
                   <div className="quick-action-card" onClick={() => { setMenuOpen(false); navigate(user ? "/TrackOrder" : "/login"); }}>
                     <div className="quick-card-icon-box">🚚</div>
                     <div className="quick-card-text-box">

@@ -96,6 +96,28 @@ const Checkout = () => {
   const [detectingCheckoutLocation, setDetectingCheckoutLocation] = useState(false);
   const [showCheckoutAdvanced, setShowCheckoutAdvanced] = useState(false);
 
+  // Rewards Wallet Balance & Coin usage states
+  const [walletCoinsBalance, setWalletCoinsBalance] = useState(0);
+  const [useCoins, setUseCoins] = useState(false);
+  const [coinsUsed, setCoinsUsed] = useState(0);
+
+  useEffect(() => {
+    if (!user?.token) return;
+    const fetchWalletBalance = async () => {
+      try {
+        const res = await axios.get("/api/rewards/wallet", {
+          headers: { Authorization: `Bearer ${user.token}` }
+        });
+        if (res.data?.success) {
+          setWalletCoinsBalance(res.data.walletBalance || 0);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchWalletBalance();
+  }, [user]);
+
   // Inline address form states
   const [showAddForm, setShowAddForm] = useState(false);
   const [newAddr, setNewAddr] = useState({
@@ -539,7 +561,11 @@ const Checkout = () => {
         : appliedCouponDetails.discountValue)
     : 0;
 
-  const finalTotal = parseFloat(Math.max(0, totalPrice - discountAmount).toFixed(2));
+  // Recalculate dynamic coin deductions to never exceed order total
+  const rawPostCouponTotal = Math.max(0, totalPrice - discountAmount);
+  const actualCoinsUsed = useCoins ? Math.min(rawPostCouponTotal, walletCoinsBalance) : 0;
+  
+  const finalTotal = parseFloat(Math.max(0, rawPostCouponTotal - actualCoinsUsed).toFixed(2));
 
   const applyCoupon = async () => {
     if (!couponCode.trim()) {
@@ -660,6 +686,7 @@ const Checkout = () => {
                 paymentMethod,
                 paymentId: response.razorpay_payment_id,
                 couponCode: couponApplied ? couponCode.toUpperCase() : "",
+                coinsUsed: actualCoinsUsed,
                 isGift: cartItems.some(i => i.isGift),
                 giftWrap: cartItems.some(i => i.giftWrap),
                 giftBox: cartItems.some(i => i.giftBox),
@@ -725,6 +752,7 @@ const Checkout = () => {
           paymentMethod: "COD",
           paymentId: "COD_" + Date.now(),
           couponCode: couponApplied ? couponCode.toUpperCase() : "",
+          coinsUsed: actualCoinsUsed,
           isGift: cartItems.some(i => i.isGift),
           giftWrap: cartItems.some(i => i.giftWrap),
           giftBox: cartItems.some(i => i.giftBox),
@@ -1345,7 +1373,42 @@ const Checkout = () => {
                 </div>
               )}
 
-              <hr className="summary-divider-line" />
+               {/* USE VENUS COINS SECTION */}
+               {walletCoinsBalance > 0 && (
+                 <div style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.05)", borderRadius: "12px", padding: "14px", marginBottom: "14px", textAlign: "left" }}>
+                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                     <label style={{ fontSize: "13.5px", fontWeight: "700", color: "#1A1A1A", display: "flex", alignItems: "center", gap: "6px" }}>
+                       ⭐ Use VENUS Coins
+                     </label>
+                     <span style={{ fontSize: "12px", color: "#C8A165", fontWeight: "600" }}>
+                       Bal: {walletCoinsBalance} Coins (₹{walletCoinsBalance})
+                     </span>
+                   </div>
+
+                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+                     <input 
+                       type="checkbox"
+                       id="checkbox-use-coins"
+                       checked={useCoins}
+                       onChange={(e) => setUseCoins(e.target.checked)}
+                       style={{ width: "16px", height: "16px", accentColor: "#C8A165", cursor: "pointer" }}
+                     />
+                     <label htmlFor="checkbox-use-coins" style={{ fontSize: "13px", color: "#4B5563", cursor: "pointer", fontWeight: "500" }}>
+                       Redeem Coins on this purchase
+                     </label>
+                   </div>
+
+                   {useCoins && (
+                     <div>
+                       <span style={{ fontSize: "12px", color: "#16A34A", fontWeight: "600", display: "block", marginBottom: "8px" }}>
+                         Applying ₹{actualCoinsUsed} discount from wallet
+                       </span>
+                     </div>
+                   )}
+                 </div>
+               )}
+
+               <hr className="summary-divider-line" />
 
               {/* Coupon code apply inputs */}
               <motion.div 
@@ -1450,6 +1513,13 @@ const Checkout = () => {
                       Coupon Discount {appliedCouponDetails?.discountType === "percentage" ? `(${discount}%)` : ""}
                     </span>
                     <span>-₹{discountAmount.toFixed(2)}</span>
+                  </div>
+                )}
+
+                {useCoins && actualCoinsUsed > 0 && (
+                  <div className="breakdown-item-line discount-amount-row" style={{ color: "#C8A165" }}>
+                    <span>VENUS Coins Used</span>
+                    <span>-₹{actualCoinsUsed.toFixed(2)}</span>
                   </div>
                 )}
 

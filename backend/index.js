@@ -106,6 +106,7 @@ app.use("/api/email-otp", require("./routes/emailOtpRoutes"));
 app.use("/api/returns", require("./routes/returnRoutes"));
 app.use("/api/complaints", require("./routes/complaintRoutes"));
 app.use("/api/reviews", require("./routes/reviewRoutes"));
+app.use("/api/rewards", require("./routes/rewardsRoutes"));
 // Health Check Endpoint
 const mongoose = require("mongoose");
 app.get("/api/health", (req, res) => {

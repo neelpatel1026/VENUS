@@ -168,6 +168,31 @@ const OrderSuccess = () => {
 
         <h1>Order Confirmed</h1>
         <h2>Thank you for shopping with VENUS CARE</h2>
+
+        {/* 5% CASHBACK COINS PENDING NOTIFICATION BANNER */}
+        {subtotal > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            style={{ 
+              display: "inline-flex", 
+              alignItems: "center", 
+              gap: "8px", 
+              background: "rgba(200, 161, 101, 0.08)", 
+              border: "1px dashed #C8A165", 
+              padding: "10px 20px", 
+              borderRadius: "30px", 
+              marginTop: "14px", 
+              marginBottom: "14px" 
+            }}
+          >
+            <span style={{ fontSize: "18px" }}>🎉</span>
+            <span style={{ fontSize: "13.5px", color: "#1A1A1A", fontWeight: "700" }}>
+              You will earn <strong style={{ color: "#C8A165" }}>⭐ {Math.floor(subtotal * 0.05)} VENUS Coins</strong> once order is delivered!
+            </span>
+          </motion.div>
+        )}
         
         <p className="hero-subtext">
           We've received your order and have emailed your confirmation statements. Your parcel dispatch tracking details will follow soon.

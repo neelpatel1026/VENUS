@@ -107,7 +107,28 @@ const addOrderItems = async (req, res) => {
       calculatedDiscount = calculateCouponDiscount(appliedCoupon, items);
     }
 
-    const calculatedTotal = parseFloat(Math.max(0, calculatedSubtotal - calculatedDiscount).toFixed(2));
+    // ---------------------------------------------------------
+    // SECURITY REWARD WALLET BALANCES AND COINS VALIDATION
+    // ---------------------------------------------------------
+    const requestCoinsUsed = Number(req.body.coinsUsed) || 0;
+    const userProfile = await User.findById(req.user._id);
+    
+    if (requestCoinsUsed > 0) {
+      if (userProfile.isWalletFrozen) {
+        for (const rolledBackItem of deductedItems) {
+          await Product.findByIdAndUpdate(rolledBackItem.productId, { $inc: { stock: rolledBackItem.qty } });
+        }
+        return res.status(400).json({ message: "Your rewards wallet is currently frozen" });
+      }
+      if (userProfile.walletBalance < requestCoinsUsed) {
+        for (const rolledBackItem of deductedItems) {
+          await Product.findByIdAndUpdate(rolledBackItem.productId, { $inc: { stock: rolledBackItem.qty } });
+        }
+        return res.status(400).json({ message: "Insufficient VENUS Coins balance" });
+      }
+    }
+
+    const calculatedTotal = parseFloat(Math.max(0, calculatedSubtotal - calculatedDiscount - requestCoinsUsed).toFixed(2));
 
     // Verify against request tampering
     if (Math.abs(calculatedTotal - totalAmount) > 0.05) {
@@ -135,6 +156,7 @@ const addOrderItems = async (req, res) => {
       subtotal: calculatedSubtotal,
       discountAmount: calculatedDiscount,
       couponCode: couponCode ? couponCode.toUpperCase() : "",
+      coinsUsed: requestCoinsUsed,
       shippingCharge: 0,
       taxAmount: 0,
       totalAmount: calculatedTotal,
@@ -168,6 +190,20 @@ const addOrderItems = async (req, res) => {
 
     // Save order
     const createdOrder = await order.save();
+
+    // Deduct coins immediately when order is placed
+    if (requestCoinsUsed > 0) {
+      userProfile.walletBalance = Math.max(0, userProfile.walletBalance - requestCoinsUsed);
+      userProfile.totalRedeemed += requestCoinsUsed;
+      userProfile.rewardTransactions.push({
+        transactionType: "Used",
+        coins: requestCoinsUsed,
+        orderId: createdOrder._id.toString(),
+        description: `Coins redeemed at checkout VC${createdOrder._id.toString().slice(-6).toUpperCase()}`,
+        createdAt: new Date()
+      });
+      await userProfile.save();
+    }
 
     // Increment coupon usage
     if (appliedCoupon) {
@@ -302,6 +338,24 @@ const updateOrderStatus = async (req, res) => {
             Date.now() + 7 * 24 * 60 * 60 * 1000
           );
           updateData.reviewEligible = true;
+
+          // Reward 5% of subtotal as VENUS Coins after Delivered
+          const coinsToEarn = Math.floor(oldOrder.subtotal * 0.05);
+          if (coinsToEarn > 0) {
+            const customer = await User.findById(oldOrder.userId);
+            if (customer && !customer.isWalletFrozen) {
+              customer.walletBalance += coinsToEarn;
+              customer.totalEarned += coinsToEarn;
+              customer.rewardTransactions.push({
+                transactionType: "Earned",
+                coins: coinsToEarn,
+                orderId: oldOrder._id.toString(),
+                description: `5% cashback for order VC${oldOrder._id.toString().slice(-6).toUpperCase()}`,
+                createdAt: new Date()
+              });
+              await customer.save();
+            }
+          }
         }
 
         if (status === "Cancelled" && oldOrder.status !== "Cancelled" && oldOrder.status !== "Returned" && oldOrder.status !== "Return Approved") {
@@ -310,6 +364,22 @@ const updateOrderStatus = async (req, res) => {
               await Product.findByIdAndUpdate(item.productId, {
                 $inc: { stock: item.qty },
               });
+            }
+          }
+
+          // Refund coins automatically if used
+          if (oldOrder.coinsUsed > 0) {
+            const customer = await User.findById(oldOrder.userId);
+            if (customer) {
+              customer.walletBalance += oldOrder.coinsUsed;
+              customer.rewardTransactions.push({
+                transactionType: "Refund Reversal",
+                coins: oldOrder.coinsUsed,
+                orderId: oldOrder._id.toString(),
+                description: `Refund reversal for cancelled order VC${oldOrder._id.toString().slice(-6).toUpperCase()}`,
+                createdAt: new Date()
+              });
+              await customer.save();
             }
           }
         }
@@ -730,6 +800,22 @@ const approveOrderCancellation = async (req, res) => {
     order.cancelledBy = "Admin";
     order.cancelledAt = new Date();
     
+    // Refund coins automatically if used
+    if (order.coinsUsed > 0) {
+      const customer = await User.findById(order.userId);
+      if (customer) {
+        customer.walletBalance += order.coinsUsed;
+        customer.rewardTransactions.push({
+          transactionType: "Refund Reversal",
+          coins: order.coinsUsed,
+          orderId: order._id.toString(),
+          description: `Refund reversal for cancelled order (Admin Approved) VC${order._id.toString().slice(-6).toUpperCase()}`,
+          createdAt: new Date()
+        });
+        await customer.save();
+      }
+    }
+
     // Add timeline nodes
     order.orderTimeline.push({
       status: "Cancellation Approved",
@@ -890,6 +976,28 @@ const updateOrderRefundDetails = async (req, res) => {
           timestamp: new Date(),
           updatedBy: req.user ? req.user.name : "Admin",
         });
+
+        // Restore redeemed coins if order gets refunded
+        if (order.coinsUsed > 0) {
+          const customer = await User.findById(order.userId);
+          if (customer) {
+            // Check to prevent double coin refunds (if already processed during Cancelled approval)
+            const alreadyRefunded = customer.rewardTransactions.some(
+              t => t.orderId === order._id.toString() && t.transactionType === "Refund Reversal"
+            );
+            if (!alreadyRefunded) {
+              customer.walletBalance += order.coinsUsed;
+              customer.rewardTransactions.push({
+                transactionType: "Refund Reversal",
+                coins: order.coinsUsed,
+                orderId: order._id.toString(),
+                description: `Refund reversal for refunded order VC${order._id.toString().slice(-6).toUpperCase()}`,
+                createdAt: new Date()
+              });
+              await customer.save();
+            }
+          }
+        }
       }
     }
 
