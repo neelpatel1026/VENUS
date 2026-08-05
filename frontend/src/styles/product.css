@@ -3314,16 +3314,22 @@
   }
 
   .shop-back-nav-btn {
-    position: sticky !important;
-    top: 70px !important; /* Locks just below fixed mobile navbar */
-    z-index: 100 !important;
-    background: #FFFFFF !important;
-    width: 100% !important;
-    padding: 10px 16px !important;
-    margin-bottom: 16px !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
-    border-radius: 0 0 10px 10px !important;
-    justify-content: flex-start !important;
+    position: relative !important;
+    top: auto !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 8px 4px !important;
+    margin-bottom: 12px !important;
+    width: auto !important;
+    display: inline-flex !important;
+    font-size: 14.5px !important;
+    transition: transform 0.15s ease, opacity 0.15s ease !important;
+  }
+
+  .shop-back-nav-btn:active {
+    transform: scale(0.97) !important;
+    opacity: 0.8 !important;
   }
 
   .shop-promo-banner-mobile {
