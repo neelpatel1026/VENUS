@@ -350,6 +350,15 @@ const Profile = () => {
 
   return (
     <div className="profile-dashboard-wrapper route-fade-in">
+      {/* MINIMAL PREMIUM BACK BUTTON */}
+      <button 
+        type="button" 
+        onClick={() => navigate(-1)} 
+        className="profile-back-nav-btn font-outfit"
+      >
+        ← Back
+      </button>
+
       {/* 1. SIMPLE PROFILE HEADER */}
       <div className="profile-hero-section">
         <div className="profile-avatar-row">

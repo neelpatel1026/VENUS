@@ -1014,3 +1014,30 @@
     text-align: center;
   }
 }
+
+/* Minimal Premium Back Button Styles */
+.profile-back-nav-btn {
+  display: none; /* Hidden on desktop, shown on mobile override below */
+  background: none;
+  border: none;
+  color: #C8A165;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 4px;
+  margin-top: 20px;
+  margin-bottom: 12px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  font-family: var(--font-sans, 'Outfit', sans-serif);
+  align-self: flex-start;
+}
+
+@media (max-width: 768px) {
+  .profile-back-nav-btn {
+    display: inline-flex !important;
+  }
+  .profile-back-nav-btn:active {
+    transform: scale(0.97);
+    opacity: 0.8;
+  }
+}
