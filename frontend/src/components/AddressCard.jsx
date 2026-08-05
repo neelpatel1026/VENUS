@@ -41,7 +41,7 @@ const AddressCard = ({
   };
 
   return (
-    <div className={`address-card-luxury ${address.isDefault ? "default-address" : ""} ${isSelected ? "selected-address" : ""}`}>
+    <div className={`address-card-luxury ${address.isDefault ? "default-address" : ""} ${isSelected ? "selected-address" : ""}`} style={isSelected ? { borderColor: "#C8A165", background: "#FDFBF8", boxShadow: "0 10px 25px rgba(200, 161, 101, 0.05)" } : {}}>
       
       {/* Badge indicators */}
       <div className="address-badge-row">
@@ -49,8 +49,13 @@ const AddressCard = ({
           {getIcon()} {address.label}
         </span>
         <div className="flex-badges-right">
+          {isSelected && (
+            <span className="default-badge-tag font-outfit" style={{ background: "#16A34A", color: "#FFFFFF", borderRadius: "20px", display: "inline-flex", alignItems: "center", gap: "3px", padding: "4px 10px", fontSize: "10px", fontWeight: "700" }}>
+              ✓ Delivering Here
+            </span>
+          )}
           {address.isDefault && (
-            <span className="default-badge-tag font-outfit">Default</span>
+            <span className="default-badge-tag font-outfit" style={{ borderRadius: "20px", padding: "4px 10px", fontSize: "10px" }}>Default</span>
           )}
         </div>
       </div>
@@ -70,56 +75,50 @@ const AddressCard = ({
       </p>
 
       {/* Delivery availability checks */}
-      <div className="address-delivery-check-block font-outfit">
-        <span className="check-title">✓ Delivery Available</span>
-        <span className="check-sub">Estimated Delivery: 2-3 Business Days • Free Shipping</span>
+      <div className="address-delivery-check-block font-outfit" style={{ border: "1px solid #E6F4EA", background: "#F9FDF9", borderRadius: "10px", padding: "12px 14px", marginBottom: "16px" }}>
+        <span className="check-title" style={{ fontSize: "12px", color: "#16A34A", fontWeight: "600", display: "block" }}>✓ Delivery Available</span>
+        <span className="check-sub" style={{ fontSize: "11px", color: "#4B5563" }}>Estimated Delivery: 2-3 Business Days • Free Shipping</span>
       </div>
 
       {/* Actions toolbar */}
-      <div className="address-actions-grid font-outfit">
-        {onSelect && (
+      <div className="address-actions-grid font-outfit" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px", borderTop: "1px solid #F6F4F0", paddingTop: "14px" }}>
+        {!isSelected && onSelect ? (
           <button 
             type="button" 
-            className={`btn-card-action select-btn ${isSelected ? "active" : ""}`}
+            className="btn-card-action select-btn"
             onClick={() => onSelect(address)}
+            style={{ gridColumn: "span 3", height: "38px", borderRadius: "8px", background: "#C8A165", color: "#FFFFFF", border: "none", fontWeight: "600", fontSize: "12px", cursor: "pointer", transition: "all 0.2s" }}
           >
-            {isSelected ? "Selected Destination" : "Deliver Here"}
+            Deliver Here
           </button>
-        )}
+        ) : null}
         
         <button 
           type="button" 
           className="btn-card-action edit-btn"
           onClick={() => onEdit(address)}
+          style={{ height: "36px", borderRadius: "8px", border: "1px solid #ECE7DF", background: "#FFFFFF", fontSize: "11.5px", fontWeight: "600", color: "#4B5563", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
         >
-          <FaEdit /> Edit
+          <FaEdit size={12} /> Edit
         </button>
 
         <button 
           type="button" 
           className="btn-card-action delete-btn"
           onClick={() => onDelete(address._id)}
+          style={{ height: "36px", borderRadius: "8px", border: "1px solid rgba(239, 68, 68, 0.15)", background: "rgba(239, 68, 68, 0.02)", fontSize: "11.5px", fontWeight: "600", color: "#EF4444", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
         >
-          <FaTrash /> Delete
+          <FaTrash size={12} /> Delete
         </button>
-        
-        {!address.isDefault && onSetDefault && (
-          <button 
-            type="button" 
-            className="btn-card-action default-btn"
-            onClick={() => onSetDefault(address._id)}
-          >
-            Set Default
-          </button>
-        )}
 
         <button 
           type="button" 
           className="btn-card-action copy-btn"
           onClick={copyToClipboard}
           title="Copy Address Text"
+          style={{ height: "36px", borderRadius: "8px", border: "1px solid #ECE7DF", background: "#FFFFFF", fontSize: "11.5px", fontWeight: "600", color: "#4B5563", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
         >
-          <FaCopy /> Copy
+          <FaCopy size={12} /> Copy
         </button>
       </div>
     </div>

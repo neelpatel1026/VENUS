@@ -3411,4 +3411,141 @@
     transform: rotate(15deg) !important;
     z-index: 1 !important;
   }
+}
+
+/* ==========================================================================
+   LUXURY SHOPPING FILTER TOOLBAR STYLES
+   ========================================================================== */
+.shop-filter-toolbar-luxury-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 12px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  margin-bottom: 28px;
+}
+
+.shop-search-wrapper-luxury {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 8px 16px;
+  flex: 1;
+  min-width: 240px;
+}
+
+.shop-search-input-luxury {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.92rem;
+  width: 100%;
+  color: #1C1C1C;
+  font-family: var(--font-sans, 'Outfit', sans-serif);
+}
+
+.shop-filters-row-luxury {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.shop-filter-select-wrapper {
+  position: relative;
+}
+
+.shop-filter-select-element {
+  padding: 8px 30px 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 0.9rem;
+  outline: none;
+  background: #FFFFFF;
+  cursor: pointer;
+  font-weight: 500;
+  color: #1C1C1C;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--font-sans, 'Outfit', sans-serif);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23C8A165' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 14px;
+}
+
+.shop-filter-select-element:focus {
+  border-color: #C8A165;
+}
+
+.shop-filter-reset-btn-luxury {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid rgba(220, 38, 38, 0.15);
+  background: rgba(220, 38, 38, 0.02);
+  color: #EF4444;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.shop-filter-reset-btn-luxury:hover {
+  background: #EF4444;
+  color: #FFFFFF;
+  border-color: #EF4444;
+}
+
+/* Mobile responsive tuning (under 768px) */
+@media (max-width: 768px) {
+  .shop-filter-toolbar-luxury-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px 10px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+  }
+
+  .shop-search-wrapper-luxury {
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+    padding: 0 12px;
+  }
+
+  .shop-filters-row-luxury {
+    display: flex;
+    width: 100%;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .shop-filter-select-wrapper {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .shop-filter-select-element {
+    width: 100%;
+    height: 40px;
+    font-size: 0.85rem;
+    padding: 0 24px 0 10px;
+    background-position: right 6px center;
+    background-size: 12px;
+    border-radius: 8px;
+    box-sizing: border-box;
+  }
+
+  .shop-filter-reset-btn-luxury {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+  }
 }

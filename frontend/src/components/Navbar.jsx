@@ -515,8 +515,6 @@ const Navbar = () => {
                   </div>
                 </div>
 
-
-
                 {/* 3. Promotional Banner */}
                 <div className="drawer-promotional-banner-luxury" onClick={() => { setMenuOpen(false); navigate("/offers"); }} style={{ padding: 0, overflow: "hidden", background: "none", border: "none", boxShadow: "none", display: "block", width: "100%" }}>
                   <img 

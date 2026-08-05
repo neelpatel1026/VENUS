@@ -134,76 +134,61 @@ const Shop = () => {
         </div>
 
         {/* 3. STICKY FILTER TOOLBAR */}
-        <div className="shop-filter-toolbar">
-          {/* Search Wrapper */}
-          <div style={{ display: 'flex', alignItems: 'center', background: '#FFFFFF', borderRadius: '10px', border: '1px solid rgba(0, 0, 0, 0.06)', padding: '8px 16px', flex: '1', minWidth: '260px' }}>
+        <div className="shop-filter-toolbar-luxury-container">
+          {/* Row 1: Search Wrapper */}
+          <div className="shop-search-wrapper-luxury">
             <FiSearch style={{ color: '#9CA3AF', marginRight: '10px' }} />
             <input
               type="text"
               placeholder="Search products by name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: '0.95rem', width: '100%', color: '#1C1C1C' }}
+              className="shop-search-input-luxury"
             />
           </div>
 
-          {/* Filters controls */}
-          <div className="shop-filter-toolbar-controls" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px' }}>
+          {/* Row 2: Filters controls (Side-by-side dropdowns) */}
+          <div className="shop-filters-row-luxury">
             
             {/* Price Filter dropdown */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#666666' }}>Price:</span>
+            <div className="shop-filter-select-wrapper">
               <select
                 value={priceRange}
                 onChange={(e) => setPriceRange(e.target.value)}
-                style={{ padding: '8px 14px', borderRadius: '8px', border: '1px solid rgba(0, 0, 0, 0.06)', fontSize: '0.9rem', outline: 'none', background: '#FFFFFF', cursor: 'pointer', fontWeight: '500', color: '#1C1C1C' }}
+                className="shop-filter-select-element"
               >
-                <option value="all">All Prices</option>
-                <option value="under-500">Under ₹500</option>
-                <option value="500-1000">₹500 - ₹1000</option>
-                <option value="over-1000">Over ₹1000</option>
+                <option value="all">Price: All</option>
+                <option value="under-500">Price: Under ₹500</option>
+                <option value="500-1000">Price: ₹500-₹1000</option>
+                <option value="over-1000">Price: Over ₹1000</option>
               </select>
             </div>
 
             {/* Sort Options */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#666666' }}>Sort:</span>
+            <div className="shop-filter-select-wrapper">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                style={{ padding: '8px 14px', borderRadius: '8px', border: '1px solid rgba(0, 0, 0, 0.06)', fontSize: '0.9rem', outline: 'none', background: '#FFFFFF', cursor: 'pointer', fontWeight: '500', color: '#1C1C1C' }}
+                className="shop-filter-select-element"
               >
-                <option value="featured">Best Selling</option>
-                <option value="price-asc">Price Low → High</option>
-                <option value="price-desc">Price High → Low</option>
-                <option value="rating-desc">Highest Rated</option>
+                <option value="featured">Sort: Best Selling</option>
+                <option value="price-asc">Sort: Price Low → High</option>
+                <option value="price-desc">Sort: Price High → Low</option>
+                <option value="rating-desc">Sort: Highest Rated</option>
               </select>
             </div>
 
-            {/* Reset Filters button */}
+            {/* Reset Filters button - inline icon-only if filters active */}
             {(searchQuery || selectedCategory !== 'All' || priceRange !== 'all' || sortBy !== 'featured') && (
               <button
                 onClick={handleResetFilters}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '8px 14px',
-                  borderRadius: '8px',
-                  border: '1px solid rgba(0, 0, 0, 0.06)',
-                  background: '#FFFFFF',
-                  color: '#ef4444',
-                  cursor: 'pointer',
-                  fontSize: '0.9rem',
-                  fontWeight: '600',
-                  transition: 'all 0.2s ease'
-                }}
+                className="shop-filter-reset-btn-luxury"
+                title="Reset Filters"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M2.15 2v6h6M21.85 22v-6h-6"/>
                   <path d="M22 11.5a10 10 0 1 0-1.9 5.5"/>
                 </svg>
-                Reset
               </button>
             )}
           </div>
