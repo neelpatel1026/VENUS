@@ -662,41 +662,230 @@
   to { transform: rotate(360deg); }
 }
 
-/* Responsive grid viewports */
+/* ================= MOBILE RESPONSIVE OVERRIDES ================= */
 @media (max-width: 1024px) {
   .ordersuccess-content-grid {
-    grid-template-columns: 1fr;
-    gap: 30px;
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
   }
   .recommendations-flex-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
   }
 }
 
 @media (max-width: 768px) {
+  .ordersuccess-page-wrapper {
+    margin: 20px auto !important;
+    padding: 0 12px !important;
+  }
+
   .ordersuccess-premium-header {
-    padding: 40px 20px;
+    padding: 30px 16px !important;
+    border-radius: 20px !important;
+    margin-bottom: 24px !important;
   }
+
   .ordersuccess-premium-header h1 {
-    font-size: 26px;
+    font-size: 22px !important;
   }
+
+  .ordersuccess-premium-header h2 {
+    font-size: 16px !important;
+  }
+
+  .ordersuccess-premium-header .hero-subtext {
+    font-size: 13px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .header-metrics-row-luxury {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 16px 12px !important;
+    padding-top: 20px !important;
+  }
+
+  .header-metric-item {
+    text-align: left !important;
+  }
+
+  .header-metric-label {
+    font-size: 9.5px !important;
+  }
+
+  .header-metric-val {
+    font-size: 13px !important;
+    word-break: break-all !important;
+  }
+
+  .ordersuccess-card-luxury {
+    padding: 20px 16px !important;
+    border-radius: 16px !important;
+  }
+
+  /* Timeline mobile adjustments */
+  .progress-timeline-horizontal {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+    padding-left: 10px !important;
+  }
+
+  .progress-timeline-horizontal::before {
+    top: 15px !important;
+    left: 25px !important;
+    bottom: 15px !important;
+    width: 2px !important;
+    height: auto !important;
+  }
+
+  .progress-timeline-horizontal::after {
+    top: 15px !important;
+    left: 25px !important;
+    width: 2px !important;
+    height: 35% !important; /* height represents active progress */
+  }
+
+  .timeline-step-item {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 14px !important;
+    width: 100% !important;
+    text-align: left !important;
+  }
+
+  .step-indicator-dot {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 11px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .step-label-text {
+    font-size: 12px !important;
+  }
+
+  /* Product Card row layout on mobile */
+  .purchased-item-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    padding: 12px 0 !important;
+  }
+
+  .purchased-item-thumb {
+    width: 60px !important;
+    height: 60px !important;
+  }
+
+  .purchased-item-info {
+    width: 100% !important;
+  }
+
+  .purchased-item-title {
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+  }
+
+  .purchased-item-meta {
+    font-size: 11px !important;
+  }
+
+  .purchased-item-price-val {
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    align-self: flex-end !important;
+  }
+
+  /* Address fields wrapping */
+  .recipient-address-lines p {
+    word-break: break-word !important;
+    line-height: 1.5 !important;
+  }
+
+  .recipient-phone {
+    font-size: 12px !important;
+  }
+
+  /* Quick metrics table values layout */
+  .metrics-data-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .metric-item {
+    border-bottom: 1px solid #FAF9F6 !important;
+    padding-bottom: 8px !important;
+  }
+
+  .metric-item:last-child {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* Actions buttons stacking vertically */
   .success-actions-stack-luxury {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
   }
-  .recommendations-flex-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+
+  .success-actions-stack-luxury button,
+  .success-actions-stack-luxury a {
+    grid-column: span 1 !important;
+    width: 100% !important;
+    height: 48px !important;
+    justify-content: center !important;
+    font-size: 12.5px !important;
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  /* Pricing breakdown summary */
+  .pricing-line-item {
+    font-size: 12.5px !important;
+  }
+
+  .grand-total-val {
+    font-size: 18px !important;
+  }
+
+  /* Reward card adjustments */
+  .loyalty-reward-card-gold {
+    padding: 16px !important;
+  }
+
+  .loyalty-points-earned {
+    font-size: 16px !important;
+  }
+
+  /* Security section layout */
+  .trust-badges-horizontal-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 16px 12px !important;
+  }
+
+  /* Help channels vertical stack */
+  .help-desk-channels-list {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .help-channel-btn {
+    width: 100% !important;
+    height: 44px !important;
+    justify-content: center !important;
   }
 }
 
-@media (max-width: 480px) {
-  .help-desk-channels-list {
-    grid-template-columns: 1fr;
-    gap: 8px;
+/* Extra small screen tuning (down to 320px) */
+@media (max-width: 375px) {
+  .header-metrics-row-luxury {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
   }
-  .recommendations-flex-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+
+  .trust-badges-horizontal-grid {
+    grid-template-columns: 1fr !important;
   }
 }
