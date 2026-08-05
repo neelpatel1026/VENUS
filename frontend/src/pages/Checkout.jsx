@@ -363,13 +363,8 @@ const Checkout = () => {
     }
   };
 
-  const verifyEmailOtp = async () => {
+  const verifyEmailOtpDirect = async (otpString) => {
     if (verifyingOtp) return;
-    const otpString = otpValues.join("");
-    if (otpString.length < 6) {
-      toast.error("Please enter the full 6-digit OTP");
-      return;
-    }
     setVerifyingOtp(true);
     setOtpErrorMsg("");
     try {
@@ -380,12 +375,12 @@ const Checkout = () => {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
-          timeout: 20000, // 20 seconds timeout
+          timeout: 20000,
         }
       );
       if (res.data.success) {
         setOtpVerified(true);
-        toast.success("Email verified successfully!");
+        toast.success("Email verified successfully! 🎉");
       }
     } catch (error) {
       if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
@@ -400,6 +395,15 @@ const Checkout = () => {
     }
   };
 
+  const verifyEmailOtp = async () => {
+    const otpString = otpValues.join("");
+    if (otpString.length < 6) {
+      toast.error("Please enter the full 6-digit OTP");
+      return;
+    }
+    await verifyEmailOtpDirect(otpString);
+  };
+
   const handleOtpChange = (index, value) => {
     // allow numbers only
     if (value && !/^\d+$/.test(value)) return;
@@ -412,6 +416,15 @@ const Checkout = () => {
     if (value && index < 5) {
       const nextInput = document.getElementById(`otp-input-${index + 1}`);
       if (nextInput) nextInput.focus();
+    }
+
+    // Auto verify when the last digit is entered and all boxes are populated
+    const finalOtp = newValues.join("");
+    if (finalOtp.length === 6 && !newValues.includes("")) {
+      // Small timeout to allow input rendering and prevent blocking focus transitions
+      setTimeout(() => {
+        verifyEmailOtpDirect(finalOtp);
+      }, 80);
     }
   };
 
