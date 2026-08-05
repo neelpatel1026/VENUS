@@ -668,6 +668,10 @@
     grid-template-columns: 1fr;
     gap: 30px;
   }
+  .recommendations-flex-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -680,11 +684,19 @@
   .success-actions-stack-luxury {
     grid-template-columns: 1fr;
   }
+  .recommendations-flex-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
 }
 
 @media (max-width: 480px) {
   .help-desk-channels-list {
     grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .recommendations-flex-grid {
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }
 }

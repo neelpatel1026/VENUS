@@ -326,6 +326,56 @@ const AdminDashboard = () => {
 
   if (!user || user.role !== "admin") return null;
 
+  if (loading) {
+    return (
+      <div className="admin-layout-wrapper route-fade-in" style={{ background: "#F8F8F8", minHeight: "100vh" }}>
+        <AdminSidebar />
+        <div className="admin-content-console" style={{ padding: "30px", flex: 1 }}>
+          {/* Header Skeleton */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px", borderBottom: "1px solid #ECECEC", paddingBottom: "24px" }}>
+            <div>
+              <div className="shimmer-bg" style={{ height: "28px", width: "240px", borderRadius: "4px", marginBottom: "8px" }} />
+              <div className="shimmer-bg" style={{ height: "14px", width: "320px", borderRadius: "4px" }} />
+            </div>
+            <div className="shimmer-bg" style={{ height: "46px", width: "300px", borderRadius: "12px" }} />
+          </div>
+
+          {/* Action Center Skeleton */}
+          <div style={{ background: "#FFFFFF", padding: "28px", borderRadius: "24px", border: "1px solid #ECECEC", marginBottom: "32px" }}>
+            <div className="shimmer-bg" style={{ height: "20px", width: "200px", borderRadius: "4px", marginBottom: "20px" }} />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px" }}>
+              {[1, 2].map(i => (
+                <div key={i} style={{ border: "1px solid #ECECEC", borderLeft: "4px solid #C8A165", borderRadius: "16px", padding: "20px", height: "180px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <div className="shimmer-bg" style={{ width: "42px", height: "42px", borderRadius: "10px" }} />
+                    <div className="shimmer-bg" style={{ width: "80px", height: "20px", borderRadius: "20px" }} />
+                  </div>
+                  <div className="shimmer-bg" style={{ height: "16px", width: "80%", borderRadius: "4px" }} />
+                  <div className="shimmer-bg" style={{ height: "12px", width: "95%", borderRadius: "4px" }} />
+                  <div className="shimmer-bg" style={{ height: "32px", width: "100%", borderRadius: "6px", marginTop: "auto" }} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* KPIs Grid */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "20px", marginBottom: "32px" }}>
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} style={{ background: "#FFFFFF", padding: "24px", borderRadius: "16px", border: "1px solid #ECECEC", display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <div className="shimmer-bg" style={{ height: "14px", width: "100px", borderRadius: "4px" }} />
+                  <div className="shimmer-bg" style={{ height: "20px", width: "20px", borderRadius: "4px" }} />
+                </div>
+                <div className="shimmer-bg" style={{ height: "28px", width: "140px", borderRadius: "4px" }} />
+                <div className="shimmer-bg" style={{ height: "12px", width: "80px", borderRadius: "4px" }} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // SVG Chart Generators
   const renderLineChart = (data) => {
     if (!data || data.length === 0) return <div style={{ color: "#6B7280" }}>No chart data.</div>;

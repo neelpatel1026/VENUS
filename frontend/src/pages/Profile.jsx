@@ -290,50 +290,55 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="profile-dashboard-wrapper route-fade-in">
-        {/* Simple Profile Header Skeleton */}
-        <div className="profile-hero-section skeleton-hero-section">
-          <div className="profile-avatar-row">
+      <div className="profile-dashboard-wrapper route-fade-in" style={{ padding: "40px 20px", maxWidth: "1280px", margin: "0 auto" }}>
+        {/* Profile Header Skeleton */}
+        <div className="profile-hero-section skeleton-hero-section" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "24px", background: "#FFFFFF", borderRadius: "16px", border: "1px solid rgba(0,0,0,0.05)", marginBottom: "30px" }}>
+          <div className="profile-avatar-row" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
             <div className="shimmer-bg" style={{ width: "64px", height: "64px", borderRadius: "50%" }} />
             <div>
-              <div className="shimmer-bg" style={{ height: "24px", width: "150px", borderRadius: "4px", marginBottom: "8px" }} />
-              <div className="shimmer-bg" style={{ height: "14px", width: "180px", borderRadius: "4px" }} />
+              <div className="shimmer-bg" style={{ height: "20px", width: "160px", borderRadius: "4px", marginBottom: "8px" }} />
+              <div className="shimmer-bg" style={{ height: "14px", width: "200px", borderRadius: "4px" }} />
             </div>
           </div>
           <div className="header-actions" style={{ display: "flex", gap: "12px" }}>
-            <div className="shimmer-bg" style={{ height: "40px", width: "100px", borderRadius: "8px" }} />
-            <div className="shimmer-bg" style={{ height: "40px", width: "100px", borderRadius: "8px" }} />
+            <div className="shimmer-bg" style={{ height: "40px", width: "110px", borderRadius: "12px" }} />
+            <div className="shimmer-bg" style={{ height: "40px", width: "110px", borderRadius: "12px" }} />
           </div>
         </div>
 
-        {/* Dual column skeleton layout */}
-        <div className="profile-main-layout">
-          {/* Left Column */}
-          <div className="profile-sidebar-col">
-            <div className="sidebar-info-card">
-              <div className="shimmer-bg" style={{ height: "20px", width: "120px", borderRadius: "4px", marginBottom: "16px" }} />
-              <div className="shimmer-bg" style={{ height: "14px", width: "80%", borderRadius: "4px", marginBottom: "8px" }} />
-              <div className="shimmer-bg" style={{ height: "14px", width: "60%", borderRadius: "4px" }} />
+        {/* Dual column layout */}
+        <div className="profile-main-layout" style={{ display: "grid", gridTemplateColumns: "1fr 2.5fr", gap: "30px" }}>
+          {/* Left Column - Sidebar Info */}
+          <div className="profile-sidebar-col" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div className="sidebar-info-card" style={{ padding: "20px", background: "#FFFFFF", borderRadius: "16px", border: "1px solid rgba(0,0,0,0.05)" }}>
+              <div className="shimmer-bg" style={{ height: "18px", width: "120px", borderRadius: "4px", marginBottom: "16px" }} />
+              <div className="shimmer-bg" style={{ height: "14px", width: "85%", borderRadius: "4px", marginBottom: "8px" }} />
+              <div className="shimmer-bg" style={{ height: "14px", width: "65%", borderRadius: "4px" }} />
             </div>
-            <div className="sidebar-info-card">
-              <div className="shimmer-bg" style={{ height: "20px", width: "120px", borderRadius: "4px", marginBottom: "16px" }} />
-              <div className="shimmer-bg" style={{ height: "40px", width: "100%", borderRadius: "8px" }} />
+            <div className="sidebar-info-card" style={{ padding: "20px", background: "#FFFFFF", borderRadius: "16px", border: "1px solid rgba(0,0,0,0.05)" }}>
+              <div className="shimmer-bg" style={{ height: "18px", width: "140px", borderRadius: "4px", marginBottom: "16px" }} />
+              <div className="shimmer-bg" style={{ height: "14px", width: "90%", borderRadius: "4px", marginBottom: "8px" }} />
+              <div className="shimmer-bg" style={{ height: "14px", width: "50%", borderRadius: "4px" }} />
             </div>
           </div>
-          {/* Right Column */}
+          
+          {/* Right Column - Orders */}
           <div className="profile-content-col">
-            <div className="dashboard-order-history-section" style={{ padding: "20px", borderRadius: "16px", background: "#FFFFFF", border: "1px solid #ECE7DF" }}>
-              <div className="shimmer-bg" style={{ height: "20px", width: "150px", borderRadius: "4px", marginBottom: "20px" }} />
+            <div className="dashboard-order-history-section" style={{ padding: "24px", borderRadius: "16px", background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.05)" }}>
+              <div className="shimmer-bg" style={{ height: "20px", width: "180px", borderRadius: "4px", marginBottom: "24px" }} />
               {[1, 2].map((i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #ECE7DF", paddingBottom: "16px", marginBottom: "16px" }}>
-                  <div style={{ display: "flex", gap: "12px" }}>
-                    <div className="shimmer-bg" style={{ width: "60px", height: "60px", borderRadius: "8px" }} />
-                    <div>
-                      <div className="shimmer-bg" style={{ height: "16px", width: "140px", borderRadius: "4px", marginBottom: "8px" }} />
-                      <div className="shimmer-bg" style={{ height: "14px", width: "80px", borderRadius: "4px" }} />
+                <div key={i} style={{ border: "1px solid rgba(0,0,0,0.05)", borderRadius: "12px", padding: "16px", marginBottom: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div className="shimmer-bg" style={{ height: "16px", width: "120px", borderRadius: "4px" }} />
+                    <div className="shimmer-bg" style={{ height: "24px", width: "80px", borderRadius: "20px" }} />
+                  </div>
+                  <div style={{ display: "flex", gap: "14px" }}>
+                    <div className="shimmer-bg" style={{ width: "60px", height: "60px", borderRadius: "8px", flexShrink: 0 }} />
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
+                      <div className="shimmer-bg" style={{ height: "16px", width: "85%", borderRadius: "4px" }} />
+                      <div className="shimmer-bg" style={{ height: "14px", width: "40%", borderRadius: "4px" }} />
                     </div>
                   </div>
-                  <div className="shimmer-bg" style={{ height: "30px", width: "100px", borderRadius: "6px" }} />
                 </div>
               ))}
             </div>

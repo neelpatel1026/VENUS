@@ -3205,15 +3205,15 @@
     max-height: 78%;
   }
   .product-details-content-luxury {
-    padding: 12px 10px 6px 10px; /* Reduced padding */
+    padding: 10px 8px 6px 8px; /* Reduced padding */
     gap: 4px; /* Tight layout */
   }
   .luxury-category-label {
-    font-size: 9.5px;
+    font-size: 9px;
     margin-bottom: 2px;
   }
   .luxury-product-title {
-    font-size: 13px;
+    font-size: 12px;
     margin-bottom: 4px;
     line-height: 1.35;
   }
@@ -3222,28 +3222,57 @@
     gap: 4px;
   }
   .luxury-card-prices-block {
-    gap: 6px;
+    gap: 4px;
     margin-bottom: 4px;
+    flex-wrap: wrap;
   }
   .luxury-sale-price {
-    font-size: 15px !important;
+    font-size: 14px !important;
   }
   .luxury-old-price {
-    font-size: 11.5px !important;
-  }
-  .luxury-savings-tag {
     font-size: 10px !important;
   }
+  .luxury-savings-tag {
+    font-size: 9px !important;
+  }
   .product-action-footer-luxury {
-    padding: 0 10px 12px 10px; /* Reduced padding */
+    padding: 0 8px 10px 8px; /* Reduced padding */
   }
   .luxury-add-to-cart-btn {
-    height: 44px !important; /* Premium touch target height */
-    font-size: 12px !important;
-    border-radius: 22px;
+    height: 40px !important; /* Premium touch target height */
+    font-size: 11px !important;
+    border-radius: 20px;
   }
   .reviews-total-tag {
     display: none; /* Hide reviews count to fit mobile width */
+  }
+}
+
+/* Extra small screen tuning (down to 320px) */
+@media (max-width: 375px) {
+  .product-grid,
+  .featured-products-grid {
+    gap: 6px !important;
+    padding: 0 4px !important;
+  }
+  .product-details-content-luxury {
+    padding: 8px 6px 4px 6px;
+  }
+  .luxury-product-title {
+    font-size: 11px;
+  }
+  .luxury-sale-price {
+    font-size: 12.5px !important;
+  }
+  .luxury-old-price {
+    font-size: 9px !important;
+  }
+  .luxury-savings-tag {
+    font-size: 8px !important;
+  }
+  .luxury-add-to-cart-btn {
+    height: 36px !important;
+    font-size: 10px !important;
   }
 }
 

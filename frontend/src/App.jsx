@@ -195,8 +195,9 @@ const NotFound = () => {
 };
 
 const PageLoader = () => (
-  <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh" }}>
-    <div style={{ width: "40px", height: "40px", borderRadius: "50%", border: "3px solid #E8DFD2", borderTopColor: "#C8A96B", animation: "spin 1s linear infinite" }}></div>
+  <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", minHeight: "60vh", background: "#FFFFFF" }}>
+    <div style={{ width: "28px", height: "28px", borderRadius: "50%", border: "2px solid #F5EFE6", borderTopColor: "#C8A96B", animation: "spin 1s linear infinite" }}></div>
+    <div style={{ marginTop: "14px", fontSize: "12px", letterSpacing: "2px", color: "#C8A96B", fontWeight: "500", textTransform: "uppercase" }}>Venus Care</div>
     <style>{`
       @keyframes spin {
         0% { transform: rotate(0deg); }

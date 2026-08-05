@@ -218,19 +218,33 @@ const Shop = () => {
                 style={{ 
                   background: '#FFFFFF', 
                   borderRadius: '20px', 
-                  border: '1px solid rgba(0, 0, 0, 0.06)', 
-                  padding: '20px', 
+                  border: '1px solid rgba(0, 0, 0, 0.05)', 
+                  padding: '16px', 
                   height: '380px',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '15px'
+                  gap: '12px'
                 }}
               >
-                <div className="shimmer-bg" style={{ flex: '1', borderRadius: '14px' }}></div>
-                <div className="shimmer-bg" style={{ height: '16px', width: '40%', borderRadius: '4px' }}></div>
-                <div className="shimmer-bg" style={{ height: '24px', width: '80%', borderRadius: '4px' }}></div>
-                <div className="shimmer-bg" style={{ height: '20px', width: '50%', borderRadius: '4px' }}></div>
-                <div className="shimmer-bg" style={{ height: '40px', borderRadius: '8px' }}></div>
+                {/* Product Image Skeleton */}
+                <div className="shimmer-bg" style={{ flex: '1', borderRadius: '12px', minHeight: '180px' }}></div>
+                
+                {/* Product Category/Title Skeleton */}
+                <div className="shimmer-bg" style={{ height: '14px', width: '35%', borderRadius: '4px' }}></div>
+                <div className="shimmer-bg" style={{ height: '18px', width: '85%', borderRadius: '4px' }}></div>
+                
+                {/* Rating Placeholder stars */}
+                <div style={{ display: 'flex', gap: '4px', margin: '2px 0' }}>
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="shimmer-bg" style={{ width: '12px', height: '12px', borderRadius: '50%' }}></div>
+                  ))}
+                </div>
+                
+                {/* Price and Add button layout row */}
+                <div style={{ display: 'flex', justifyContent: 'between', alignItems: 'center', marginTop: 'auto', gap: '10px' }}>
+                  <div className="shimmer-bg" style={{ height: '20px', width: '30%', borderRadius: '4px' }}></div>
+                  <div className="shimmer-bg" style={{ height: '36px', flex: '1', borderRadius: '8px' }}></div>
+                </div>
               </div>
             ))}
           </div>

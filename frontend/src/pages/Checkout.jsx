@@ -537,6 +537,10 @@ const Checkout = () => {
       const res = await axios.post("/api/coupons/validate", {
         code: couponCode,
         items: cartItems
+      }, {
+        headers: {
+          Authorization: `Bearer ${user.token}`
+        }
       });
 
       const data = res.data;
@@ -767,31 +771,76 @@ const Checkout = () => {
         <div className="checkout-page-container">
           <div className="checkout-two-columns-layout">
             <div className="checkout-left-column">
-              <div className="checkout-section-block" style={{ padding: "24px" }}>
-                <div className="shimmer-bg" style={{ height: "24px", width: "180px", borderRadius: "4px", marginBottom: "16px" }} />
+              {/* Shipping Address Section Skeleton */}
+              <div className="checkout-section-block" style={{ padding: "24px", background: "#FFFFFF", borderRadius: "16px", border: "1px solid rgba(0,0,0,0.05)", marginBottom: "20px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                  <div className="shimmer-bg" style={{ height: "22px", width: "160px", borderRadius: "4px" }} />
+                  <div className="shimmer-bg" style={{ height: "30px", width: "120px", borderRadius: "6px" }} />
+                </div>
                 <div className="checkout-address-cards-grid">
-                  <div className="shimmer-bg" style={{ height: "120px", borderRadius: "12px" }} />
-                  <div className="shimmer-bg" style={{ height: "120px", borderRadius: "12px" }} />
+                  {[1, 2].map((i) => (
+                    <div key={i} style={{ border: "1px solid rgba(0,0,0,0.05)", borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <div className="shimmer-bg" style={{ height: "16px", width: "80px", borderRadius: "4px" }} />
+                        <div className="shimmer-bg" style={{ height: "16px", width: "16px", borderRadius: "50%" }} />
+                      </div>
+                      <div className="shimmer-bg" style={{ height: "14px", width: "90%", borderRadius: "4px" }} />
+                      <div className="shimmer-bg" style={{ height: "14px", width: "70%", borderRadius: "4px" }} />
+                      <div className="shimmer-bg" style={{ height: "14px", width: "50%", borderRadius: "4px" }} />
+                    </div>
+                  ))}
                 </div>
               </div>
-              <div className="checkout-section-block" style={{ padding: "24px" }}>
-                <div className="shimmer-bg" style={{ height: "24px", width: "150px", borderRadius: "4px", marginBottom: "16px" }} />
-                <div className="shimmer-bg" style={{ height: "60px", borderRadius: "12px" }} />
+              
+              {/* Payment Methods Section Skeleton */}
+              <div className="checkout-section-block" style={{ padding: "24px", background: "#FFFFFF", borderRadius: "16px", border: "1px solid rgba(0,0,0,0.05)" }}>
+                <div className="shimmer-bg" style={{ height: "22px", width: "140px", borderRadius: "4px", marginBottom: "20px" }} />
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} style={{ border: "1px solid rgba(0,0,0,0.05)", borderRadius: "12px", padding: "16px", display: "flex", alignItems: "center", gap: "12px" }}>
+                      <div className="shimmer-bg" style={{ height: "18px", width: "18px", borderRadius: "50%" }} />
+                      <div className="shimmer-bg" style={{ height: "16px", width: "120px", borderRadius: "4px" }} />
+                      <div className="shimmer-bg" style={{ height: "16px", width: "40px", borderRadius: "4px", marginLeft: "auto" }} />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
+            
             <div className="checkout-right-column">
-              <div className="order-summary-box-card" style={{ padding: "24px" }}>
-                <div className="shimmer-bg" style={{ height: "24px", width: "150px", borderRadius: "4px", marginBottom: "20px" }} />
+              <div className="order-summary-box-card" style={{ padding: "24px", background: "#FFFFFF", borderRadius: "16px", border: "1px solid rgba(0,0,0,0.05)" }}>
+                <div className="shimmer-bg" style={{ height: "22px", width: "150px", borderRadius: "4px", marginBottom: "24px" }} />
+                
+                {/* Items in summary list */}
                 {[1, 2].map((i) => (
-                  <div key={i} style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
-                    <div className="shimmer-bg" style={{ width: "50px", height: "50px", borderRadius: "8px" }} />
-                    <div style={{ flex: 1 }}>
-                      <div className="shimmer-bg" style={{ height: "14px", width: "80%", borderRadius: "4px", marginBottom: "6px" }} />
+                  <div key={i} style={{ display: "flex", gap: "14px", marginBottom: "16px" }}>
+                    <div className="shimmer-bg" style={{ width: "60px", height: "60px", borderRadius: "8px", flexShrink: 0 }} />
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
+                      <div className="shimmer-bg" style={{ height: "14px", width: "85%", borderRadius: "4px" }} />
                       <div className="shimmer-bg" style={{ height: "12px", width: "40%", borderRadius: "4px" }} />
+                      <div className="shimmer-bg" style={{ height: "14px", width: "30%", borderRadius: "4px", marginTop: "auto" }} />
                     </div>
                   </div>
                 ))}
-                <div className="shimmer-bg" style={{ height: "1px", margin: "20px 0" }} />
+                
+                <div style={{ height: "1px", background: "rgba(0,0,0,0.06)", margin: "20px 0" }} />
+                
+                {/* Price calculations details */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <div className="shimmer-bg" style={{ height: "12px", width: "80px", borderRadius: "4px" }} />
+                    <div className="shimmer-bg" style={{ height: "12px", width: "50px", borderRadius: "4px" }} />
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <div className="shimmer-bg" style={{ height: "12px", width: "60px", borderRadius: "4px" }} />
+                    <div className="shimmer-bg" style={{ height: "12px", width: "40px", borderRadius: "4px" }} />
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <div className="shimmer-bg" style={{ height: "14px", width: "70px", borderRadius: "4px" }} />
+                    <div className="shimmer-bg" style={{ height: "14px", width: "60px", borderRadius: "4px" }} />
+                  </div>
+                </div>
+                
                 <div className="shimmer-bg" style={{ height: "48px", borderRadius: "12px" }} />
               </div>
             </div>

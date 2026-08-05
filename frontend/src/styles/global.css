@@ -419,12 +419,12 @@ textarea:focus-visible {
 .shimmer-bg {
   background: linear-gradient(
     90deg,
-    #F3ECE0 25%,
-    #FAF6F0 50%,
-    #F3ECE0 75%
+    #F5EFE6 25%,
+    #FAF8F5 50%,
+    #F5EFE6 75%
   );
   background-size: 200% 100%;
-  animation: shimmerAnim 1.6s infinite;
+  animation: shimmerAnim 1.2s infinite ease-in-out;
 }
 
 @keyframes shimmerAnim {

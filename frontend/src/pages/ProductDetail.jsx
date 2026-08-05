@@ -461,15 +461,39 @@ const ProductDetail = () => {
       <div className="product-detail-wrapper route-fade-in">
         <div className="product-detail">
           <div className="detail-image-container">
-            <div className="shimmer-bg" style={{ width: "100%", height: "100%", minHeight: "300px", borderRadius: "20px" }} />
+            <div className="shimmer-bg" style={{ width: "100%", height: "100%", aspectRatio: "1/1", minHeight: "450px", borderRadius: "16px" }} />
           </div>
-          <div className="detail-info" style={{ gap: "20px" }}>
-            <div className="shimmer-bg" style={{ height: "12px", width: "80px", borderRadius: "4px" }} />
-            <div className="shimmer-bg" style={{ height: "36px", width: "80%", borderRadius: "4px" }} />
-            <div className="shimmer-bg" style={{ height: "24px", width: "150px", borderRadius: "4px" }} />
-            <div className="shimmer-bg" style={{ height: "70px", width: "100%", borderRadius: "16px" }} />
-            <div className="shimmer-bg" style={{ height: "100px", width: "100%", borderRadius: "12px" }} />
-            <div className="shimmer-bg" style={{ height: "48px", width: "100%", borderRadius: "14px" }} />
+          <div className="detail-info" style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "10px" }}>
+            {/* Category Breadcrumb */}
+            <div className="shimmer-bg" style={{ height: "12px", width: "120px", borderRadius: "4px" }} />
+            {/* Title */}
+            <div className="shimmer-bg" style={{ height: "32px", width: "85%", borderRadius: "4px" }} />
+            
+            {/* Rating Stars placeholder */}
+            <div style={{ display: "flex", gap: "4px", margin: "4px 0" }}>
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="shimmer-bg" style={{ width: "16px", height: "16px", borderRadius: "50%" }}></div>
+              ))}
+            </div>
+            
+            {/* Price lines */}
+            <div className="shimmer-bg" style={{ height: "28px", width: "180px", borderRadius: "4px" }} />
+            
+            {/* Divider */}
+            <div style={{ height: "1px", background: "rgba(0,0,0,0.06)", margin: "8px 0" }} />
+            
+            {/* Short info blocks */}
+            <div className="shimmer-bg" style={{ height: "60px", width: "100%", borderRadius: "12px" }} />
+            
+            {/* Main Action Button */}
+            <div className="shimmer-bg" style={{ height: "48px", width: "100%", borderRadius: "12px", marginTop: "12px" }} />
+            
+            {/* Description lines */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "16px" }}>
+              <div className="shimmer-bg" style={{ height: "14px", width: "100%", borderRadius: "4px" }} />
+              <div className="shimmer-bg" style={{ height: "14px", width: "95%", borderRadius: "4px" }} />
+              <div className="shimmer-bg" style={{ height: "14px", width: "70%", borderRadius: "4px" }} />
+            </div>
           </div>
         </div>
       </div>

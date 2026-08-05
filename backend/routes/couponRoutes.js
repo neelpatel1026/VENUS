@@ -13,7 +13,7 @@ const { admin } = require("../middleware/adminMiddleware");
 const paymentLimiter = require("../middleware/paymentLimiter");
 const adminLimiter = require("../middleware/adminLimiter");
 
-router.post("/validate", paymentLimiter, validateCoupon);
+router.post("/validate", protect, paymentLimiter, validateCoupon);
 
 router.route("/")
   .get(protect, admin, adminLimiter, getCoupons)

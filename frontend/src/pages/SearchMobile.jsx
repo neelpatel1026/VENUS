@@ -330,7 +330,20 @@ const SearchMobile = () => {
         ) : (
           /* 3. LIVE SEARCH RESULTS */
           <div className="live-search-results-viewport">
-            {filteredProducts.length > 0 ? (
+            {loading ? (
+              <div className="live-results-products-list">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="live-result-item-row" style={{ borderBottom: "1px solid rgba(0,0,0,0.05)", padding: "12px", display: "flex", gap: "14px" }}>
+                    <div className="shimmer-bg" style={{ width: "64px", height: "64px", borderRadius: "8px", flexShrink: 0 }} />
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
+                      <div className="shimmer-bg" style={{ height: "12px", width: "30%", borderRadius: "4px" }} />
+                      <div className="shimmer-bg" style={{ height: "16px", width: "85%", borderRadius: "4px" }} />
+                      <div className="shimmer-bg" style={{ height: "14px", width: "40%", borderRadius: "4px", marginTop: "auto" }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredProducts.length > 0 ? (
               <div className="live-results-products-list">
                 {filteredProducts.map((p) => (
                   <div 
