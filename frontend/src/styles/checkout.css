@@ -1154,6 +1154,81 @@
     height: 38px !important;
   }
 
+  /* GPS locator button fully responsive styling */
+  .gps-locator-btn {
+    width: 100% !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+    border: 1px solid #C8A165 !important;
+    background: transparent !important;
+    color: #C8A165 !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Google Places search inputs */
+  .luxury-search-input-field {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    height: 44px !important;
+    border-radius: 12px !important;
+    padding: 0 16px !important;
+    background: #FFFFFF !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .luxury-search-input-field input {
+    font-size: 13px !important;
+  }
+
+  /* Address label chips formatting */
+  .chips-list-selection {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .type-chip-btn {
+    flex: 1 1 calc(33.33% - 8px) !important;
+    min-width: 80px !important;
+    height: 36px !important;
+    border-radius: 8px !important;
+    font-size: 11px !important;
+    padding: 0 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Form actions buttons canceling and saving addresses */
+  .form-buttons-row {
+    flex-direction: row !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .btn-luxury-cancel,
+  .btn-luxury-submit-gold {
+    height: 48px !important;
+    font-size: 13px !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
   /* Keyboard overlap safety: return fixed submit button to block flow when inputs are focused */
   .checkout-two-columns-layout:focus-within .summary-checkout-place-order-action-submit-btn {
     position: static !important;
@@ -1161,6 +1236,26 @@
     margin-top: 20px !important;
     box-shadow: 0 4px 14px rgba(200, 161, 101, 0.25) !important;
     background: #C8A165 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkout-page-container {
+    padding: 12px 10px 110px 10px !important;
+  }
+
+  .type-chip-btn {
+    flex: 1 1 calc(50% - 6px) !important;
+  }
+
+  .address-actions-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .btn-card-action.select-btn,
+  .btn-card-action.default-btn,
+  .btn-card-action {
+    grid-column: span 1 !important;
   }
 }
 
@@ -1197,14 +1292,6 @@
     height: 52px !important;
     justify-content: center !important;
     border-radius: 26px !important;
-  }
-  .address-actions-grid {
-    grid-template-columns: 1fr !important;
-  }
-  .btn-card-action.select-btn,
-  .btn-card-action.default-btn,
-  .btn-card-action {
-    grid-column: span 1 !important;
   }
 }
 
