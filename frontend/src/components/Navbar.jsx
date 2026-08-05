@@ -515,41 +515,6 @@ const Navbar = () => {
                   </div>
                 </div>
 
-                {/* 3. Promotional Banner */}
-                <div className="drawer-promotional-banner-luxury" onClick={() => { setMenuOpen(false); navigate("/offers"); }} style={{ padding: 0, overflow: "hidden", background: "none", border: "none", boxShadow: "none", display: "block", width: "100%" }}>
-                  <img 
-                    src="/hero1_mobile.jpg" 
-                    alt="Venus Care Luxury Promotion" 
-                    style={{ width: "100%", height: "auto", display: "block", borderRadius: "16px", objectFit: "cover" }} 
-                    loading="lazy"
-                    onError={(e) => { e.target.src = "/about_hero.jpg"; }}
-                  />
-                </div>
-
-                {/* 4. Small Horizontal Scrolling Promotional Cards */}
-                <div className="drawer-promo-collections-row">
-                  {[
-                    { title: "Vitamin C Collection", subtitle: "Super Radiant Skin", link: "/shop?search=Vitamin C" },
-                    { title: "Summer Essentials", subtitle: "UV Shield & Hydration", link: "/shop?search=Sunscreen" },
-                    { title: "Glow Collection", subtitle: "Overnight Repair Serum", link: "/shop?search=Serums" },
-                    { title: "Luxury Gift Sets", subtitle: "Perfect Present for Loved Ones", link: "/shop?search=Gift Sets" },
-                    { title: "Anti-Aging Collection", subtitle: "Rewind Fine Lines", link: "/shop?search=Moisturizers" }
-                  ].map((collection, cIdx) => (
-                    <motion.div 
-                      key={cIdx} 
-                      className="promo-collection-mini-card"
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => { setMenuOpen(false); navigate(collection.link); }}
-                    >
-                      <div className="promo-collection-mini-bg" />
-                      <div className="promo-collection-mini-content">
-                        <h5>{collection.title}</h5>
-                        <p>{collection.subtitle}</p>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-
                 {/* 4. Luxury Navigation List with Accordion Submenus */}
                 <div className="drawer-menu-list-items">
                   {/* Home */}
