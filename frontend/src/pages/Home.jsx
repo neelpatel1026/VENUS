@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 import HeroSlider from "../components/HeroSlider";
 import WhyVenus from "../components/WhyVenus";
@@ -15,6 +16,8 @@ import "../styles/home.css"
 import "swiper/css";
 import "swiper/css/navigation";
 
+import api from "../utils/api";
+
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,21 +28,15 @@ const Home = () => {
       setLoading(true);
       setError("");
 
-      const res = await fetch("/api/products", { signal });
-
-      if (!res.ok) {
-        throw new Error("Unable to fetch collections. Please try again.");
-      }
-
-      const data = await res.json();
-      setProducts(data);
+      const res = await api.get("/products", { signal });
+      setProducts(res.data);
     } catch (err) {
-      if (err.name === "AbortError") {
+      if (axios.isCancel(err)) {
         console.log("Fetch products request aborted");
         return;
       }
       console.error(err);
-      setError("Products loading timed out or service is unavailable.");
+      setError("Unable to load products. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -47,20 +44,16 @@ const Home = () => {
 
   useEffect(() => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s request timeout safety
-
-    fetchProducts(controller.signal).finally(() => clearTimeout(timeoutId));
+    fetchProducts(controller.signal);
 
     return () => {
       controller.abort();
-      clearTimeout(timeoutId);
     };
   }, []);
 
   const handleRetry = () => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
-    fetchProducts(controller.signal).finally(() => clearTimeout(timeoutId));
+    fetchProducts(controller.signal);
   };
 
   return (

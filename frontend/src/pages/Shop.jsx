@@ -3,11 +3,14 @@ import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { FiSearch } from 'react-icons/fi';
 import '../styles/product.css';
+import api from '../utils/api';
+import axios from 'axios';
 
 const Shop = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState('');
   const [searchParams] = useSearchParams();
 
   const handleBackClick = () => {
@@ -33,20 +36,36 @@ const Shop = () => {
     }
   }, [searchParams]);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch('/api/products');
-        const data = await res.json();
-        setProducts(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
+  const fetchProducts = async (signal) => {
+    try {
+      setLoading(true);
+      setErrorMsg('');
+      const res = await api.get('/products', { signal });
+      setProducts(res.data);
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        console.log("Fetch products request cancelled");
+        return;
       }
+      console.error(error);
+      setErrorMsg('Unable to load products. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchProducts(controller.signal);
+    return () => {
+      controller.abort();
     };
-    fetchProducts();
   }, []);
+
+  const handleRetry = () => {
+    const controller = new AbortController();
+    fetchProducts(controller.signal);
+  };
 
   // Reset Filters
   const handleResetFilters = () => {
@@ -232,6 +251,18 @@ const Shop = () => {
                 </div>
               </div>
             ))}
+          </div>
+        ) : errorMsg ? (
+          <div className="error-fallback-luxury" style={{ textAlign: "center", padding: "40px 20px", background: "#FFF8F8", border: "1px dashed #EF4444", borderRadius: "16px", maxWidth: "450px", margin: "40px auto" }}>
+            <span style={{ fontSize: "28px" }}>⚠️</span>
+            <h4 style={{ fontFamily: "Cinzel, serif", fontSize: "16px", margin: "12px 0 6px 0", color: "#1A1A1A" }}>Connection Delayed</h4>
+            <p style={{ fontSize: "13px", color: "#6B7280", margin: "0 0 16px 0", lineHeight: "1.5" }}>{errorMsg}</p>
+            <button 
+              onClick={handleRetry} 
+              style={{ padding: "10px 24px", background: "#C9A45C", color: "#FFFFFF", border: "none", borderRadius: "20px", fontSize: "12px", fontWeight: "700", textTransform: "uppercase", cursor: "pointer", boxShadow: "0 4px 10px rgba(200, 161, 101, 0.2)" }}
+            >
+              Retry Loading
+            </button>
           </div>
         ) : filteredProducts.length === 0 ? (
           

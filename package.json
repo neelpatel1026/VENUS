@@ -14,7 +14,7 @@
   "scripts": {
     "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
 
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev": "concurrently \"npm run dev:server\" \"sleep 2.5 && npm run dev:client\"",
 
     "dev:server": "npm --prefix backend run dev",
 

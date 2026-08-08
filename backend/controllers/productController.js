@@ -6,23 +6,57 @@ const Product = require('../models/Product');
 const cloudinary = require('../config/cloudinary');
 const fs = require('fs');
 
-// GET ALL PRODUCTS
+let productCache = null;
+let cacheTimestamp = 0;
+
 const getProducts = async (req, res) => {
+  const startTime = Date.now();
   try {
-    // Cache products list for 60s with stale-while-revalidate for instant subsequent loads
-    res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=30");
-    
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 100;
+    const skip = (page - 1) * limit;
+    const sortBy = req.query.sortBy || 'createdAt';
+    const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
+
+    // Use lightweight memory caching for default requests
+    if (page === 1 && limit === 100 && sortBy === 'createdAt' && sortOrder === -1) {
+      if (productCache && (Date.now() - cacheTimestamp < 60000)) {
+        res.set("X-Cache", "HIT");
+        res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=30");
+        return res.status(200).json(productCache);
+      }
+    }
+
+    const sortOption = {};
+    sortOption[sortBy] = sortOrder;
+
     const products = await Product.find({})
-      .sort({ createdAt: -1 })
+      .select("name description category price originalPrice stock imageUrl rating reviewCount availableAsGift giftWrapAvailable luxuryGiftBoxAvailable giftMessageAllowed giftBadgeText estimatedPackingTime giftPrice createdAt")
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limit)
       .lean();
 
+    if (page === 1 && limit === 100 && sortBy === 'createdAt' && sortOrder === -1) {
+      productCache = products;
+      cacheTimestamp = Date.now();
+    }
+
+    res.set("X-Cache", "MISS");
+    res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=30");
     res.status(200).json(products);
 
   } catch (error) {
+    console.error(`🔴 API ERROR in getProducts: route=${req.originalUrl} query=${JSON.stringify(req.query)} time=${Date.now() - startTime}ms err=${error.message}`);
     res.status(500).json({
-      message: error.message,
+      message: "Unable to load products. Please try again.",
     });
   }
+};
+
+const invalidateProductCache = () => {
+  productCache = null;
+  cacheTimestamp = 0;
 };
 
 // GET SINGLE PRODUCT
@@ -138,6 +172,7 @@ if (Number(stock) < 0) {
       giftPrice: req.body.giftPrice || 0,
     });
 
+    invalidateProductCache();
     res.status(201).json(product);
 
   } catch (error) {
@@ -240,6 +275,7 @@ const updateProduct = async (req, res) => {
     const updatedProduct =
       await product.save();
 
+    invalidateProductCache();
     res.status(200).json(
       updatedProduct
     );
@@ -268,6 +304,7 @@ const deleteProduct = async (req, res) => {
 
     await product.deleteOne();
 
+    invalidateProductCache();
     res.status(200).json({
       message: 'Product removed successfully',
     });
