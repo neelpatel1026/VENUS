@@ -1,12 +1,7 @@
 import axios from "axios";
 
-// Determine the API URL base path
 const getBaseURL = () => {
-  if (import.meta.env.MODE === "production") {
-    // Return custom backend domain or '/' in production (if served under same host)
-    return import.meta.env.VITE_API_URL || "/api";
-  }
-  return "/api";
+  return import.meta.env.VITE_API_URL || "/api";
 };
 
 // Create reusable Axios instance with timeouts
