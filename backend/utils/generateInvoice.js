@@ -71,12 +71,10 @@ const generateInvoice = async (order, res) => {
 
   doc.fillColor(DARK_GRAY).fontSize(8).font("Helvetica");
   const brandDetails = [
-    "Registered Office: Ground Floor, Gold Plaza, Bandra West, Mumbai, MH - 400050",
-    "Support Email: care@venuscare.com",
-    "Helpline: +91 1800-555-VENUS",
-    "GSTIN: 27AAEFC9401F1Z2 (Venus Retail Private Limited)",
-    "PAN: AAEFC9401F",
-    "Website: www.venuscare.com"
+    "Ahmedabad, Gujarat, India",
+    "Support Email: venuscareofficial@gmail.com",
+    "Helpline: +91 63538 31965",
+    "Website: https://venuscare.in"
   ];
   for (const line of brandDetails) {
     doc.text(line, 40, leftY, { width: 230 });
@@ -366,7 +364,7 @@ const generateInvoice = async (order, res) => {
   doc.text("Email: venuscareofficial@gmail.com   |   WhatsApp: +91 63538 31965   |   Instagram: @venuscareofficial", 40, currentY, { align: "center", width: 515 });
   currentY += 12;
 
-  doc.fontSize(6.8).fillColor("#9CA3AF").text("This is a digitally generated tax invoice. All disputes are subject to Venus Retail Jurisdiction.", 40, currentY, { align: "center", width: 515 });
+  doc.fontSize(6.8).fillColor("#9CA3AF").text("This is a digitally generated tax invoice. All disputes are subject to Gujarat Jurisdiction.", 40, currentY, { align: "center", width: 515 });
 
   /* ==========================================================================
      6. DYNAMIC PAGE NUMBERING

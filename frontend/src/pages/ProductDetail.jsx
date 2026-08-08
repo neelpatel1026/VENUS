@@ -174,9 +174,23 @@ const ProductDetail = () => {
         setEligibleOrderId(orderIdFromUrl);
         setEligible(true);
       }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.body.style.overflow = 'hidden';
       setShowModal(true);
     }
   }, [searchParams]);
+
+  // Escape key handler to close review modal and release body scroll
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && showModal) {
+        document.body.style.overflow = 'auto';
+        setShowModal(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showModal]);
 
   // Vote Helpful
   const handleHelpfulVote = async (reviewId) => {
@@ -384,6 +398,8 @@ const ProductDetail = () => {
     setSubmitCons("");
     setImageInputText("");
     setVideoInputText("");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.body.style.overflow = 'hidden';
     setShowModal(true);
   };
 
@@ -403,6 +419,8 @@ const ProductDetail = () => {
     setSubmitCons(reviewObj.cons || "");
     setImageInputText("");
     setVideoInputText("");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.body.style.overflow = 'hidden';
     setShowModal(true);
   };
 
@@ -1297,85 +1315,70 @@ const ProductDetail = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            onClick={() => {
+              document.body.style.overflow = 'auto';
+              setShowModal(false);
+            }}
           >
             <motion.div 
               className="modal-content-card-luxury"
               initial={{ scale: 0.95, y: 15 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 15 }}
+              onClick={(e) => e.stopPropagation()}
             >
-              <div className="modal-header-row">
-                <h3>{editReviewId ? "Refine Your Feedback" : "Share Your Skincare Journey"}</h3>
-                <button type="button" onClick={() => setShowModal(false)} className="modal-close-btn">
+              {/* Sticky Modal Header */}
+              <div className="modal-header-row font-outfit" style={{ position: "sticky", top: 0, background: "#FCFAF6", zIndex: 10, borderBottom: "1px solid #EAE5D9", paddingBottom: "12px", marginBottom: "16px" }}>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: "1.4rem", fontFamily: "'Cinzel', serif", color: "#1A1A1A" }}>
+                    Write a Review
+                  </h3>
+                  <span style={{ fontSize: "12px", color: "#8B7355", fontStyle: "italic" }}>
+                    Share your experience with Venus Care.
+                  </span>
+                </div>
+                <button type="button" onClick={() => {
+                  document.body.style.overflow = 'auto';
+                  setShowModal(false);
+                }} className="modal-close-btn">
                   <FiX />
                 </button>
               </div>
 
-              {/* Star Picker */}
-              <div className="star-picker-section-luxury">
-                <span className="rating-picker-label">Overall Rating:</span>
-                <div className="star-picker-row-luxury">
+              {/* Star Picker Step 1 */}
+              <div className="star-picker-section-luxury" style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "20px" }}>
+                <span className="rating-picker-label" style={{ marginBottom: "8px", fontWeight: "600", color: "#1A1A1A" }}>
+                  How would you rate this product?
+                </span>
+                <div className="star-picker-row-luxury" style={{ display: "flex", gap: "6px" }}>
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       type="button"
                       key={star}
                       onClick={() => setRating(star)}
                       className={`star-picker-btn-luxury ${star <= rating ? "selected" : ""}`}
+                      style={{ background: "none", border: "none", fontSize: "2rem", cursor: "pointer", color: star <= rating ? "#C8A165" : "#EAE5D9" }}
                     >
                       <HiStar />
                     </button>
                   ))}
                 </div>
+                <span style={{ marginTop: "6px", fontSize: "13px", fontWeight: "500", color: "#C8A165", textTransform: "uppercase", letterSpacing: "1px" }}>
+                  {rating === 5 && "Excellent"}
+                  {rating === 4 && "Good"}
+                  {rating === 3 && "Average"}
+                  {rating === 2 && "Poor"}
+                  {rating === 1 && "Very Poor"}
+                </span>
               </div>
 
-              <form onSubmit={handleSubmitReview} className="modal-form-luxury">
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "12px" }}>
-                  <div className="form-input-group">
-                    <label>Your Location</label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. New Delhi, IN" 
-                      value={locationInput}
-                      onChange={(e) => setLocationInput(e.target.value)}
-                    />
-                  </div>
-                  <div className="form-input-group">
-                    <label>Product Variant</label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. 50ml, Standard Pack" 
-                      value={variantInput}
-                      onChange={(e) => setVariantInput(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "12px" }}>
-                  <div className="form-input-group">
-                    <label>Pros (What you liked)</label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. Radiant glow, hydration" 
-                      value={submitPros}
-                      onChange={(e) => setSubmitPros(e.target.value)}
-                    />
-                  </div>
-                  <div className="form-input-group">
-                    <label>Cons (What could be improved)</label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. Pricey, strong scent" 
-                      value={submitCons}
-                      onChange={(e) => setSubmitCons(e.target.value)}
-                    />
-                  </div>
-                </div>
-
+              <form onSubmit={handleSubmitReview} className="modal-form-luxury" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                {/* Step 2 — Essential fields */}
                 <div className="form-input-group">
-                  <label>Review Title</label>
+                  <label style={{ fontWeight: "600", fontSize: "13px", color: "#1A1A1A" }}>Review Title</label>
                   <input
                     type="text"
-                    placeholder="Summarize your experience (e.g. Radiantly soft skin!)"
+                    placeholder="Summarize your experience"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
@@ -1384,81 +1387,130 @@ const ProductDetail = () => {
                 </div>
 
                 <div className="form-input-group">
-                  <label>Detailed Feedback</label>
+                  <label style={{ fontWeight: "600", fontSize: "13px", color: "#1A1A1A" }}>Review Description</label>
                   <textarea
-                    placeholder="Share specific details about the texture, fragrance, packaging, and results (minimum 20 characters)..."
+                    placeholder="Tell us what you liked, the texture, fragrance, packaging, and results."
                     value={reviewContent}
                     onChange={(e) => setReviewContent(e.target.value)}
                     required
                     rows={4}
                     maxLength={1000}
                   />
-                  <div className="character-counter-row font-outfit">
+                  <div className="character-counter-row font-outfit" style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#8B7355", marginTop: "4px" }}>
                     <span>{reviewContent.length}/1000 characters</span>
                     <span>{reviewContent.length < 20 ? `${20 - reviewContent.length} more needed` : "Rule Valid"}</span>
                   </div>
                 </div>
 
-                <div className="form-input-group font-outfit" style={{ marginBottom: "12px" }}>
-                  <label>Select Skin Type</label>
-                  <div className="pills-selection-row">
-                    {["Dry", "Oily", "Sensitive", "Combination", "Normal"].map(type => (
-                      <button
-                        type="button"
-                        key={type}
-                        onClick={() => setSubmitSkinType(submitSkinType === type ? "" : type)}
-                        className={`pill-selection-btn ${submitSkinType === type ? "active" : ""}`}
-                      >
-                        {type}
+                {/* Step 3 — Optional details (Collapsible accordion) */}
+                <details className="premium-accordion-section" style={{ border: "1px solid #EAE5D9", borderRadius: "12px", padding: "12px", background: "#FAF8F5" }}>
+                  <summary style={{ cursor: "pointer", fontWeight: "600", fontSize: "13px", color: "#1A1A1A", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span>Add more details (optional)</span>
+                  </summary>
+                  <div className="accordion-content-stack" style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "12px" }}>
+                    <div className="form-input-group">
+                      <label>Location</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. New Delhi, IN" 
+                        value={locationInput}
+                        onChange={(e) => setLocationInput(e.target.value)}
+                      />
+                    </div>
+                    <div className="form-input-group">
+                      <label>Product Variant</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. 50ml, Standard Pack" 
+                        value={variantInput}
+                        onChange={(e) => setVariantInput(e.target.value)}
+                      />
+                    </div>
+                    <div className="form-input-group">
+                      <label>Pros</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. Radiant glow, hydration" 
+                        value={submitPros}
+                        onChange={(e) => setSubmitPros(e.target.value)}
+                      />
+                    </div>
+                    <div className="form-input-group">
+                      <label>Cons</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. Pricey, strong scent" 
+                        value={submitCons}
+                        onChange={(e) => setSubmitCons(e.target.value)}
+                      />
+                    </div>
+                    <div className="form-input-group font-outfit">
+                      <label>Skin Type</label>
+                      <div className="pills-selection-row" style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "4px" }}>
+                        {["Dry", "Oily", "Sensitive", "Combination", "Normal"].map(type => (
+                          <button
+                            type="button"
+                            key={type}
+                            onClick={() => setSubmitSkinType(submitSkinType === type ? "" : type)}
+                            className={`pill-selection-btn ${submitSkinType === type ? "active" : ""}`}
+                            style={{ padding: "6px 14px", borderRadius: "20px", border: "1px solid #EAE5D9", background: submitSkinType === type ? "#C8A165" : "#FFFFFF", color: submitSkinType === type ? "#FFFFFF" : "#1A1A1A", cursor: "pointer", fontSize: "12px" }}
+                          >
+                            {type}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <label className="modal-toggle-label font-outfit" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#1A1A1A", cursor: "pointer" }}>
+                      <input
+                        type="checkbox"
+                        checked={isAnonymous}
+                        onChange={(e) => setIsAnonymous(e.target.checked)}
+                      />
+                      Post review anonymously?
+                    </label>
+                  </div>
+                </details>
+
+                {/* Step 4 — Premium Media Upload Box */}
+                <div className="form-upload-section-luxury" style={{ border: "2px dashed #EAE5D9", borderRadius: "16px", padding: "16px", textAlign: "center", background: "#FAF8F5" }}>
+                  <label style={{ display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer", gap: "6px" }}>
+                    <FiCamera style={{ fontSize: "2rem", color: "#C8A165" }} />
+                    <span style={{ fontSize: "14px", fontWeight: "600", color: "#1A1A1A" }}>Upload photos (optional)</span>
+                    <span style={{ fontSize: "11px", color: "#8B7355" }}>Max 5 images (Up to 5MB each)</span>
+                    <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+                      <button type="button" onClick={handleAddMockPhoto} className="btn-mock-upload-choice" style={{ padding: "6px 12px", border: "1px solid #C8A165", background: "#FFFFFF", color: "#C8A165", borderRadius: "6px", cursor: "pointer", fontSize: "12px" }}>
+                        + Add Mock Photo
                       </button>
-                    ))}
-                  </div>
-                </div>
-
-
-
-                {/* Mock Upload Section */}
-                <div className="form-upload-section-luxury">
-                  <label>Attach Media Files (Simulated Upload)</label>
-                  <div style={{ display: "flex", gap: "10px", marginTop: "4px" }}>
-                    <button 
-                      type="button" 
-                      onClick={handleAddMockPhoto} 
-                      className="btn-mock-upload-choice"
-                    >
-                      <FiCamera /> Add Mock Photo
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={handleAddMockVideo} 
-                      className="btn-mock-upload-choice"
-                    >
-                      <FiVideo /> Add Mock Video
-                    </button>
-                  </div>
+                      <button type="button" onClick={handleAddMockVideo} className="btn-mock-upload-choice" style={{ padding: "6px 12px", border: "1px solid #C8A165", background: "#FFFFFF", color: "#C8A165", borderRadius: "6px", cursor: "pointer", fontSize: "12px" }}>
+                        + Add Mock Video
+                      </button>
+                    </div>
+                  </label>
 
                   {/* Previews */}
                   {((uploadedImages.length > 0) || uploadedVideo) && (
-                    <div className="uploaded-previews-flex">
+                    <div className="uploaded-previews-flex" style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "12px", justifyContent: "center" }}>
                       {uploadedImages.map((img, idx) => (
-                        <div key={idx} className="preview-media-card">
-                          <img src={img} alt="" />
+                        <div key={idx} className="preview-media-card" style={{ position: "relative", width: "60px", height: "60px", borderRadius: "8px", overflow: "hidden" }}>
+                          <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           <button 
                             type="button" 
                             onClick={() => setUploadedImages(prev => prev.filter((_, i) => i !== idx))} 
                             className="remove-media-btn"
+                            style={{ position: "absolute", top: "2px", right: "2px", background: "rgba(0,0,0,0.6)", border: "none", color: "#FFFFFF", borderRadius: "50%", width: "18px", height: "18px", display: "flex", alignItems: "center", justifyItems: "center", fontSize: "10px", cursor: "pointer" }}
                           >
                             <FiX />
                           </button>
                         </div>
                       ))}
                       {uploadedVideo && (
-                        <div className="preview-media-card video-card">
+                        <div className="preview-media-card video-card" style={{ position: "relative", width: "60px", height: "60px", borderRadius: "8px", overflow: "hidden" }}>
                           <video src={uploadedVideo} muted playsInline style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           <button 
                             type="button" 
                             onClick={() => setUploadedVideo("")} 
                             className="remove-media-btn"
+                            style={{ position: "absolute", top: "2px", right: "2px", background: "rgba(0,0,0,0.6)", border: "none", color: "#FFFFFF", borderRadius: "50%", width: "18px", height: "18px", display: "flex", alignItems: "center", justifyItems: "center", fontSize: "10px", cursor: "pointer" }}
                           >
                             <FiX />
                           </button>
@@ -1468,9 +1520,8 @@ const ProductDetail = () => {
                   )}
                 </div>
 
-                {/* Toggles */}
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px", margin: "16px 0" }}>
-                  <label className="modal-toggle-label font-outfit">
+                <div style={{ display: "flex", gap: "8px", margin: "8px 0" }}>
+                  <label className="modal-toggle-label font-outfit" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#1A1A1A", cursor: "pointer" }}>
                     <input
                       type="checkbox"
                       checked={recommend}
@@ -1478,19 +1529,14 @@ const ProductDetail = () => {
                     />
                     Recommend this luxury skincare formulation to other buyers?
                   </label>
-
-                  <label className="modal-toggle-label font-outfit">
-                    <input
-                      type="checkbox"
-                      checked={isAnonymous}
-                      onChange={(e) => setIsAnonymous(e.target.checked)}
-                    />
-                    Post review anonymously? (Hides account name from customer feed)
-                  </label>
                 </div>
 
-                <div className="modal-actions-row">
-                  <button type="button" onClick={() => setShowModal(false)} className="btn-modal-cancel">
+                {/* Sticky Modal Footer */}
+                <div className="modal-actions-row" style={{ position: "sticky", bottom: 0, background: "#FCFAF6", zIndex: 10, borderTop: "1px solid #EAE5D9", paddingTop: "12px", display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+                  <button type="button" onClick={() => {
+                    document.body.style.overflow = 'auto';
+                    setShowModal(false);
+                  }} className="btn-modal-cancel">
                     Cancel
                   </button>
                   <button type="submit" disabled={submitting} className="btn-modal-submit">
