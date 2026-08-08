@@ -16,7 +16,7 @@ const sendEmail = async ({
     const resend = new Resend(apiKey);
 
     const { data, error } = await resend.emails.send({
-      from: `VENUS CARE <${fromEmail}>`,
+      from: `VENUS CARE Official Support <${fromEmail}>`,
       to: email,
       subject: subject,
       html: message,

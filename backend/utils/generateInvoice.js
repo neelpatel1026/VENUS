@@ -360,10 +360,13 @@ const generateInvoice = async (order, res) => {
   doc.fillColor(LIGHT_GRAY).fontSize(7.5).font("Helvetica").text("Return Policy: 7-day returns on unopened formulations. To return, scan the QR code above or visit Profile > Orders.", 40, currentY, { align: "center", width: 515 });
   currentY += 12;
 
-  doc.text("Support Helpline: +91 1800-555-VENUS   |   Email: care@venuscare.com   |   Web: www.venuscare.com", 40, currentY, { align: "center", width: 515 });
+  doc.text("VENUS CARE  |  Premium Skincare & Beauty Brand  |  Website: https://venuscare.in", 40, currentY, { align: "center", width: 515 });
   currentY += 12;
 
-  doc.fontSize(6.8).fillColor("#9CA3AF").text("This is a digitally generated tax invoice valid under the CGST Act 2017. All disputes are subject to Venus Retail Mumbai Jurisdiction.", 40, currentY, { align: "center", width: 515 });
+  doc.text("Email: venuscareofficial@gmail.com   |   WhatsApp: +91 63538 31965   |   Instagram: @venuscareofficial", 40, currentY, { align: "center", width: 515 });
+  currentY += 12;
+
+  doc.fontSize(6.8).fillColor("#9CA3AF").text("This is a digitally generated tax invoice. All disputes are subject to Venus Retail Jurisdiction.", 40, currentY, { align: "center", width: 515 });
 
   /* ==========================================================================
      6. DYNAMIC PAGE NUMBERING

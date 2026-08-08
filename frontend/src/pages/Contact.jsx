@@ -155,7 +155,7 @@ const Contact = () => {
                 <FiPhone className="info-icon" />
                 <div className="info-text">
                   <span>Phone Support</span>
-                  <h4>+91 96726 81026</h4>
+                  <h4>+91 63538 31965</h4>
                   <p>Mon - Sat: 9:00 AM - 7:00 PM</p>
                 </div>
               </div>
@@ -164,7 +164,7 @@ const Contact = () => {
                 <FiMail className="info-icon" />
                 <div className="info-text">
                   <span>Customer Care Email</span>
-                  <h4>support@venuscare.com</h4>
+                  <h4>venuscareofficial@gmail.com</h4>
                   <p>Online ticketing response</p>
                 </div>
               </div>

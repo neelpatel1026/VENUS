@@ -106,7 +106,7 @@ const Footer = () => {
 
             {/* Social Outline Icons */}
             <div className="footer-social-wrapper">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-circle-btn" aria-label="Follow us on Instagram">
+              <a href="https://instagram.com/venuscareofficial" target="_blank" rel="noopener noreferrer" className="social-circle-btn" aria-label="Follow VENUS CARE on Instagram">
                 <FaInstagram />
               </a>
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-circle-btn" aria-label="Follow us on Facebook">
@@ -199,11 +199,11 @@ const Footer = () => {
               </div>
               <div className="contact-detail-line" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#B8BEC8", fontSize: "13px" }}>
                 <FaPhone style={{ color: "#C8A165" }} />
-                <span>+91 96726 81026</span>
+                <a href="https://wa.me/916353831965?text=Hello%20VENUS%20CARE,%20I%20need%20assistance%20regarding%20my%20order." target="_blank" rel="noopener noreferrer" style={{ color: "inherit", textDecoration: "none" }}>+91 63538 31965</a>
               </div>
               <div className="contact-detail-line" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#B8BEC8", fontSize: "13px" }}>
                 <FaEnvelope style={{ color: "#C8A165" }} />
-                <span>support@venuscare.com</span>
+                <a href="mailto:venuscareofficial@gmail.com" style={{ color: "inherit", textDecoration: "none" }}>venuscareofficial@gmail.com</a>
               </div>
               <div className="contact-detail-line" style={{ display: "flex", alignItems: "center", gap: "8px", color: "#B8BEC8", fontSize: "13px", whiteSpace: "nowrap" }}>
                 <FaRegClock style={{ color: "#C8A165" }} />

@@ -679,10 +679,10 @@ const Navbar = () => {
                     <p className="support-card-subtitle-luxury">Our skincare experts are always happy to assist you.</p>
                     
                     <div className="support-info-items-list">
-                      <a href="mailto:support@venuscare.in" className="support-info-item-row-link">
-                        <FaEnvelope className="info-row-icon" /> support@venuscare.in
+                      <a href="mailto:venuscareofficial@gmail.com" className="support-info-item-row-link">
+                        <FaEnvelope className="info-row-icon" /> venuscareofficial@gmail.com
                       </a>
-                      <a href="https://wa.me/919999988888" target="_blank" rel="noopener noreferrer" className="support-info-item-row-link">
+                      <a href="https://wa.me/916353831965?text=Hello%20VENUS%20CARE,%20I%20need%20assistance%20regarding%20my%20order." target="_blank" rel="noopener noreferrer" className="support-info-item-row-link">
                         <FaWhatsapp className="info-row-icon" /> WhatsApp Support
                       </a>
                       <div className="support-info-item-row-static">
@@ -709,7 +709,7 @@ const Navbar = () => {
                         Contact Support
                       </button>
                       <a 
-                        href="https://wa.me/919999988888" 
+                        href="https://wa.me/916353831965?text=Hello%20VENUS%20CARE,%20I%20need%20assistance%20regarding%20my%20order." 
                         target="_blank" 
                         rel="noopener noreferrer" 
                         className="support-secondary-action-btn-whatsapp"
@@ -719,7 +719,7 @@ const Navbar = () => {
                     </div>
 
                     <div className="support-card-socials-row">
-                      <motion.a whileTap={{ scale: 0.9 }} href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="circular-social-icon-btn">
+                      <motion.a whileTap={{ scale: 0.9 }} href="https://instagram.com/venuscareofficial" target="_blank" rel="noopener noreferrer" className="circular-social-icon-btn" aria-label="Follow VENUS CARE on Instagram">
                         <FaInstagram />
                       </motion.a>
                       <motion.a whileTap={{ scale: 0.9 }} href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="circular-social-icon-btn">

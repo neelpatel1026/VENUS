@@ -5,8 +5,8 @@ const sendEmail = require("./sendEmail.js");
  */
 const generateEmailHtml = ({ title, greeting, bodyContent, actionButtonsHtml = "", timelineHtml = "", orderSummaryHtml = "" }) => {
   const baseUrl = process.env.CLIENT_URL || "http://localhost:5173";
-  const contactNumber = "+91 99999 88888";
-  const supportEmail = "support@venuscare.com";
+  const contactNumber = "+91 63538 31965";
+  const supportEmail = "venuscareofficial@gmail.com";
 
   return `
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -192,10 +192,10 @@ const generateEmailHtml = ({ title, greeting, bodyContent, actionButtonsHtml = "
       <tr>
         <td class="footer">
           <div class="social-links">
-            <a href="${baseUrl}/instagram">Instagram</a> | <a href="${baseUrl}/facebook">Facebook</a> | <a href="${baseUrl}/pinterest">Pinterest</a>
+            <a href="https://instagram.com/venuscareofficial">Instagram</a> | <a href="${baseUrl}/facebook">Facebook</a> | <a href="${baseUrl}/pinterest">Pinterest</a>
           </div>
           <div class="footer-text">
-            <strong>Customer Support:</strong> <a href="mailto:${supportEmail}" style="color: #C8A165; text-decoration: none;">${supportEmail}</a> | Support Hotline: ${contactNumber}<br />
+            <strong>Customer Support:</strong> <a href="mailto:${supportEmail}" style="color: #C8A165; text-decoration: none;">${supportEmail}</a> | Support Helpline: ${contactNumber}<br />
             Business Hours: Mon - Sat, 9:00 AM - 6:00 PM IST<br />
             <a href="${baseUrl}/privacy-policy" style="color: #6B7280; text-decoration: underline;">Privacy Policy</a> | 
             <a href="${baseUrl}/return-policy" style="color: #6B7280; text-decoration: underline;">Return Policy</a>

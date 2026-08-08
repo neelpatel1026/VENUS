@@ -475,17 +475,17 @@ const OrderSuccess = () => {
             </div>
           </div>
 
-          {/* Help channels Desk card */}
+           {/* Help channels Desk card */}
           <div className="ordersuccess-card-luxury">
             <h3>Need Any Help?</h3>
             <div className="help-desk-channels-list">
-              <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer" className="help-channel-btn">
+              <a href="https://wa.me/916353831965?text=Hello%20VENUS%20CARE,%20I%20need%20assistance%20regarding%20my%20order." target="_blank" rel="noopener noreferrer" className="help-channel-btn">
                 <FaWhatsapp /> WhatsApp
               </a>
-              <a href="mailto:support@venuscare.com" className="help-channel-btn">
+              <a href="mailto:venuscareofficial@gmail.com" className="help-channel-btn">
                 <FaEnvelope /> Email Support
               </a>
-              <a href="tel:+919999999999" className="help-channel-btn">
+              <a href="tel:+916353831965" className="help-channel-btn">
                 <FaPhone /> Direct Call
               </a>
             </div>
