@@ -140,6 +140,7 @@ const Contact = () => {
           <div className="info-card">
             <h3>Store Information</h3>
             <p className="info-card-desc">Reach out directly to our luxury experience centres.</p>
+            <p className="info-card-desc" style={{ fontSize: "12px", fontStyle: "italic", marginTop: "2px", opacity: 0.85 }}>Luxury skincare support with dedicated customer assistance.</p>
             
             <div className="info-details">
               <div className="info-item">
@@ -156,7 +157,7 @@ const Contact = () => {
                 <div className="info-text">
                   <span>Phone Support</span>
                   <h4>+91 63538 31965</h4>
-                  <p>Mon - Sat: 9:00 AM - 7:00 PM</p>
+                  <p>Mon - Sat: 10:00 AM - 6:00 PM</p>
                 </div>
               </div>
 
@@ -173,7 +174,7 @@ const Contact = () => {
                 <FiClock className="info-icon" />
                 <div className="info-text">
                   <span>Business Hours</span>
-                  <h4>Mon - Sat: 9:00 AM - 7:00 PM</h4>
+                  <h4>Mon - Sat: 10:00 AM - 6:00 PM</h4>
                   <p>Closed on Sundays & National Holidays</p>
                 </div>
               </div>
@@ -182,8 +183,8 @@ const Contact = () => {
                 <FiSmile className="info-icon" />
                 <div className="info-text">
                   <span>Support Availability</span>
-                  <h4>24/7 online response</h4>
-                  <p>Fast review processing</p>
+                  <h4>Priority customer assistance</h4>
+                  <p>Response within business hours</p>
                 </div>
               </div>
             </div>
