@@ -16,7 +16,7 @@ import "../styles/home.css"
 import "swiper/css";
 import "swiper/css/navigation";
 
-import api from "../utils/api";
+import api from "../lib/api";
 
 const Home = () => {
   const [products, setProducts] = useState(() => {
@@ -40,7 +40,7 @@ const Home = () => {
       setLoading(true);
       setError("");
 
-      const res = await api.get("/products", { signal });
+      const res = await api.get("/api/products", { signal });
       if (res.data && Array.isArray(res.data)) {
         setProducts(res.data);
         try {

@@ -3,7 +3,7 @@ import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { FiSearch } from 'react-icons/fi';
 import '../styles/product.css';
-import api from '../utils/api';
+import api from '../lib/api';
 import axios from 'axios';
 
 const Shop = () => {
@@ -40,7 +40,7 @@ const Shop = () => {
     try {
       setLoading(true);
       setErrorMsg('');
-      const res = await api.get('/products', { signal });
+      const res = await api.get('/api/products', { signal });
       setProducts(res.data);
     } catch (error) {
       if (axios.isCancel(error)) {

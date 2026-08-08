@@ -24,9 +24,9 @@ app.use(helmetConfig);
 app.use(globalLimiter);
 
 const allowedOrigins = [
-  'https://venuscare.in',
-  'https://www.venuscare.in',
-  'http://localhost:5173'
+  "http://localhost:5173",
+  "https://venuscare.in",
+  "https://www.venuscare.in",
 ];
 if (process.env.FRONTEND_URL) {
   allowedOrigins.push(process.env.FRONTEND_URL);
