@@ -35,6 +35,7 @@ const getProducts = async (req, res) => {
       .sort(sortOption)
       .skip(skip)
       .limit(limit)
+      .maxTimeMS(8000) // 8 seconds MongoDB timeout guard
       .lean();
 
     if (page === 1 && limit === 100 && sortBy === 'createdAt' && sortOrder === -1) {

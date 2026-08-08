@@ -161,9 +161,18 @@ process.on("uncaughtException", (err) => {
 // Server
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
   
+  // Verify MongoDB & Product Collection availability
+  try {
+    const Product = require("./models/Product");
+    const count = await Product.countDocuments();
+    console.log(`✅ MongoDB Connection Verified. Product Collection is active. Current Count: ${count} products.`);
+  } catch (err) {
+    console.error(`🔴 Critical Startup Validation Failed: ${err.message}`);
+  }
+
   // Start the review email reminder scheduler
   const { startReviewScheduler } = require("./utils/reviewScheduler.js");
   startReviewScheduler();

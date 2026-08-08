@@ -19,8 +19,20 @@ import "swiper/css/navigation";
 import api from "../utils/api";
 
 const Home = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState(() => {
+    // Populate with last successful product list backup if less than 5 minutes old
+    try {
+      const cached = localStorage.getItem("venus_products_cache");
+      const stamp = localStorage.getItem("venus_products_cache_time");
+      if (cached && stamp && (Date.now() - Number(stamp) < 300000)) {
+        return JSON.parse(cached);
+      }
+    } catch (e) {
+      console.warn("Products local storage recovery failed:", e);
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(products.length === 0);
   const [error, setError] = useState("");
 
   const fetchProducts = async (signal) => {
@@ -29,14 +41,28 @@ const Home = () => {
       setError("");
 
       const res = await api.get("/products", { signal });
-      setProducts(res.data);
+      if (res.data && Array.isArray(res.data)) {
+        setProducts(res.data);
+        try {
+          localStorage.setItem("venus_products_cache", JSON.stringify(res.data));
+          localStorage.setItem("venus_products_cache_time", String(Date.now()));
+        } catch (e) {
+          console.warn("Saving products to local cache failed:", e);
+        }
+      }
     } catch (err) {
       if (axios.isCancel(err)) {
         console.log("Fetch products request aborted");
         return;
       }
       console.error(err);
-      setError("Unable to load products. Please try again.");
+      
+      // If we already have cached backup products, keep them and do not render the error screen
+      if (products && products.length > 0) {
+        console.log("Product fetch failed; serving cached backup list");
+      } else {
+        setError("Unable to load products. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
