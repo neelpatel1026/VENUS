@@ -4,38 +4,37 @@ import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 import "./../styles/heroslider.css";
 
+import hero1Desktop from "../assets/hero/hero1_desktop_1786171317314.jpg";
+import hero1Mobile from "../assets/hero/hero1_mobile_1786171335199.jpg";
+import hero2Desktop from "../assets/hero/hero2_desktop_1786171356600.jpg";
+import hero2Mobile from "../assets/hero/hero2_mobile_1786171372696.jpg";
+import hero3Desktop from "../assets/hero/hero3_desktop_1786171394678.jpg";
+import hero3Mobile from "../assets/hero/hero3_mobile_1786171416552.jpg";
+
 const slides = [
   {
-    desktopImage: "/hero1_desktop.jpg",
-    mobileImage: "/hero1_mobile.jpg",
+    desktopImage: hero1Desktop,
+    mobileImage: hero1Mobile,
     subtitle: "Luxury Botanical Skincare",
     title: "Reveal Your Natural Glow",
     buttonText: "Shop Collection",
     align: "right",
   },
   {
-    desktopImage: "/hero2_desktop.jpg",
-    mobileImage: "/hero2_mobile.jpg",
-    subtitle: "Vitamin C Collection",
-    title: "Brighten Every Day",
-    buttonText: "Shop Vitamin C",
+    desktopImage: hero2Desktop,
+    mobileImage: hero2Mobile,
+    subtitle: "Amla & Bhringraj Rituals",
+    title: "Nourish Every Strand",
+    buttonText: "Shop Haircare",
     align: "left",
   },
   {
-    desktopImage: "/hero3_desktop.jpg",
-    mobileImage: "/hero3_mobile.jpg",
-    subtitle: "Hydration Collection",
-    title: "Deep Hydration",
+    desktopImage: hero3Desktop,
+    mobileImage: hero3Mobile,
+    subtitle: "Hydration Apothecary Rituals",
+    title: "Deep Skin Hydration",
     buttonText: "Discover More",
     align: "right",
-  },
-  {
-    desktopImage: "/hero4_desktop.jpg",
-    mobileImage: "/hero4_mobile.jpg",
-    subtitle: "Luxury Anti-Aging",
-    title: "Timeless Beauty",
-    buttonText: "Explore Collection",
-    align: "left",
   },
 ];
 

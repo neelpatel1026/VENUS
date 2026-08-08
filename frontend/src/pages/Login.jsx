@@ -8,6 +8,8 @@ import toast from "react-hot-toast";
 import Input from "../components/Input";
 import "../styles/auth.css";
 
+import api from "../lib/api";
+
 const Login = () => {
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -83,7 +85,7 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const res = await axios.post("/api/auth/login", {
+      const res = await api.post("/api/auth/login", {
         emailOrPhone: trimmedInput,
         password: trimmedPassword,
       });
@@ -102,7 +104,13 @@ const Login = () => {
       navigate("/");
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || "Invalid credentials");
+      if (!navigator.onLine) {
+        toast.error("No internet connection");
+      } else if (error.code === "ECONNABORTED") {
+        toast.error("Request timed out");
+      } else {
+        toast.error(error.response?.data?.message || "Invalid credentials");
+      }
     } finally {
       setLoading(false);
     }
@@ -112,7 +120,7 @@ const Login = () => {
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       setLoading(true);
-      const res = await axios.post("/api/auth/google-login", {
+      const res = await api.post("/api/auth/google-login", {
         credential: credentialResponse.credential,
       });
 
@@ -121,7 +129,13 @@ const Login = () => {
       navigate("/");
     } catch (error) {
       console.error(error);
-      toast.error(error?.response?.data?.message || "Google Authentication Failed");
+      if (!navigator.onLine) {
+        toast.error("No internet connection");
+      } else if (error.code === "ECONNABORTED") {
+        toast.error("Request timed out");
+      } else {
+        toast.error(error?.response?.data?.message || "Google Authentication Failed");
+      }
     } finally {
       setLoading(false);
     }

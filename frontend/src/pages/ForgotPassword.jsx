@@ -14,6 +14,8 @@ const STEPS = {
   SUCCESS: "success",
 };
 
+import api from "../lib/api";
+
 const ForgotPassword = () => {
   const [step, setStep] = useState(STEPS.EMAIL);
   const [email, setEmail] = useState("");
@@ -141,7 +143,7 @@ const ForgotPassword = () => {
 
     setLoading(true);
     try {
-      await axios.post("/api/auth/forgot-password", { email: trimmedEmail });
+      await api.post("/api/auth/forgot-password", { email: trimmedEmail });
       toast.success("Verification code dispatched successfully!");
       setStep(STEPS.OTP);
       setTimer(60);
@@ -149,7 +151,13 @@ const ForgotPassword = () => {
       setOtpArray(["", "", "", "", "", ""]);
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || "Failed to send OTP. Check email identity.");
+      if (!navigator.onLine) {
+        toast.error("No internet connection");
+      } else if (err.code === "ECONNABORTED") {
+        toast.error("Request timed out");
+      } else {
+        toast.error(err.response?.data?.message || "Failed to send OTP. Check email identity.");
+      }
     } finally {
       setLoading(false);
     }
@@ -247,7 +255,7 @@ const ForgotPassword = () => {
 
     setLoading(true);
     try {
-      await axios.post("/api/auth/reset-password", {
+      await api.post("/api/auth/reset-password", {
         email: email.trim().toLowerCase(),
         otp: otpArray.join(""),
         newPassword,
@@ -262,7 +270,13 @@ const ForgotPassword = () => {
       }, 3500);
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || "Reset failed. OTP code might have expired.");
+      if (!navigator.onLine) {
+        toast.error("No internet connection");
+      } else if (err.code === "ECONNABORTED") {
+        toast.error("Request timed out");
+      } else {
+        toast.error(err.response?.data?.message || "Reset failed. OTP code might have expired.");
+      }
     } finally {
       setLoading(false);
     }

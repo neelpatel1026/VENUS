@@ -9,6 +9,7 @@ import { clearCart } from "../redux/cartSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import "../styles/navbar.css";
 import toast from "react-hot-toast";
+import api from "../lib/api";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -121,10 +122,9 @@ const Navbar = () => {
   useEffect(() => {
     const fetchSearchData = async () => {
       try {
-        const res = await fetch("/api/products");
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          setAllProducts(data);
+        const res = await api.get("/api/products");
+        if (Array.isArray(res.data)) {
+          setAllProducts(res.data);
         }
       } catch (err) {
         console.error("Failed to load products for search suggestions:", err);

@@ -8,6 +8,8 @@ import axios from "axios";
 import Input from "../components/Input";
 import "../styles/auth.css";
 
+import api from "../lib/api";
+
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -202,7 +204,7 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const res = await axios.post("/api/auth/register", {
+      const res = await api.post("/api/auth/register", {
         name: trimmedName,
         email: trimmedEmail,
         phone: trimmedPhone,
@@ -214,7 +216,13 @@ const Register = () => {
       navigate("/");
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || "Registration failed");
+      if (!navigator.onLine) {
+        toast.error("No internet connection");
+      } else if (error.code === "ECONNABORTED") {
+        toast.error("Request timed out");
+      } else {
+        toast.error(error.response?.data?.message || "Registration failed");
+      }
     } finally {
       setLoading(false);
     }

@@ -5,6 +5,7 @@ import {
 } from 'react';
 
 import axios from 'axios';
+import api from '../lib/api';
 
 import { useDispatch } from 'react-redux';
 
@@ -28,28 +29,23 @@ export const AuthProvider = ({ children }) => {
 
   const [loading, setLoading] = useState(true);
 
-  /* ================= LOGOUT ================= */
-
-  const logout = () => {
+  const logout = async () => {
 
     try {
+      // Call backend logout endpoint
+      await api.post('/api/auth/logout').catch(err => console.warn('Backend logout warning:', err));
 
       // CLEAR USER STATE
-
       setUser(null);
 
       // CLEAR STORAGE
-
       localStorage.removeItem('userInfo');
-
       localStorage.removeItem('token');
 
       // CLEAR REDUX CART
-
       dispatch(clearCart());
 
     } catch (error) {
-
       console.error(
         'Logout error:',
         error
@@ -127,7 +123,7 @@ export const AuthProvider = ({ children }) => {
 
         // VERIFY USER FROM BACKEND
 
-        const { data } = await axios.get(
+        const { data } = await api.get(
           '/api/auth/me',
           {
             headers: {

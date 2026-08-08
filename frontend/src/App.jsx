@@ -210,8 +210,28 @@ const PageLoader = () => (
   </div>
 );
 
+import api from "./lib/api";
+
 function App() {
   const { toasts } = useToasterStore();
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadCsrf = async () => {
+      try {
+        await api.get("/api/csrf/token");
+      } catch (error) {
+        console.error("Failed to retrieve CSRF token", error);
+      }
+    };
+
+    if (mounted) loadCsrf();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const visibleToasts = toasts.filter((t) => t.visible);
