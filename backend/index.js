@@ -23,39 +23,27 @@ app.use(helmetConfig);
 
 app.use(globalLimiter);
 
-// CORS Configuration
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://venus-f3m6zcesh-neelpatel1026s-projects.vercel.app",
-  "https://venus-woad-alpha.vercel.app",
-  "https://venus-wood-alpha.vercel.app",
-  "https://www.venuscare.in",
-  "https://venuscare.in"
+  'https://venuscare.in',
+  'https://www.venuscare.in',
+  'http://localhost:5173'
 ];
 if (process.env.FRONTEND_URL) {
   allowedOrigins.push(process.env.FRONTEND_URL);
 }
 
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (!origin) return callback(null, true);
-
-      const isAllowed = allowedOrigins.includes(origin) || 
-                        origin.endsWith(".vercel.app") || 
-                        /^http:\/\/localhost:\d+$/.test(origin);
-
-      if (isAllowed) {
-        return callback(null, true);
-      }
-
-      return callback(new Error("Not allowed by CORS"));
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "X-Requested-With", "x-csrf-bypass"]
-  })
-);
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app") || /^http:\/\/localhost:\d+$/.test(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS blocked'));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", "X-Requested-With", "x-csrf-bypass"]
+}));
 
 app.use(compression());
 
