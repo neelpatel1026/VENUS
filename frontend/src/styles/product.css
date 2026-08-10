@@ -49,7 +49,7 @@
 }
 
 .featured-section {
-  padding: 60px 0;
+  padding: 80px 0;
   background: #FAF7F2;
 }
 
@@ -492,16 +492,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #EFE8DF;
+  border: 1px solid #FAF7F2; /* Clean Ivory outline */
   position: sticky;
   top: 120px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02); /* Soft shadow */
+  height: 400px; /* Reduced vertical height by ~25% */
 }
 
 .detail-image {
   width: 90%;
   height: 90%;
-  max-height: 480px;
+  max-height: 380px; /* Fitted to container limits */
   object-fit: contain;
 }
 
@@ -2929,28 +2930,28 @@
 
 .product-card-luxury {
   background: #FFFFFF;
-  border-radius: 20px; /* 20px radius */
+  border-radius: 24px; /* Slightly larger premium border radius */
   overflow: hidden;
   display: flex;
   flex-direction: column;
   height: 100%;
   position: relative;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
-  border: 1px solid #FAF9F6;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02), 0 10px 30px rgba(200, 161, 101, 0.03); /* Soft gold shadow mix */
+  border: 1px solid #FAF7F2;
 }
 
 .product-card-luxury:hover {
-  transform: translateY(-6px); /* Lift slightly */
-  box-shadow: 0 16px 36px rgba(200, 161, 101, 0.08); /* Gold soft shadow */
-  border-color: rgba(200, 161, 101, 0.15);
+  transform: translateY(-8px); /* Lift slightly more for hover elevation */
+  box-shadow: 0 20px 40px rgba(200, 161, 101, 0.12); /* Visually stronger soft gold shadow */
+  border-color: rgba(200, 161, 101, 0.25);
 }
 
 /* Image container occupies ~70% */
 .product-image-container-luxury {
   position: relative;
   width: 100%;
-  padding-top: 90%; /* 10:9 luxury aspect ratio */
+  padding-top: 92%; /* Increased image aspect ratio area slightly */
   background: #FFFFFF;
   overflow: hidden;
 }
@@ -2968,14 +2969,14 @@
 }
 
 .product-image-img-luxury {
-  max-width: 90%;
-  max-height: 90%;
-  object-fit: contain; /* object-fit: contain */
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: 92%; /* Increased display area slightly */
+  max-height: 92%;
+  object-fit: contain;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); /* Smoother zoom transition */
 }
 
 .product-card-luxury:hover .product-image-img-luxury {
-  transform: scale(1.05); /* Zoom 1.05x on hover */
+  transform: scale(1.03); /* Subtler zoom 1.03x */
 }
 
 /* Discount Pill - Rounded, small, luxury red/gold */
@@ -3088,9 +3089,10 @@
 
 .luxury-product-title {
   margin: 0 0 10px 0;
-  font-size: 14.5px;
+  font-size: 14px; /* Refined slightly */
   font-weight: 600;
-  line-height: 1.45;
+  line-height: 1.5; /* Improved line-height */
+  letter-spacing: 0.1px; /* Refined letter spacing */
 }
 
 .luxury-product-title a {
@@ -3112,17 +3114,17 @@
 .luxury-card-rating-block {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px; /* Slightly larger gap for perfect breathing room */
   margin-bottom: 14px;
 }
 
 .stars-list-gold {
   display: flex;
-  gap: 2px;
+  gap: 3px; /* Refined star gap */
 }
 
 .star-element {
-  font-size: 11px;
+  font-size: 11.5px; /* Marginally sharper stars */
 }
 
 .rating-score-val {
@@ -3147,9 +3149,9 @@
 }
 
 .luxury-sale-price {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1F1F1F;
+  font-size: 19px; /* Stronger main price */
+  font-weight: 800; /* Extra bold for visual prominence */
+  color: #111111;
 }
 
 .luxury-old-price {
@@ -3172,7 +3174,7 @@
 
 .luxury-add-to-cart-btn {
   width: 100%;
-  height: 42px;
+  height: 46px; /* Increased height slightly for a premium feel */
   border-radius: 30px;
   background: #C8A165;
   color: #FFFFFF;
@@ -3184,7 +3186,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* Smoother transition curve */
   box-shadow: 0 4px 10px rgba(200, 161, 101, 0.15);
 }
 

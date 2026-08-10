@@ -113,9 +113,9 @@ const CartDrawer = () => {
           <motion.div
             ref={drawerRef}
             className="cart-drawer-container font-outfit"
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
+            initial={window.innerWidth <= 768 ? { y: "100%", x: 0 } : { x: "100%", y: 0 }}
+            animate={window.innerWidth <= 768 ? { y: 0, x: 0 } : { x: 0, y: 0 }}
+            exit={window.innerWidth <= 768 ? { y: "100%", x: 0 } : { x: "100%", y: 0 }}
             transition={{ type: "tween", duration: 0.25, ease: "easeOut" }}
           >
             {/* Header */}

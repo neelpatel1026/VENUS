@@ -195,11 +195,10 @@
   font-weight: 300;
 }
 
-/* ================= ACTION BUTTONS / ICONS ================= */
 .nav-actions-right {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: 18px; /* Improved gap spacing: ~18px */
 }
 
 .nav-icon-btn {
@@ -212,18 +211,19 @@
   justify-content: center;
   color: var(--luxury-dark);
   transition: 
-    color 0.3s ease,
-    transform 0.3s var(--transition-ease);
+    color 0.2s ease,
+    transform 0.2s var(--transition-ease);
 }
 
 .nav-icon {
-  font-size: var(--icon-size);
+  font-size: 22px; /* Thicker/largeroutline rendering */
+  stroke-width: 2px !important;
   color: inherit;
 }
 
 .nav-icon-btn:hover {
   color: var(--luxury-gold);
-  transform: scale(1.08);
+  transform: translateY(-1px) scale(1.05); /* 1.05 max hover scale & 1px up */
 }
 
 /* Cart Icon Badge */
@@ -234,19 +234,19 @@
 
 .cart-badge {
   position: absolute;
-  top: -1px;
-  right: -2px;
+  top: -4px; /* Positioned slightly above top-right corner */
+  right: -5px;
   background-color: var(--luxury-gold);
   color: var(--luxury-white);
-  font-size: 9px;
-  font-weight: 600;
-  width: 15px;
-  height: 15px;
-  border-radius: var(--radius-full);
+  font-size: 10px; /* Improved text font size: ~10px */
+  font-weight: 700;
+  width: 18px; /* Refined size: ~18px */
+  height: 18px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-gold);
+  box-shadow: 0 2px 6px rgba(200, 161, 107, 0.4);
 }
 
 /* Elastic Pop */
@@ -1263,6 +1263,7 @@
   .mobile-header-icon {
     font-size: 22px;
     color: #1A1A1A;
+    stroke-width: 2px !important;
   }
 
   /* Mobile Cart Badge */
@@ -1272,19 +1273,19 @@
 
   .mobile-cart-badge {
     position: absolute;
-    top: -2px;
-    right: -2px;
+    top: -4px; /* Positioned slightly above top-right corner */
+    right: -5px;
     background: #C8A165;
     color: #FFFFFF;
-    font-size: 9px;
+    font-size: 10px; /* Improved text font size: ~10px */
     font-weight: 700;
-    width: 16px;
-    height: 16px;
+    width: 18px; /* Refined size: ~18px */
+    height: 18px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 5px rgba(200, 161, 101, 0.3);
+    box-shadow: 0 2px 6px rgba(200, 161, 107, 0.4);
     border: 1px solid #FFFFFF;
   }
 

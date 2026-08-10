@@ -565,7 +565,8 @@ const Checkout = () => {
   const rawPostCouponTotal = Math.max(0, totalPrice - discountAmount);
   const actualCoinsUsed = useCoins ? Math.min(rawPostCouponTotal, walletCoinsBalance) : 0;
   
-  const finalTotal = parseFloat(Math.max(0, rawPostCouponTotal - actualCoinsUsed).toFixed(2));
+  const codFee = paymentMethod === "COD" ? 50 : 0;
+  const finalTotal = parseFloat(Math.max(0, rawPostCouponTotal - actualCoinsUsed + codFee).toFixed(2));
 
   const applyCoupon = async () => {
     if (!couponCode.trim()) {
@@ -1198,42 +1199,83 @@ const Checkout = () => {
               </div>
               <p className="section-desc-subtext">Select a secure billing path for final transaction verification.</p>
 
-              <div className="payment-options-grid">
+              <div className="payment-options-grid" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 
-                {/* Option 1: Razorpay */}
-                <div 
-                  className={`payment-option-card ${paymentMethod === "Razorpay" ? "selected" : ""}`}
-                  onClick={() => setPaymentMethod("Razorpay")}
-                >
-                  <div className="card-selection-indicator">
-                    <div className="radio-circle">
-                      {paymentMethod === "Razorpay" && <div className="checked-dot" />}
-                    </div>
-                  </div>
-                  
-                  <div className="payment-card-details">
-                    <h4>Razorpay Secure</h4>
-                    <p>UPI, Cards, Net Banking, Wallets</p>
-                  </div>
-                  <LuCreditCard className="payment-type-logo-icon" />
-                </div>
-
-                {/* Option 2: Cash on Delivery */}
+                {/* Cash on Delivery (ACTIVE) */}
                 <div 
                   className={`payment-option-card ${paymentMethod === "COD" ? "selected" : ""}`}
                   onClick={() => setPaymentMethod("COD")}
+                  style={{
+                    border: paymentMethod === "COD" ? "2px solid #C8A165" : "1px solid #FAF7F2",
+                    background: paymentMethod === "COD" ? "#FFFDF9" : "#FFFFFF",
+                    padding: "16px",
+                    borderRadius: "14px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    cursor: "pointer"
+                  }}
                 >
-                  <div className="card-selection-indicator">
-                    <div className="radio-circle">
-                      {paymentMethod === "COD" && <div className="checked-dot" />}
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div className="radio-circle" style={{ width: "18px", height: "18px", borderRadius: "50%", border: "2px solid #C8A165", display: "flex", alignItems: "center", justifyCenter: "center", justifyContent: "center" }}>
+                      <div className="checked-dot" style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#C8A165" }} />
+                    </div>
+                    <div>
+                      <h4 style={{ margin: "0 0 4px 0", fontSize: "14.5px", fontWeight: "700" }}>Cash On Delivery (COD)</h4>
+                      <p style={{ margin: 0, fontSize: "12px", color: "#6B7280" }}>₹50 COD fee added. A small handling fee applies for COD orders.</p>
                     </div>
                   </div>
-                  
-                  <div className="payment-card-details">
-                    <h4>Cash On Delivery</h4>
-                    <p>COD Available (Verification Required)</p>
+                  <LuWallet style={{ fontSize: "22px", color: "#C8A165" }} />
+                </div>
+
+                {/* Option 2: Razorpay Secure (Coming Soon / Disabled) */}
+                <div 
+                  className="payment-option-card disabled"
+                  style={{
+                    border: "1px solid #FAF7F2",
+                    background: "#FAFAFA",
+                    padding: "16px",
+                    borderRadius: "14px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    opacity: 0.6,
+                    cursor: "not-allowed"
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div className="radio-circle" style={{ width: "18px", height: "18px", borderRadius: "50%", border: "2px solid #D1D5DB" }} />
+                    <div>
+                      <h4 style={{ margin: "0 0 4px 0", fontSize: "14.5px", fontWeight: "700", color: "#9CA3AF" }}>Online Payments (Cards / NetBanking)</h4>
+                      <p style={{ margin: 0, fontSize: "12px", color: "#9CA3AF" }}>Coming Soon — Temporarily disabled for system upgrades</p>
+                    </div>
                   </div>
-                  <LuWallet className="payment-type-logo-icon" />
+                  <span style={{ fontSize: "10px", fontWeight: "700", background: "#E5E7EB", color: "#4B5563", padding: "4px 8px", borderRadius: "12px" }}>Coming Soon</span>
+                </div>
+
+                {/* UPI (Coming Soon / Disabled) */}
+                <div 
+                  className="payment-option-card disabled"
+                  style={{
+                    border: "1px solid #FAF7F2",
+                    background: "#FAFAFA",
+                    padding: "16px",
+                    borderRadius: "14px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    opacity: 0.6,
+                    cursor: "not-allowed"
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div className="radio-circle" style={{ width: "18px", height: "18px", borderRadius: "50%", border: "2px solid #D1D5DB" }} />
+                    <div>
+                      <h4 style={{ margin: "0 0 4px 0", fontSize: "14.5px", fontWeight: "700", color: "#9CA3AF" }}>UPI (GooglePay, PhonePe, Paytm)</h4>
+                      <p style={{ margin: 0, fontSize: "12px", color: "#9CA3AF" }}>Coming Soon — Temporarily disabled for system upgrades</p>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: "10px", fontWeight: "700", background: "#E5E7EB", color: "#4B5563", padding: "4px 8px", borderRadius: "12px" }}>Coming Soon</span>
                 </div>
 
               </div>
@@ -1550,10 +1592,17 @@ const Checkout = () => {
                   </div>
                 )}
 
-                <div className="breakdown-item-line gst-tax-line">
-                  <span>GST / Taxes</span>
-                  <span>Included</span>
-                </div>
+                 {paymentMethod === "COD" && (
+                   <div className="breakdown-item-line" style={{ color: "#D97706" }}>
+                     <span>COD Handling Fee</span>
+                     <span>₹50.00</span>
+                   </div>
+                 )}
+
+                 <div className="breakdown-item-line gst-tax-line">
+                   <span>GST / Taxes</span>
+                   <span>Included</span>
+                 </div>
 
                 <hr className="summary-divider-line" />
 
