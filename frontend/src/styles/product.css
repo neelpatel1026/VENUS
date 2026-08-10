@@ -1411,6 +1411,24 @@
   box-shadow: none;
 }
 
+/* Micro-interactions & animations */
+.star-picker-btn-luxury {
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.2s ease;
+}
+
+.star-picker-btn-luxury:hover {
+  transform: scale(1.25);
+}
+
+.star-picker-btn-luxury:active {
+  transform: scale(0.95);
+}
+
+.btn-modal-submit:hover:not(:disabled) {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
 /* Modal responsive alignments */
 @media (max-width: 768px) {
   .modal-overlay {

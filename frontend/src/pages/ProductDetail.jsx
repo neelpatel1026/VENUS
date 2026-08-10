@@ -577,9 +577,13 @@ const ProductDetail = () => {
             
             {/* Stars & Reviews */}
             <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.9rem", color: "#F59E0B" }}>
-              <HiStar style={{ width: "18px", height: "18px" }} />
-              <strong style={{ color: "#1F2937" }}>{product.rating || 4.8}</strong>
-              <span style={{ color: "#6B7280" }}>({product.reviewCount || 245} reviews)</span>
+              <HiStar style={{ width: "18px", height: "18px", color: (stats && stats.totalReviews > 0) ? "#C8A165" : "#E5E7EB" }} />
+              <strong style={{ color: "#1F2937" }}>
+                {stats && stats.totalReviews > 0 ? parseFloat(stats.averageRating).toFixed(1) : "0.0"}
+              </strong>
+              <span style={{ color: "#6B7280" }}>
+                ({stats ? stats.totalReviews : 0} reviews)
+              </span>
               <span style={{ color: "#C8A165", margin: "0 8px" }}>|</span>
               <span style={{ color: "#10B981", fontWeight: "600" }}>Verified Buyer Trust</span>
             </div>
@@ -780,23 +784,25 @@ const ProductDetail = () => {
             {/* Section 1: Customer Ratings Summary */}
             <div className="reviews-stats-card-luxury">
               <div className="stats-header-gold">
-                <h2>{stats?.averageRating || 4.8}</h2>
+                <h2>{stats && stats.totalReviews > 0 ? parseFloat(stats.averageRating).toFixed(1) : "0.0"}</h2>
                 <div className="reviews-stars-row-luxury">
                   {[...Array(5)].map((_, i) => (
                     <HiStar
                       key={i}
                       style={{
-                        color: i < Math.round(stats?.averageRating || 4.8) ? "#C8A165" : "#E5E7EB",
+                        color: stats && stats.totalReviews > 0 && i < Math.round(stats.averageRating) ? "#C8A165" : "#E5E7EB",
                       }}
                     />
                   ))}
                 </div>
                 <span className="reviews-count-sub font-outfit">
-                  Based on {stats?.totalReviews || 245} verified purchase reviews
+                  {stats && stats.totalReviews > 0 
+                    ? `Based on ${stats.totalReviews} verified purchase reviews` 
+                    : "No reviews yet"}
                 </span>
               </div>
 
-              {stats?.recommendRate !== undefined && (
+              {stats && stats.totalReviews > 0 && stats.recommendRate !== undefined && (
                 <div className="reviews-recommendation-block-luxury">
                   <div className="recommend-circle">
                     <span className="pct-text">{stats.recommendRate}%</span>
@@ -841,33 +847,35 @@ const ProductDetail = () => {
             </div>
 
             {/* Section 2: Star Breakdown Progress Bars */}
-            <div className="reviews-breakdown-card-luxury">
-              <h4 className="card-sub-title-luxury">Rating Distribution</h4>
-              <div className="breakdown-bars-list">
-                {[5, 4, 3, 2, 1].map((stars) => {
-                  const count = stats?.breakdown?.[stars] || 0;
-                  const total = stats?.totalReviews || 1;
-                  const pct = stats?.totalReviews > 0 ? Math.round((count / total) * 100) : 0;
-                  return (
-                    <div 
-                      key={stars} 
-                      className={`rating-bar-row-luxury ${ratingFilter === String(stars) ? "active-row" : ""}`}
-                      onClick={() => setRatingFilter(ratingFilter === String(stars) ? "" : String(stars))}
-                      style={{ cursor: "pointer" }}
-                      title={`Filter by ${stars} Stars`}
-                    >
-                      <span className="rating-star-label-luxury">
-                        {stars} ★
-                      </span>
-                      <div className="rating-progress-track-luxury">
-                        <div className="rating-progress-bar-luxury" style={{ width: `${pct}%` }} />
+            {stats && stats.totalReviews > 0 && (
+              <div className="reviews-breakdown-card-luxury">
+                <h4 className="card-sub-title-luxury">Rating Distribution</h4>
+                <div className="breakdown-bars-list">
+                  {[5, 4, 3, 2, 1].map((stars) => {
+                    const count = stats?.breakdown?.[stars] || 0;
+                    const total = stats?.totalReviews || 1;
+                    const pct = stats?.totalReviews > 0 ? Math.round((count / total) * 100) : 0;
+                    return (
+                      <div 
+                        key={stars} 
+                        className={`rating-bar-row-luxury ${ratingFilter === String(stars) ? "active-row" : ""}`}
+                        onClick={() => setRatingFilter(ratingFilter === String(stars) ? "" : String(stars))}
+                        style={{ cursor: "pointer" }}
+                        title={`Filter by ${stars} Stars`}
+                      >
+                        <span className="rating-star-label-luxury">
+                          {stars} ★
+                        </span>
+                        <div className="rating-progress-track-luxury">
+                          <div className="rating-progress-bar-luxury" style={{ width: `${pct}%` }} />
+                        </div>
+                        <span className="rating-count-label-luxury">{pct}%</span>
                       </div>
-                      <span className="rating-count-label-luxury">{pct}%</span>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Featured editorial reviews summary */}
             {featuredReviews && (featuredReviews.topPositiveReview || featuredReviews.topCriticalReview || featuredReviews.latestReview) && (
@@ -1063,11 +1071,11 @@ const ProductDetail = () => {
               /* Empty State */
               <div className="reviews-empty-state-luxury">
                 <span className="empty-state-icon">✨</span>
-                <h4>No Customer Reviews Yet</h4>
-                <p>Become the first verified customer to share your luxury skincare journey with this formula.</p>
+                <h4>No reviews yet</h4>
+                <p>Be the first customer to share your experience with VENUS CARE.</p>
                 {eligible ? (
                   <button onClick={openWriteReviewModal} className="btn-write-review-luxury-gold" style={{ marginTop: "12px" }}>
-                    Publish the First Review
+                    Write the first review
                   </button>
                 ) : (
                   <Link to="/shop" className="btn-browse-shop-luxury-gold" style={{ marginTop: "12px", textDecoration: "none" }}>
@@ -1396,7 +1404,7 @@ const ProductDetail = () => {
                     rows={4}
                     maxLength={1000}
                   />
-                  <div className="character-counter-row font-outfit" style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#8B7355", marginTop: "4px" }}>
+                  <div className="character-counter-row font-outfit" style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: reviewContent.length < 20 ? "#D97706" : "#8B7355", marginTop: "4px" }}>
                     <span>{reviewContent.length}/1000 characters</span>
                     <span>{reviewContent.length < 20 ? `${20 - reviewContent.length} more needed` : "Rule Valid"}</span>
                   </div>
