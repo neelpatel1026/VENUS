@@ -46,6 +46,8 @@ const AdminOrders = () => {
   
   // Selection and Sorting
   const [selectedIds, setSelectedIds] = useState([]);
+  const [bulkStatus, setBulkStatus] = useState("");
+  const [bulkLoading, setBulkLoading] = useState(false);
   const [sortField, setSortField] = useState("createdAt");
   const [sortDirection, setSortDirection] = useState("desc");
   const [currentPage, setCurrentPage] = useState(1);
@@ -341,22 +343,27 @@ const AdminOrders = () => {
 
   // BULK UPDATE STATUS
   const handleBulkStatusUpdate = async (status) => {
-    const confirm = window.confirm(`Update the shipment status of ${selectedIds.length} orders to ${status}?`);
+    const targetStatus = typeof status === "string" ? status : bulkStatus;
+    if (!targetStatus) return;
+
+    const confirm = window.confirm(`Update the shipment status of ${selectedIds.length} orders to ${targetStatus}?`);
     if (!confirm) return;
     toast.loading(`Bulk processing status updates...`, { id: "bulk-update" });
+    setBulkLoading(true);
     try {
       const res = await axios.put("/api/orders/bulk-status", {
         orderIds: selectedIds,
-        status,
+        status: targetStatus,
       }, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
 
       toast.dismiss("bulk-update");
       if (res.data.success) {
-        toast.success(`Successfully updated ${res.data.updatedCount || selectedIds.length} orders to ${status}!`);
-        triggerNotification("STATUS UPDATE", `Bulk changed ${selectedIds.length} orders to ${status}`);
+        toast.success(`Successfully updated ${res.data.updatedCount || selectedIds.length} orders to ${targetStatus}!`);
+        triggerNotification("STATUS UPDATE", `Bulk changed ${selectedIds.length} orders to ${targetStatus}`);
         setSelectedIds([]);
+        setBulkStatus("");
         fetchOrders();
       } else {
         toast.error(res.data.message || "Bulk update failed");
@@ -364,6 +371,8 @@ const AdminOrders = () => {
     } catch (err) {
       toast.dismiss("bulk-update");
       toast.error(err.response?.data?.message || "Failed to process bulk status changes");
+    } finally {
+      setBulkLoading(false);
     }
   };
 
@@ -757,6 +766,58 @@ const AdminOrders = () => {
             </div>
           ))}
         </div>
+
+        {/* BULK ACTIONS TOOLBAR CONTAINER */}
+        {selectedIds.length > 0 && (
+          <div className="flex flex-wrap items-center gap-3 p-4 mb-4 rounded-2xl border border-amber-200 bg-amber-50" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px", padding: "16px", marginBottom: "24px", borderRadius: "16px", border: "1px solid #FEF3C7", background: "#FEF3C7", color: "#1F2937", fontFamily: "'Outfit', sans-serif" }}>
+            <span className="text-sm font-semibold text-gray-800" style={{ fontSize: "14px", fontWeight: "600" }}>
+              {selectedIds.length} order(s) selected
+            </span>
+
+            <select
+              value={bulkStatus}
+              onChange={(e) => setBulkStatus(e.target.value)}
+              className="border rounded-lg px-3 py-2 text-sm bg-white"
+              style={{ border: "1px solid #ECE7DF", borderRadius: "8px", padding: "8px 12px", fontSize: "13px", background: "#FFFFFF", color: "#1F2937", outline: "none" }}
+              disabled={bulkLoading}
+              aria-label="Bulk order status action"
+            >
+              <option value="">Bulk status action</option>
+              <option value="Processing">Mark as Processing</option>
+              <option value="Dispatched">Mark as Dispatched</option>
+              <option value="Shipped">Mark as Shipped</option>
+              <option value="Delivered">Mark as Delivered</option>
+              <option value="Cancelled">Mark as Cancelled</option>
+            </select>
+
+            <button
+              onClick={handleBulkStatusUpdate}
+              disabled={!bulkStatus || bulkLoading}
+              className="px-4 py-2 rounded-lg bg-[#C8A46A] text-white text-sm font-medium hover:opacity-90 disabled:opacity-50"
+              style={{ padding: "8px 16px", borderRadius: "8px", background: "#C8A165", color: "#FFFFFF", border: "none", fontSize: "13px", fontWeight: "600", cursor: "pointer", transition: "opacity 0.2s" }}
+            >
+              {bulkLoading ? "Updating..." : "Apply"}
+            </button>
+
+            <button
+              onClick={handleBulkPrintInvoices}
+              disabled={bulkLoading}
+              className="px-4 py-2 rounded-lg border text-sm font-medium hover:bg-gray-50 disabled:opacity-50"
+              style={{ padding: "8px 16px", borderRadius: "8px", background: "#FFFFFF", color: "#C8A165", border: "1px solid #C8A165", fontSize: "13px", fontWeight: "600", cursor: "pointer", transition: "opacity 0.2s" }}
+            >
+              Generate Invoices
+            </button>
+
+            <button
+              onClick={() => setSelectedIds([])}
+              disabled={bulkLoading}
+              className="text-sm text-gray-600 hover:text-gray-900 disabled:opacity-50"
+              style={{ background: "none", border: "none", fontSize: "13px", color: "#D97706", cursor: "pointer", textDecoration: "underline", fontWeight: "600" }}
+            >
+              Clear
+            </button>
+          </div>
+        )}
 
         {/* ADVANCED FILTER BOX SECTION */}
         <div className="admin-card-container" style={{ padding: "20px", marginBottom: "24px" }}>

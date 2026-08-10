@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart, removeFromCart } from "../redux/cartSlice";
@@ -70,6 +70,8 @@ const ProductDetail = () => {
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const dispatch = useDispatch();
+  const modalRef = useRef(null);
+  const activeTriggerRef = useRef(null);
 
   // Fetch Product
   useEffect(() => {
@@ -98,6 +100,59 @@ const ProductDetail = () => {
     };
     fetchProduct();
   }, [id]);
+
+  // Focus Trap and Escape key listener for Write Review Modal (WCAG 2.1 AA Compliance)
+  useEffect(() => {
+    if (!showModal) {
+      if (activeTriggerRef.current) {
+        activeTriggerRef.current.focus();
+      }
+      return;
+    }
+
+    const modalElement = modalRef.current;
+    if (!modalElement) return;
+
+    // List all queryable focus elements
+    const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const focusableElements = modalElement.querySelectorAll(focusableSelector);
+    
+    if (focusableElements.length > 0) {
+      focusableElements[0].focus();
+    }
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        document.body.style.overflow = "auto";
+        setShowModal(false);
+        return;
+      }
+
+      if (e.key === "Tab") {
+        const list = modalElement.querySelectorAll(focusableSelector);
+        if (list.length === 0) return;
+        const first = list[0];
+        const last = list[list.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            last.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === last) {
+            first.focus();
+            e.preventDefault();
+          }
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showModal]);
 
   // Fetch Reviews
   const fetchReviews = async (resetPage = false) => {
@@ -398,6 +453,7 @@ const ProductDetail = () => {
     setSubmitCons("");
     setImageInputText("");
     setVideoInputText("");
+    activeTriggerRef.current = document.activeElement;
     window.scrollTo({ top: 0, behavior: 'smooth' });
     document.body.style.overflow = 'hidden';
     setShowModal(true);
@@ -419,6 +475,7 @@ const ProductDetail = () => {
     setSubmitCons(reviewObj.cons || "");
     setImageInputText("");
     setVideoInputText("");
+    activeTriggerRef.current = document.activeElement;
     window.scrollTo({ top: 0, behavior: 'smooth' });
     document.body.style.overflow = 'hidden';
     setShowModal(true);
@@ -1329,7 +1386,11 @@ const ProductDetail = () => {
             }}
           >
             <motion.div 
+              ref={modalRef}
               className="modal-content-card-luxury"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="write-review-modal-title"
               initial={{ scale: 0.95, y: 15 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 15 }}
@@ -1338,7 +1399,7 @@ const ProductDetail = () => {
               {/* Sticky Modal Header */}
               <div className="modal-header-row font-outfit" style={{ position: "sticky", top: 0, background: "#FCFAF6", zIndex: 10, borderBottom: "1px solid #EAE5D9", paddingBottom: "12px", marginBottom: "16px" }}>
                 <div>
-                  <h3 style={{ margin: 0, fontSize: "1.4rem", fontFamily: "'Cinzel', serif", color: "#1A1A1A" }}>
+                  <h3 id="write-review-modal-title" style={{ margin: 0, fontSize: "1.4rem", fontFamily: "'Cinzel', serif", color: "#1A1A1A" }}>
                     Write a Review
                   </h3>
                   <span style={{ fontSize: "12px", color: "#8B7355", fontStyle: "italic" }}>

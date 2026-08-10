@@ -48,6 +48,8 @@ const saveCartToStorage = (cartItems) => {
 
 const initialState = {
   cartItems: loadCartFromStorage(),
+  drawerOpen: false,
+  lastAddedProduct: null,
 };
 
 /* ================= CART SLICE ================= */
@@ -58,6 +60,12 @@ const cartSlice = createSlice({
   initialState,
 
   reducers: {
+    setDrawerOpen: (state, action) => {
+      state.drawerOpen = action.payload;
+    },
+    clearLastAddedProduct: (state) => {
+      state.lastAddedProduct = null;
+    },
     /* ================= ADD TO CART ================= */
 
     addToCart: (state, action) => {
@@ -109,6 +117,8 @@ const cartSlice = createSlice({
         state.cartItems.push(item);
       }
 
+      state.lastAddedProduct = item;
+      state.drawerOpen = true;
       saveCartToStorage(state.cartItems);
     },
 
@@ -180,6 +190,8 @@ const cartSlice = createSlice({
 /* ================= EXPORT ACTIONS ================= */
 
 export const {
+  setDrawerOpen,
+  clearLastAddedProduct,
   addToCart,
 
   removeFromCart,

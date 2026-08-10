@@ -125,6 +125,7 @@ import ScrollToTop from "./components/ScrollToTop.jsx";
 import OfferBar from "./components/OfferBar";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
 import { ToastContainer } from "./components/ToastContainer.jsx";
+import CartDrawer from "./components/CartDrawer.jsx";
 
 /* PAGES */
 
@@ -262,6 +263,7 @@ function App() {
 
       <OfferBar />
       <Navbar />
+      <CartDrawer />
 
       {/* MAIN CONTENT */}
 

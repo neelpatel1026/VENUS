@@ -11,6 +11,7 @@ import FeaturedLogos from "../components/FeaturedLogos";
 import InstagramFeed from "../components/InstagramFeed";
 import Newsletter from "../components/Newsletter";
 import ProductCard from "../components/ProductCard";
+import ProductCardSkeleton from "../components/ProductCardSkeleton";
 import "../styles/home.css"
 
 import "swiper/css";
@@ -129,12 +130,7 @@ const Home = () => {
         {loading ? (
           <div className="featured-products-grid">
             {[...Array(4)].map((_, index) => (
-              <div key={index} style={{ border: "1px solid #ECE7DF", background: "#FFFFFF", padding: "16px", borderRadius: "16px", height: "420px", display: "flex", flexDirection: "column", gap: "14px" }}>
-                <div className="shimmer-bg" style={{ flex: '1', borderRadius: '12px' }}></div>
-                <div className="shimmer-bg skeleton-text-line" />
-                <div className="shimmer-bg skeleton-text-line short" />
-                <div className="shimmer-bg" style={{ height: "40px", borderRadius: "8px" }}></div>
-              </div>
+              <ProductCardSkeleton key={index} />
             ))}
           </div>
         ) : error ? (

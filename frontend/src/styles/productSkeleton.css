@@ -1,0 +1,123 @@
+/* ==========================================================================
+   PRODUCT CARD SKELETON LUXURY STYLES
+   ========================================================================== */
+
+.product-card-skeleton-luxury {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1px solid #F1E7D6;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  box-sizing: border-box;
+  gap: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.skeleton-image-wrapper {
+  width: 100%;
+  padding-top: 90%; /* Aspect ratio matching 10:9 */
+  border-radius: 12px;
+  background: #F5F1EA;
+}
+
+.skeleton-text-line {
+  height: 12px;
+  background: #F5F1EA;
+  border-radius: 4px;
+}
+
+.skeleton-text-line.category-width {
+  width: 25%;
+  height: 10px;
+}
+
+.skeleton-text-line.title-width {
+  width: 75%;
+  height: 14px;
+}
+
+.skeleton-text-line.rating-num-width {
+  width: 12%;
+  height: 10px;
+}
+
+.skeleton-text-line.price-width {
+  width: 35%;
+  height: 16px;
+}
+
+.skeleton-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.skeleton-star {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #F5F1EA;
+}
+
+.skeleton-price-row {
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+}
+
+.skeleton-btn-action {
+  width: 100%;
+  height: 42px;
+  border-radius: 30px;
+  background: #F5F1EA;
+}
+
+/* Shimmer animation rules */
+.shimmer-effect-pulsing {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-effect-pulsing::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(245, 241, 234, 0) 0%,
+    rgba(251, 248, 243, 0.6) 50%,
+    rgba(245, 241, 234, 0) 100%
+  );
+  animation: shimmerMove 1.2s infinite linear;
+}
+
+@keyframes shimmerMove {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Responsive configurations */
+@media (max-width: 768px) {
+  .product-card-skeleton-luxury {
+    border-radius: 12px;
+    padding: 10px 8px 10px 8px;
+    gap: 8px;
+  }
+  .skeleton-image-wrapper {
+    padding-top: 85%;
+  }
+  .skeleton-btn-action {
+    height: 40px;
+  }
+}

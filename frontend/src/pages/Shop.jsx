@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
+import ProductCardSkeleton from '../components/ProductCardSkeleton';
 import { FiSearch } from 'react-icons/fi';
 import '../styles/product.css';
 import api from '../lib/api';
@@ -217,39 +218,7 @@ const Shop = () => {
         {loading ? (
           <div className="product-grid">
             {[...Array(8)].map((_, idx) => (
-              <div 
-                key={idx} 
-                style={{ 
-                  background: '#FFFFFF', 
-                  borderRadius: '20px', 
-                  border: '1px solid rgba(0, 0, 0, 0.05)', 
-                  padding: '16px', 
-                  height: '380px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px'
-                }}
-              >
-                {/* Product Image Skeleton */}
-                <div className="shimmer-bg" style={{ flex: '1', borderRadius: '12px', minHeight: '180px' }}></div>
-                
-                {/* Product Category/Title Skeleton */}
-                <div className="shimmer-bg" style={{ height: '14px', width: '35%', borderRadius: '4px' }}></div>
-                <div className="shimmer-bg" style={{ height: '18px', width: '85%', borderRadius: '4px' }}></div>
-                
-                {/* Rating Placeholder stars */}
-                <div style={{ display: 'flex', gap: '4px', margin: '2px 0' }}>
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="shimmer-bg" style={{ width: '12px', height: '12px', borderRadius: '50%' }}></div>
-                  ))}
-                </div>
-                
-                {/* Price and Add button layout row */}
-                <div style={{ display: 'flex', justifyContent: 'between', alignItems: 'center', marginTop: 'auto', gap: '10px' }}>
-                  <div className="shimmer-bg" style={{ height: '20px', width: '30%', borderRadius: '4px' }}></div>
-                  <div className="shimmer-bg" style={{ height: '36px', flex: '1', borderRadius: '8px' }}></div>
-                </div>
-              </div>
+              <ProductCardSkeleton key={idx} />
             ))}
           </div>
         ) : errorMsg ? (

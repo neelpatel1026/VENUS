@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { HiMenu, HiX } from "react-icons/hi";
 import { FiSearch, FiShoppingBag, FiUser, FiLayers, FiLogOut, FiMapPin, FiX, FiTrash2, FiTrendingUp, FiChevronDown, FiChevronUp, FiChevronRight, FiHome, FiTag, FiPhoneCall, FiInfo } from "react-icons/fi";
 import { FaStar, FaInstagram, FaFacebookF, FaYoutube, FaPinterestP, FaLinkedinIn, FaWhatsapp, FaEnvelope, FaMapMarkerAlt, FaClock, FaCheckCircle } from "react-icons/fa";
-import { clearCart } from "../redux/cartSlice";
+import { clearCart, setDrawerOpen } from "../redux/cartSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import "../styles/navbar.css";
 import toast from "react-hot-toast";
@@ -375,14 +375,20 @@ const Navbar = () => {
 
             {/* Shopping Bag / Cart */}
             {user?.role !== "admin" && (
-              <Link to="/cart" className="nav-icon-btn cart-icon-wrapper" aria-label="Open shopping bag">
+              <button 
+                type="button" 
+                onClick={() => dispatch(setDrawerOpen(true))} 
+                className="nav-icon-btn cart-icon-wrapper" 
+                aria-label="Open shopping bag"
+                style={{ background: "none", border: "none", cursor: "pointer" }}
+              >
                 <FiShoppingBag className="nav-icon" />
                 {cartItems.length > 0 && (
                   <span className={`cart-badge ${cartBounce ? "bounce" : ""}`}>
                     {cartItems.length}
                   </span>
                 )}
-              </Link>
+              </button>
             )}
 
             {/* Mobile Hamburger menu toggle */}
@@ -445,14 +451,20 @@ const Navbar = () => {
 
           {/* Cart Icon with Badge */}
           {user?.role !== "admin" && (
-            <Link to="/cart" className="mobile-header-icon-btn mobile-cart-wrapper" aria-label="Open shopping bag">
+            <button 
+              type="button"
+              onClick={() => dispatch(setDrawerOpen(true))}
+              className="mobile-header-icon-btn mobile-cart-wrapper" 
+              aria-label="Open shopping bag"
+              style={{ background: "none", border: "none", cursor: "pointer" }}
+            >
               <FiShoppingBag className="mobile-header-icon" />
               {cartItems.length > 0 && (
                 <span className={`mobile-cart-badge ${cartBounce ? "bounce" : ""}`}>
                   {cartItems.length > 99 ? "99+" : cartItems.length}
                 </span>
               )}
-            </Link>
+            </button>
           )}
         </div>
       </nav>

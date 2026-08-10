@@ -973,7 +973,10 @@ const Checkout = () => {
                   <LuPlus className="btn-icon" /> Add New Address
                 </button>
               ) : (
-                <div className="inline-add-address-form-box-luxury">
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  handleAddNewAddressSubmit();
+                }} className="inline-add-address-form-box-luxury">
                   <h4 className="inline-form-title">New Shipping Details</h4>
                   
                   {/* Google Autocomplete input */}
@@ -1039,6 +1042,8 @@ const Checkout = () => {
                         onChange={(e) => setNewAddr({ ...newAddr, fullName: e.target.value })}
                         placeholder="Receiver Name" 
                         required 
+                        autocomplete="name"
+                        enterkeyhint="next"
                       />
                     </div>
                     <div className="form-input-block">
@@ -1050,6 +1055,10 @@ const Checkout = () => {
                         onChange={(e) => setNewAddr({ ...newAddr, phone: e.target.value })}
                         placeholder="10-digit contact number" 
                         required 
+                        autocomplete="tel"
+                        pattern="[0-9]*"
+                        inputmode="numeric"
+                        enterkeyhint="next"
                       />
                     </div>
                     <div className="form-input-block">
@@ -1061,6 +1070,8 @@ const Checkout = () => {
                         onChange={(e) => setNewAddr({ ...newAddr, addressLine1: e.target.value })}
                         placeholder="Flat no., Floor..." 
                         required 
+                        autocomplete="address-line1"
+                        enterkeyhint="next"
                       />
                     </div>
                     <div className="form-input-block">
@@ -1071,6 +1082,8 @@ const Checkout = () => {
                         value={newAddr.addressLine2} 
                         onChange={(e) => setNewAddr({ ...newAddr, addressLine2: e.target.value })}
                         placeholder="e.g. Near Metro Hub" 
+                        autocomplete="address-line2"
+                        enterkeyhint="next"
                       />
                     </div>
                   </div>
@@ -1093,36 +1106,50 @@ const Checkout = () => {
                             <label>City</label>
                             <input 
                               type="text" 
+                              name="city"
                               value={newAddr.city} 
                               onChange={(e) => setNewAddr({ ...newAddr, city: e.target.value })}
                               required 
+                              autocomplete="address-level2"
+                              enterkeyhint="next"
                             />
                           </div>
                           <div className="form-input-block">
                             <label>State</label>
                             <input 
                               type="text" 
+                              name="state"
                               value={newAddr.state} 
                               onChange={(e) => setNewAddr({ ...newAddr, state: e.target.value })}
                               required 
+                              autocomplete="address-level1"
+                              enterkeyhint="next"
                             />
                           </div>
                           <div className="form-input-block">
                             <label>Pincode</label>
                             <input 
                               type="text" 
+                              name="pincode"
                               value={newAddr.pincode} 
                               onChange={(e) => setNewAddr({ ...newAddr, pincode: e.target.value })}
                               required 
+                              autocomplete="postal-code"
+                              pattern="[0-9]*"
+                              inputmode="numeric"
+                              enterkeyhint="next"
                             />
                           </div>
                           <div className="form-input-block">
                             <label>Country</label>
                             <input 
                               type="text" 
+                              name="country"
                               value={newAddr.country} 
                               onChange={(e) => setNewAddr({ ...newAddr, country: e.target.value })}
                               required 
+                              autocomplete="country-name"
+                              enterkeyhint="done"
                             />
                           </div>
                         </div>
@@ -1157,9 +1184,9 @@ const Checkout = () => {
                   {/* Submit actions */}
                   <div className="form-buttons-row" style={{ display: "flex", gap: "10px", marginTop: "18px" }}>
                     <button type="button" className="btn-luxury-cancel" style={{ flex: 1 }} onClick={() => setShowAddForm(false)}>Cancel</button>
-                    <button type="button" className="btn-luxury-submit-gold" style={{ flex: 1 }} onClick={handleAddNewAddressSubmit}>Save & Deliver</button>
+                    <button type="submit" className="btn-luxury-submit-gold" style={{ flex: 1 }}>Save & Deliver</button>
                   </div>
-                </div>
+                </form>
               )}
             </div>
 
