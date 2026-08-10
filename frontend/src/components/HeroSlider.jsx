@@ -4,12 +4,14 @@ import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 import "./../styles/heroslider.css";
 
-import hero1Desktop from "../assets/hero/hero1_desktop_1786171317314.jpg";
-import hero1Mobile from "../assets/hero/hero1_mobile_1786171335199.jpg";
-import hero2Desktop from "../assets/hero/hero2_desktop_1786171356600.jpg";
-import hero2Mobile from "../assets/hero/hero2_mobile_1786171372696.jpg";
-import hero3Desktop from "../assets/hero/hero3_desktop_1786171394678.jpg";
-import hero3Mobile from "../assets/hero/hero3_mobile_1786171416552.jpg";
+import hero1Desktop from "../assets/hero/hero-sunscreen-radiant.webp";
+import hero1Mobile from "../assets/hero/hero-sunscreen-radiant-mobile.webp";
+import hero2Desktop from "../assets/hero/hero-serum-rosegold.webp";
+import hero2Mobile from "../assets/hero/hero-serum-rosegold-mobile.webp";
+import hero3Desktop from "../assets/hero/hero-botanical-ritual.webp";
+import hero3Mobile from "../assets/hero/hero-botanical-ritual-mobile.webp";
+import hero4Desktop from "../assets/hero/hero-golden-glow.webp";
+import hero4Mobile from "../assets/hero/hero-glow-mobile.webp";
 
 const slides = [
   {
@@ -36,6 +38,14 @@ const slides = [
     buttonText: "Discover More",
     align: "right",
   },
+  {
+    desktopImage: hero4Desktop,
+    mobileImage: hero4Mobile,
+    subtitle: "Amber & Golden Apothecary",
+    title: "The Golden Glow Ritual",
+    buttonText: "Shop Collection",
+    align: "left",
+  }
 ];
 
 export default function HeroSlider() {
@@ -116,14 +126,16 @@ export default function HeroSlider() {
             onTouchEnd={onTouchEnd}
           >
             <picture style={{ display: "block", width: "100%", height: "100%" }}>
-              <source media="(max-width: 768px)" srcSet={slide.mobileImage} />
+              <source media="(max-width: 768px)" srcSet={slide.mobileImage} width="900" height="1200" />
               <img
                 src={slide.desktopImage}
                 alt={slide.title}
                 className="hero-slide-image"
                 loading={index === 0 ? "eager" : "lazy"}
-                fetchPriority={index === 0 ? "high" : "low"}
-                decoding={index === 0 ? "sync" : "async"}
+                fetchpriority={index === 0 ? "high" : undefined}
+                decoding="async"
+                width="1920"
+                height="800"
                 style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
               />
             </picture>
