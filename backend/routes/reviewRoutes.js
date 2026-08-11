@@ -24,11 +24,12 @@ const router = express.Router();
 router.get("/product/:productId", getProductReviews);
 
 // Private/customer routes
+const { reviewSubmitLimiter } = require("../middleware/authLimiter");
 router.use(protect);
 router.get("/check-eligibility", checkEligibility);
 router.get("/myreviews", getMyReviews);
-router.post("/", createReview);
-router.put("/:id", editReview);
+router.post("/", reviewSubmitLimiter, createReview);
+router.put("/:id", reviewSubmitLimiter, editReview);
 router.delete("/:id", deleteReview);
 router.post("/:id/helpful", voteHelpful);
 router.post("/:id/unhelpful", voteUnhelpful);

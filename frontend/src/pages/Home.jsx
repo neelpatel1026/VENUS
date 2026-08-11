@@ -1,23 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
 import HeroSlider from "../components/HeroSlider";
 import WhyVenus from "../components/WhyVenus";
 import PromoSection from "../components/PromoSection";
-import Testimonials from "../components/Testimonials";
-import Gallery from "../components/Gallery";
-import FeaturedLogos from "../components/FeaturedLogos";
-import InstagramFeed from "../components/InstagramFeed";
-import Newsletter from "../components/Newsletter";
 import ProductCard from "../components/ProductCard";
 import ProductCardSkeleton from "../components/ProductCardSkeleton";
-import "../styles/home.css"
+import "../styles/home.css";
+
+// Lazy Loaded Components (below the fold)
+const Testimonials = lazy(() => import("../components/Testimonials"));
+const Gallery = lazy(() => import("../components/Gallery"));
+const FeaturedLogos = lazy(() => import("../components/FeaturedLogos"));
+const InstagramFeed = lazy(() => import("../components/InstagramFeed"));
+const Newsletter = lazy(() => import("../components/Newsletter"));
 
 import "swiper/css";
 import "swiper/css/navigation";
 
 import api from "../lib/api";
+import { updateSEOMetadata, injectJsonLd } from "../utils/seoHelper";
 
 const Home = () => {
   const [products, setProducts] = useState(() => {
@@ -35,6 +38,7 @@ const Home = () => {
   });
   const [loading, setLoading] = useState(products.length === 0);
   const [error, setError] = useState("");
+  const [visibleProductsCount, setVisibleProductsCount] = useState(8);
 
   const fetchProducts = async (signal) => {
     try {
@@ -72,6 +76,25 @@ const Home = () => {
   useEffect(() => {
     const controller = new AbortController();
     fetchProducts(controller.signal);
+
+    // Inject SEO Metadata
+    updateSEOMetadata({
+      title: "VENUS CARE | Premium Luxury Cosmetic & Skincare",
+      description: "Discover premium luxury cosmetic & skincare formulations created to reveal natural skin radiance with pure, advanced botanical sciences.",
+      canonicalUrl: "https://venuscare.in/"
+    });
+
+    // Inject Organization JSON-LD
+    injectJsonLd("organization-jsonld", {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "VENUS CARE",
+      "url": "https://venuscare.in",
+      "logo": "https://venuscare.in/favicon.svg",
+      "sameAs": [
+        "https://instagram.com/venuscareofficial"
+      ]
+    });
 
     return () => {
       controller.abort();
@@ -152,11 +175,45 @@ const Home = () => {
             <p style={{ fontSize: "13px", color: "#6B7280", margin: 0 }}>We are currently updating our luxury skincare catalog. Please check back shortly!</p>
           </div>
         ) : (
-          <div className="featured-products-grid">
-            {products.slice(0, 8).map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
-          </div>
+          <>
+            <div className="featured-products-grid">
+              {products.slice(0, visibleProductsCount).map((product) => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+            </div>
+            {visibleProductsCount < products.length && (
+              <div style={{ display: "flex", justifyContent: "center", marginTop: "32px" }}>
+                <button
+                  onClick={() => setVisibleProductsCount((prev) => prev + 8)}
+                  style={{
+                    padding: "12px 36px",
+                    background: "#1A1A1A",
+                    color: "#FFFFFF",
+                    border: "1px solid #1A1A1A",
+                    borderRadius: "24px",
+                    fontFamily: "Cinzel, serif",
+                    fontSize: "11px",
+                    fontWeight: "700",
+                    letterSpacing: "2px",
+                    textTransform: "uppercase",
+                    cursor: "pointer",
+                    transition: "all 0.25s ease",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#C8A165";
+                    e.currentTarget.style.borderColor = "#C8A165";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "#1A1A1A";
+                    e.currentTarget.style.borderColor = "#1A1A1A";
+                  }}
+                >
+                  Load More
+                </button>
+              </div>
+            )}
+          </>
         )}
       </section>
 
@@ -164,15 +221,25 @@ const Home = () => {
 
       <PromoSection />
 
-      <Testimonials />
+      <Suspense fallback={<div style={{ height: "400px", background: "#FAF7F2", margin: "40px 0", borderRadius: "24px" }} className="shimmer-line"></div>}>
+        <Testimonials />
+      </Suspense>
 
-      <Gallery />
+      <Suspense fallback={<div style={{ height: "300px", background: "#FFFFFF", margin: "40px 0" }} className="shimmer-line"></div>}>
+        <Gallery />
+      </Suspense>
 
-      <FeaturedLogos />
+      <Suspense fallback={<div style={{ height: "100px", background: "#FAF7F2", margin: "20px 0" }} className="shimmer-line"></div>}>
+        <FeaturedLogos />
+      </Suspense>
 
-      <InstagramFeed />
+      <Suspense fallback={<div style={{ height: "250px", background: "#FFFFFF", margin: "40px 0" }} className="shimmer-line"></div>}>
+        <InstagramFeed />
+      </Suspense>
 
-      <Newsletter />
+      <Suspense fallback={<div style={{ height: "200px", background: "#FAF7F2", margin: "40px 0", borderRadius: "16px" }} className="shimmer-line"></div>}>
+        <Newsletter />
+      </Suspense>
     </div>
   );
 };

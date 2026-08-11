@@ -7,13 +7,15 @@ const helmetConfig = helmet({
   contentSecurityPolicy: {
     useDefaults: true,
     directives: {
-      defaultSrc: ["'self'"],
+      defaultSrc: ["'self'", "https://accounts.google.com"],
       scriptSrc: [
         "'self'", 
         "'unsafe-inline'", 
         "'unsafe-eval'", 
         "https://checkout.razorpay.com", 
-        "https://*.razorpay.com"
+        "https://*.razorpay.com",
+        "https://apis.google.com",
+        "https://accounts.google.com"
       ],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
@@ -35,13 +37,15 @@ const helmetConfig = helmet({
         "http://localhost:5173",
         "http://localhost:5174",
         "http://localhost:5000",
-        "https://*.vercel.app"
+        "https://*.vercel.app",
+        "https://accounts.google.com"
       ],
       frameSrc: [
         "'self'", 
         "https://api.razorpay.com", 
         "https://checkout.razorpay.com", 
-        "https://*.razorpay.com"
+        "https://*.razorpay.com",
+        "https://accounts.google.com"
       ],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: isProduction ? [] : null, // Upgrades requests in production

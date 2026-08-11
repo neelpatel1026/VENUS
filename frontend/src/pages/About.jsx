@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -16,7 +17,17 @@ import {
 } from "react-icons/fi";
 import "../styles/aboutPage.css";
 
+import { updateSEOMetadata } from "../utils/seoHelper";
+
 const About = () => {
+  useEffect(() => {
+    updateSEOMetadata({
+      title: "Our Story & Botanical Purity",
+      description: "Learn about the VENUS CARE philosophy. Acid-free formulations, clean botanical beauty, and dermatologically tested skincare products.",
+      canonicalUrl: "https://venuscare.in/about"
+    });
+  }, []);
+
   // Animation Variants
   const fadeInUp = {
     hidden: { opacity: 0, y: 30 },

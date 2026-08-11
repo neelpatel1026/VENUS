@@ -42,6 +42,21 @@ newToast.remove = originalToast.remove;
 
 Object.assign(toast, newToast);
 
+// Global Error & Promise Rejection Logging
+if (import.meta.env.PROD) {
+  window.addEventListener("error", (event) => {
+    console.error("🌐 [Global Window Error]:", event.message, "at", event.filename, ":", event.lineno);
+    // Placeholder to dispatch error details to Sentry if active:
+    // if (window.Sentry) Sentry.captureException(event.error);
+  });
+
+  window.addEventListener("unhandledrejection", (event) => {
+    console.error("🌐 [Unhandled Promise Rejection]:", event.reason);
+    // Placeholder to dispatch promise error details to Sentry if active:
+    // if (window.Sentry) Sentry.captureException(event.reason);
+  });
+}
+
 /* ================= ROOT ================= */
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

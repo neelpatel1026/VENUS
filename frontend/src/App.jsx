@@ -238,7 +238,9 @@ function App() {
     const visibleToasts = toasts.filter((t) => t.visible);
     if (visibleToasts.length > 2) {
       const oldest = visibleToasts[0];
-      toast.dismiss(oldest.id);
+      setTimeout(() => {
+        toast.dismiss(oldest.id);
+      }, 0);
     }
 
     const messages = new Set();

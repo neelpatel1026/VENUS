@@ -206,7 +206,9 @@ const ToastManager = () => {
     const activeToasts = toasts.filter((t) => t.visible);
     if (activeToasts.length > 3) {
       const oldest = activeToasts[0];
-      toast.dismiss(oldest.id);
+      setTimeout(() => {
+        toast.dismiss(oldest.id);
+      }, 0);
     }
   }, [toasts]);
 

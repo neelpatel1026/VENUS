@@ -6,6 +6,7 @@ import { FiSearch } from 'react-icons/fi';
 import '../styles/product.css';
 import api from '../lib/api';
 import axios from 'axios';
+import { updateSEOMetadata } from '../utils/seoHelper';
 
 const Shop = () => {
   const navigate = useNavigate();
@@ -58,6 +59,14 @@ const Shop = () => {
   useEffect(() => {
     const controller = new AbortController();
     fetchProducts(controller.signal);
+
+    // Inject SEO Metadata
+    updateSEOMetadata({
+      title: "Shop Luxury Skincare Collection",
+      description: "Browse the VENUS CARE skincare rituals catalog. Formulated with dermatological science and organic botanicals for complete skin nourishment.",
+      canonicalUrl: "https://venuscare.in/shop"
+    });
+
     return () => {
       controller.abort();
     };

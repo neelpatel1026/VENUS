@@ -246,19 +246,54 @@ const Navbar = () => {
               <Link className="nav-link-item" to="/">Home</Link>
             </li>
             <li>
-              <Link className="nav-link-item" to="/shop">Shop</Link>
+              <Link 
+                className="nav-link-item" 
+                to="/shop"
+                onMouseEnter={() => import("../pages/Shop.jsx")}
+                onFocus={() => import("../pages/Shop.jsx")}
+              >
+                Shop
+              </Link>
             </li>
             <li>
-              <Link className="nav-link-item" to="/gifting">Gifting</Link>
+              <Link 
+                className="nav-link-item" 
+                to="/gifting"
+                onMouseEnter={() => import("../pages/Gifting.jsx")}
+                onFocus={() => import("../pages/Gifting.jsx")}
+              >
+                Gifting
+              </Link>
             </li>
             <li>
-              <Link className="nav-link-item" to="/offers">Offers</Link>
+              <Link 
+                className="nav-link-item" 
+                to="/offers"
+                onMouseEnter={() => import("../pages/Offers.jsx")}
+                onFocus={() => import("../pages/Offers.jsx")}
+              >
+                Offers
+              </Link>
             </li>
             <li>
-              <Link className="nav-link-item" to="/about">About</Link>
+              <Link 
+                className="nav-link-item" 
+                to="/about"
+                onMouseEnter={() => import("../pages/About.jsx")}
+                onFocus={() => import("../pages/About.jsx")}
+              >
+                About
+              </Link>
             </li>
             <li>
-              <Link className="nav-link-item" to="/contact">Contact</Link>
+              <Link 
+                className="nav-link-item" 
+                to="/contact"
+                onMouseEnter={() => import("../pages/Contact.jsx")}
+                onFocus={() => import("../pages/Contact.jsx")}
+              >
+                Contact
+              </Link>
             </li>
           </ul>
         </div>
@@ -277,6 +312,7 @@ const Navbar = () => {
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Search catalog products"
                 />
               </form>
             </div>
@@ -543,7 +579,12 @@ const Navbar = () => {
                   </div>
 
                   {/* Shop All */}
-                  <div className="drawer-menu-list-row-item" onClick={() => { setMenuOpen(false); navigate("/shop"); }}>
+                  <div 
+                    className="drawer-menu-list-row-item" 
+                    onClick={() => { setMenuOpen(false); navigate("/shop"); }}
+                    onTouchStart={() => import("../pages/Shop.jsx")}
+                    onMouseEnter={() => import("../pages/Shop.jsx")}
+                  >
                     <span className="row-icon-title"><FiShoppingBag className="row-icon-main" /> Shop All</span>
                     <FiChevronRight className="row-chevron-right" />
                   </div>
@@ -666,19 +707,34 @@ const Navbar = () => {
                   </div>
 
                   {/* Offers */}
-                  <div className="drawer-menu-list-row-item" onClick={() => { setMenuOpen(false); navigate("/offers"); }}>
+                  <div 
+                    className="drawer-menu-list-row-item" 
+                    onClick={() => { setMenuOpen(false); navigate("/offers"); }}
+                    onTouchStart={() => import("../pages/Offers.jsx")}
+                    onMouseEnter={() => import("../pages/Offers.jsx")}
+                  >
                     <span className="row-icon-title"><FiTag className="row-icon-main" /> Special Offers</span>
                     <FiChevronRight className="row-chevron-right" />
                   </div>
 
                   {/* About */}
-                  <div className="drawer-menu-list-row-item" onClick={() => { setMenuOpen(false); navigate("/about"); }}>
+                  <div 
+                    className="drawer-menu-list-row-item" 
+                    onClick={() => { setMenuOpen(false); navigate("/about"); }}
+                    onTouchStart={() => import("../pages/About.jsx")}
+                    onMouseEnter={() => import("../pages/About.jsx")}
+                  >
                     <span className="row-icon-title"><FiInfo className="row-icon-main" /> About Brand</span>
                     <FiChevronRight className="row-chevron-right" />
                   </div>
 
                   {/* Contact */}
-                  <div className="drawer-menu-list-row-item" onClick={() => { setMenuOpen(false); navigate("/contact"); }}>
+                  <div 
+                    className="drawer-menu-list-row-item" 
+                    onClick={() => { setMenuOpen(false); navigate("/contact"); }}
+                    onTouchStart={() => import("../pages/Contact.jsx")}
+                    onMouseEnter={() => import("../pages/Contact.jsx")}
+                  >
                     <span className="row-icon-title"><FiPhoneCall className="row-icon-main" /> Contact Support</span>
                     <FiChevronRight className="row-chevron-right" />
                   </div>

@@ -7,16 +7,19 @@ const sendEmail = async ({
 }) => {
   try {
     const apiKey = process.env.RESEND_API_KEY;
-    const fromEmail = process.env.FROM_EMAIL || "onboarding@resend.dev";
 
     if (!apiKey) {
       throw new Error("Missing RESEND_API_KEY environment variable");
     }
 
+    if (!process.env.EMAIL_FROM) {
+      throw new Error("EMAIL_FROM is missing in environment variables");
+    }
+
     const resend = new Resend(apiKey);
 
     const { data, error } = await resend.emails.send({
-      from: `VENUS CARE Official Support <${fromEmail}>`,
+      from: process.env.EMAIL_FROM,
       to: email,
       subject: subject,
       html: message,

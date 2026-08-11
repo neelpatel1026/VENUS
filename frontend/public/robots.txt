@@ -1,4 +1,6 @@
 User-agent: *
+Disallow: /admin/
+Disallow: /admin
 Allow: /
 
-Sitemap: https://www.venuscare.com/sitemap.xml
+Sitemap: https://venuscare.in/sitemap.xml

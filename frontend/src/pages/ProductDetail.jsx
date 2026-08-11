@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext, useRef } from "react";
+import { useEffect, useState, useContext, useRef, useMemo } from "react";
 import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart, removeFromCart } from "../redux/cartSlice";
@@ -8,6 +8,7 @@ import { FiPlay, FiX, FiMapPin, FiThumbsUp, FiThumbsDown, FiCamera, FiVideo, FiM
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../context/AuthContext";
 import { getOptimizedImageUrl } from "../utils/imageHelper.js";
+import { updateSEOMetadata, injectJsonLd } from "../utils/seoHelper";
 import "../styles/product.css";
 
 const ProductDetail = () => {
@@ -84,6 +85,59 @@ const ProductDetail = () => {
         }
         const data = await res.json();
         setProduct(data);
+        
+        // Dynamically Inject Product SEO Metadata, OG tags, and Canonical Link
+        updateSEOMetadata({
+          title: data.name,
+          description: data.description ? data.description.substring(0, 155) : "Buy premium luxury cosmetics on VENUS CARE.",
+          canonicalUrl: `https://venuscare.in/product/${data._id}`,
+          ogType: "product",
+          ogImage: data.imageUrl || "https://venuscare.in/cosmetic_1.avif"
+        });
+
+        // Inject Product JSON-LD
+        injectJsonLd("product-jsonld", {
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": data.name,
+          "image": data.imageUrl,
+          "description": data.description,
+          "sku": data._id,
+          "offers": {
+            "@type": "Offer",
+            "url": `https://venuscare.in/product/${data._id}`,
+            "priceCurrency": "INR",
+            "price": data.price,
+            "availability": data.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+          }
+        });
+
+        // Inject Breadcrumb JSON-LD
+        injectJsonLd("breadcrumb-jsonld", {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://venuscare.in"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": data.category || "Shop",
+              "item": `https://venuscare.in/shop?category=${encodeURIComponent(data.category || "")}`
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": data.name,
+              "item": `https://venuscare.in/product/${data._id}`
+            }
+          ]
+        });
+
         try {
           const viewed = JSON.parse(localStorage.getItem("venus_recently_viewed") || "[]");
           const updated = [data, ...viewed.filter((p) => p._id !== data._id)].slice(0, 4);
@@ -531,6 +585,13 @@ const ProductDetail = () => {
     setOpenFaq(openFaq === index ? null : index);
   };
 
+  const discount = useMemo(() => {
+    if (!product || !product.originalPrice || !product.price) return 0;
+    return product.originalPrice > product.price
+      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+      : 0;
+  }, [product]);
+
   if (loading) {
     return (
       <div className="product-detail-wrapper route-fade-in">
@@ -583,11 +644,6 @@ const ProductDetail = () => {
       </div>
     );
   }
-
-  const discount =
-    product.originalPrice > product.price
-      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-      : 0;
 
   return (
     <div className="product-detail-wrapper route-fade-in">
@@ -676,6 +732,26 @@ const ProductDetail = () => {
 
           {/* Actions */}
           <div>
+            {product.stock > 0 && product.stock <= 5 && (
+              <div 
+                style={{ 
+                  background: "#FEF2F2", 
+                  border: "1px solid #FEE2E2", 
+                  color: "#991B1B", 
+                  padding: "10px 14px", 
+                  borderRadius: "8px", 
+                  fontSize: "12px", 
+                  fontWeight: "600", 
+                  marginBottom: "12px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px"
+                }}
+              >
+                ⚠️ Hurrah! Only {product.stock} items remaining in stock. Order soon!
+              </div>
+            )}
+            
             {user?.role !== "admin" && (
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 {product.stock === 0 ? (
@@ -709,10 +785,24 @@ const ProductDetail = () => {
           <div style={{ borderTop: "1px solid #ECE6DC", paddingTop: "20px" }}>
             <h4 style={{ fontSize: "0.95rem", fontWeight: "700", color: "#1F2937", marginBottom: "12px" }}>Fulfillment Information</h4>
             <div className="fulfillment-grid">
-              <div>🚚 Delivery ETA: <strong>3-4 business days</strong></div>
+              <div>🚚 Delivery ETA: <strong>{(() => {
+                const date = new Date();
+                date.setDate(date.getDate() + 3);
+                const first = date.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+                date.setDate(date.getDate() + 2);
+                const second = date.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+                return `Arrives between ${first} - ${second}`;
+              })()}</strong></div>
               <div>🛡️ Return Policy: <strong>7-Days Returns</strong></div>
               <div>⚡ Payments: <strong>COD & Online available</strong></div>
               <div>✨ Brand Purity: <strong>100% Authentic Product</strong></div>
+            </div>
+            
+            {/* Inline Trust Badges */}
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "16px", background: "#FAF7F2", padding: "12px", borderRadius: "8px", border: "1px solid #E8DFD2" }}>
+              <span style={{ fontSize: "11px", color: "#8B7355", fontWeight: "600" }}>🛡️ Secure Checkout</span>
+              <span style={{ fontSize: "11px", color: "#8B7355", fontWeight: "600" }}>🌱 100% Vegan</span>
+              <span style={{ fontSize: "11px", color: "#8B7355", fontWeight: "600" }}>🧪 Acid-Free</span>
             </div>
           </div>
         </div>
@@ -1370,6 +1460,54 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* Recently Viewed Products Section */}
+      {(() => {
+        try {
+          const viewed = JSON.parse(localStorage.getItem("venus_recently_viewed") || "[]");
+          const items = viewed.filter((p) => p._id !== product._id).slice(0, 4);
+          if (items.length === 0) return null;
+          return (
+            <div style={{ marginTop: "60px", borderTop: "1px solid #ECE6DC", paddingTop: "40px" }}>
+              <h3 style={{ fontSize: "1.4rem", fontFamily: "'Cinzel', serif", fontWeight: "700", color: "#1F2937", marginBottom: "25px", textAlign: "center" }}>Recently Viewed</h3>
+              <div 
+                style={{ 
+                  display: "grid", 
+                  gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", 
+                  gap: "20px", 
+                  maxWidth: "1000px", 
+                  margin: "0 auto" 
+                }}
+              >
+                {items.map((item) => (
+                  <Link 
+                    key={item._id} 
+                    to={`/product/${item._id}`} 
+                    style={{ textDecoration: "none", color: "inherit", background: "#FFFFFF", border: "1px solid #ECE6DC", borderRadius: "12px", overflow: "hidden", display: "flex", flexDirection: "column", transition: "transform 0.2s ease" }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-4px)"}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+                  >
+                    <div style={{ aspectRatio: "1/1", background: "#FAF7F2", overflow: "hidden", position: "relative" }}>
+                      <img 
+                        src={getOptimizedImageUrl(item.imageUrl || item.image || "/cosmetic_1.avif", 400)} 
+                        alt={item.name} 
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                      />
+                    </div>
+                    <div style={{ padding: "12px", display: "flex", flexDirection: "column", gap: "6px" }}>
+                      <span style={{ fontSize: "10px", textTransform: "uppercase", color: "#8B7355", fontWeight: "700" }}>{item.category}</span>
+                      <h4 style={{ margin: 0, fontSize: "13px", fontWeight: "600", color: "#1F2937", height: "36px", overflow: "hidden" }}>{item.name}</h4>
+                      <strong style={{ fontSize: "14px", color: "#1F2937" }}>₹{parseFloat(item.price).toFixed(2)}</strong>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          );
+        } catch (e) {
+          return null;
+        }
+      })()}
 
 
       {/* Write/Edit Review Modal Overlay */}

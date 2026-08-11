@@ -132,7 +132,7 @@ export default function HeroSlider() {
                 alt={slide.title}
                 className="hero-slide-image"
                 loading={index === 0 ? "eager" : "lazy"}
-                fetchpriority={index === 0 ? "high" : undefined}
+                fetchPriority={index === 0 ? "high" : undefined}
                 decoding="async"
                 width="1920"
                 height="800"

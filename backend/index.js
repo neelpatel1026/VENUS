@@ -23,18 +23,41 @@ app.use(helmetConfig);
 
 app.use(globalLimiter);
 
+// Centralized Request IDs & Logging Middleware
+app.use((req, res, next) => {
+  const reqId = req.headers["x-request-id"] || require("crypto").randomUUID();
+  req.id = reqId;
+  res.setHeader("X-Request-Id", reqId);
+
+  const startTime = Date.now();
+  res.on("finish", () => {
+    const elapsed = Date.now() - startTime;
+    console.info(`[REQ-LOG] ID: ${reqId} | ${req.method} ${req.originalUrl} | Status: ${res.statusCode} | IP: ${req.ip} | ${elapsed}ms`);
+  });
+  next();
+});
+
+const isProd = process.env.NODE_ENV === "production";
 const allowedOrigins = [
-  "http://localhost:5173",
   "https://venuscare.in",
   "https://www.venuscare.in",
 ];
-if (process.env.FRONTEND_URL) {
-  allowedOrigins.push(process.env.FRONTEND_URL);
+if (!isProd) {
+  allowedOrigins.push("http://localhost:5173");
+  if (process.env.FRONTEND_URL) {
+    allowedOrigins.push(process.env.FRONTEND_URL);
+  }
 }
 
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app") || /^http:\/\/localhost:\d+$/.test(origin)) {
+    if (!origin) {
+      return callback(null, true);
+    }
+    const isAllowed = allowedOrigins.includes(origin) || 
+      (!isProd && (origin.endsWith(".vercel.app") || /^http:\/\/localhost:\d+$/.test(origin)));
+    
+    if (isAllowed) {
       callback(null, true);
     } else {
       callback(new Error('CORS blocked'));
@@ -95,6 +118,7 @@ app.use("/api/returns", require("./routes/returnRoutes"));
 app.use("/api/complaints", require("./routes/complaintRoutes"));
 app.use("/api/reviews", require("./routes/reviewRoutes"));
 app.use("/api/rewards", require("./routes/rewardsRoutes"));
+
 // Health Check Endpoint
 const mongoose = require("mongoose");
 app.get("/api/health", (req, res) => {
@@ -131,9 +155,16 @@ if (process.env.NODE_ENV === "production") {
 // Global Error Handler Middleware
 app.use((err, req, res, next) => {
   const statusCode = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
+  
+  // Log detailed error stack server-side with unique request ID
+  console.error(`[ERROR HANDLER] [REQ-ID: ${req.id || "N/A"}] Method: ${req.method} | Path: ${req.originalUrl} | Status: ${statusCode} | Err:`, err);
+  
+  const isProd = process.env.NODE_ENV === "production";
+  
   res.status(statusCode).json({
     success: false,
-    message: err.message || "Internal Server Error",
+    message: isProd ? "Internal Server Error" : (err.message || "Internal Server Error"),
+    requestId: req.id || undefined
   });
 });
 

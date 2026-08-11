@@ -18,8 +18,8 @@ const getCookieOptions = () => {
   const isProd = process.env.NODE_ENV === "production" || process.env.RENDER === "true";
   const options = {
     httpOnly: true,
-    secure: process.env.COOKIE_SECURE === "true" || (process.env.COOKIE_SECURE === undefined && isProd),
-    sameSite: process.env.COOKIE_SAME_SITE || (isProd ? "none" : "lax"),
+    secure: isProd,
+    sameSite: "lax",
     maxAge: parseInt(process.env.COOKIE_MAX_AGE || String(15 * 24 * 60 * 60 * 1000)),
     path: process.env.COOKIE_PATH || "/",
   };
@@ -303,27 +303,11 @@ const forgotPassword = async (req, res) => {
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    // user.otp = otp;
-    user.otp = await bcrypt.hash(otp, 10);
 
+    user.otp = await bcrypt.hash(otp, 10);
     user.otpExpire = Date.now() + 5 * 60 * 1000;
 
     await user.save();
-
-//     await sendEmail({
-//       email,
-//       subject: 'Password Reset OTP',
-//       message: `
-//     <h2>Your OTP is ${otp}</h2>
-//     <p>This OTP will expire in 5 minutes.</p>
-//     <p>If you did not request this password reset, please ignore this email.</p> `,
-//     });
-    
-//     if (!emailResult.success) {
-//   return res.status(500).json({
-//     message: "Failed to send OTP email",
-//   });
-// }  
 
     const { sendForgotPasswordOtp } = require("../utils/notificationService.js");
     
@@ -530,6 +514,17 @@ const updateProfile = async (req, res) => {
   }
 };
 
+const logoutUser = async (req, res) => {
+  try {
+    const opts = getCookieOptions();
+    // Clear cookie by resetting maxAge to 0
+    res.clearCookie("token", { ...opts, maxAge: 0 });
+    res.status(200).json({ success: true, message: "Logged out successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -538,5 +533,6 @@ module.exports = {
   resetPassword,
   getUsers,
   updateProfile,
+  logoutUser
 };
 

@@ -16,6 +16,7 @@ const {
   resetPassword,
   getUsers,
   updateProfile,
+  logoutUser,
 } = require('../controllers/authController.js');
 
 const { protect } = require('../middleware/authMiddleware.js');
@@ -27,6 +28,7 @@ router.get("/users", getUsers);
 router.post('/register', registerLimiter, registerUser);
 router.post('/login', loginLimiter, loginUser);
 router.post('/google-login', loginLimiter, googleLogin);
+router.post('/logout', logoutUser);
 router.post('/forgot-password', forgotPasswordLimiter, forgotPassword);
 router.post('/reset-password', resetPasswordLimiter, resetPassword);
 router.put('/profile', protect, upload.single('avatar'), updateProfile);

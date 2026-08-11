@@ -28,13 +28,13 @@ const createHandler = (limiterName) => {
   };
 };
 
-// 1. Login: 5 attempts / 10 minutes
+// 1. Login: 5 attempts / 15 minutes
 const loginLimiter = rateLimit({
-  windowMs: parseInt(process.env.LOGIN_LIMIT_WINDOW_MINS || "10") * 60 * 1000,
-  max: isDev ? 100 : parseInt(process.env.LOGIN_LIMIT_MAX || "5"),
+  windowMs: 15 * 60 * 1000,
+  max: isDev ? 100 : 5,
   standardHeaders: true,
   legacyHeaders: false,
-  message: "Too many login attempts. Please try again after 10 minutes.",
+  message: "Too many login attempts. Please try again after 15 minutes.",
   skip: skipLocalhost,
   handler: createHandler("LOGIN"),
 });
@@ -50,24 +50,24 @@ const registerLimiter = rateLimit({
   handler: createHandler("REGISTER"),
 });
 
-// 3. Forgot Password: 3 requests / hour
+// 3. Forgot Password / OTP send: 3 requests / 10 minutes
 const forgotPasswordLimiter = rateLimit({
-  windowMs: parseInt(process.env.FORGOT_PASSWORD_LIMIT_WINDOW_MINS || "60") * 60 * 1000,
-  max: isDev ? 100 : parseInt(process.env.FORGOT_PASSWORD_LIMIT_MAX || "3"),
+  windowMs: 10 * 60 * 1000,
+  max: isDev ? 100 : 3,
   standardHeaders: true,
   legacyHeaders: false,
-  message: "Too many forgot password requests. Please try again after 1 hour.",
+  message: "Too many requests. Please try again after 10 minutes.",
   skip: skipLocalhost,
   handler: createHandler("FORGOT_PASSWORD"),
 });
 
-// 4. Reset Password: 5 attempts / hour
+// 4. Reset Password: 3 attempts / 15 minutes
 const resetPasswordLimiter = rateLimit({
-  windowMs: parseInt(process.env.RESET_PASSWORD_LIMIT_WINDOW_MINS || "60") * 60 * 1000,
-  max: isDev ? 100 : parseInt(process.env.RESET_PASSWORD_LIMIT_MAX || "5"),
+  windowMs: 15 * 60 * 1000,
+  max: isDev ? 100 : 3,
   standardHeaders: true,
   legacyHeaders: false,
-  message: "Too many password reset attempts. Please try again after 1 hour.",
+  message: "Too many password reset attempts. Please try again after 15 minutes.",
   skip: skipLocalhost,
   handler: createHandler("RESET_PASSWORD"),
 });
@@ -83,10 +83,22 @@ const verifyOtpLimiter = rateLimit({
   handler: createHandler("VERIFY_OTP"),
 });
 
+// 6. Review Submit: 10 requests / 15 minutes
+const reviewSubmitLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: isDev ? 100 : 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "Too many reviews submitted. Please try again after 15 minutes.",
+  skip: skipLocalhost,
+  handler: createHandler("REVIEW_SUBMIT"),
+});
+
 module.exports = {
   loginLimiter,
   registerLimiter,
   forgotPasswordLimiter,
   resetPasswordLimiter,
   verifyOtpLimiter,
+  reviewSubmitLimiter,
 };

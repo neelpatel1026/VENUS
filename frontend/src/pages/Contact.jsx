@@ -6,6 +6,8 @@ import { useLocation } from "react-router-dom";
 import { FiMapPin, FiPhone, FiMail, FiClock, FiShield, FiSmile } from "react-icons/fi";
 import "../styles/contact.css";
 
+import { updateSEOMetadata } from "../utils/seoHelper";
+
 const Contact = () => {
   const { user } = useContext(AuthContext);
   const location = useLocation();
@@ -22,6 +24,14 @@ const Contact = () => {
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    updateSEOMetadata({
+      title: "Contact Support Desk & Customer Care",
+      description: "Get in touch with VENUS CARE customer support. Contact details, WhatsApp assistance, and email support for all skincare orders.",
+      canonicalUrl: "https://venuscare.in/contact"
+    });
+  }, []);
 
   // Prefill authenticated user details
   useEffect(() => {

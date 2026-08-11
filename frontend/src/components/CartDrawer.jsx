@@ -182,17 +182,29 @@ const CartDrawer = () => {
                         <div className="item-row-actions-row">
                           {/* Qty Controls */}
                           <div className="item-qty-adjuster-widget">
-                            <button onClick={() => handleDecrease(item.productId)} disabled={item.qty <= 1}>
+                            <button 
+                              onClick={() => handleDecrease(item.productId)} 
+                              disabled={item.qty <= 1}
+                              aria-label={`Decrease quantity of ${item.name}`}
+                            >
                               <FiMinus />
                             </button>
-                            <span>{item.qty}</span>
-                            <button onClick={() => handleIncrease(item.productId)} disabled={item.qty >= item.stock}>
+                            <span aria-live="polite">{item.qty}</span>
+                            <button 
+                              onClick={() => handleIncrease(item.productId)} 
+                              disabled={item.qty >= item.stock}
+                              aria-label={`Increase quantity of ${item.name}`}
+                            >
                               <FiPlus />
                             </button>
                           </div>
 
                           {/* Delete Item */}
-                          <button className="item-row-remove-btn" onClick={() => handleRemove(item.productId)}>
+                          <button 
+                            className="item-row-remove-btn" 
+                            onClick={() => handleRemove(item.productId)}
+                            aria-label={`Remove ${item.name} from shopping bag`}
+                          >
                             <FiTrash2 />
                           </button>
                         </div>
@@ -238,6 +250,28 @@ const CartDrawer = () => {
             {/* Footer sticky bottom panel */}
             {cartItems.length > 0 && (
               <div className="cart-drawer-footer">
+                {/* Free Shipping Progress Indicator (Threshold ₹1500) */}
+                <div className="free-shipping-indicator" style={{ marginBottom: "16px", paddingBottom: "12px", borderBottom: "1px solid #ECE6DC" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#1F2937", marginBottom: "6px" }}>
+                    {subtotal >= 1500 ? (
+                      <span style={{ color: "#10B981", fontWeight: "600" }}>🎉 You qualify for Free Shipping!</span>
+                    ) : (
+                      <span>Spend <strong>₹{(1500 - subtotal).toFixed(2)}</strong> more for free shipping</span>
+                    )}
+                    <span style={{ fontWeight: "700" }}>₹{subtotal.toFixed(2)} / ₹1500.00</span>
+                  </div>
+                  <div style={{ width: "100%", height: "6px", background: "#FAF7F2", borderRadius: "3px", overflow: "hidden", border: "1px solid #ECE6DC" }}>
+                    <div 
+                      style={{ 
+                        width: `${Math.min((subtotal / 1500) * 100, 100)}%`, 
+                        height: "100%", 
+                        background: subtotal >= 1500 ? "#10B981" : "#C8A165", 
+                        transition: "width 0.4s ease" 
+                      }} 
+                    />
+                  </div>
+                </div>
+
                 <div className="footer-subtotal-row">
                   <span>Subtotal</span>
                   <strong>₹{subtotal.toFixed(2)}</strong>
