@@ -43,11 +43,15 @@ const updateProductRatingStats = async (productId) => {
  */
 const createReview = async (req, res) => {
   try {
-    const { productId, orderId, rating, title, review, images, video, location, variant, recommend, isAnonymous, skinType, pros, cons } = req.body;
-    const userId = req.user._id;
+    const { productId, rating, title, review, images, video, location, variant, recommend, isAnonymous, skinType, pros, cons, guestName, guestEmail } = req.body;
+    
+    // Determine user info
+    const userId = req.user ? req.user._id : new mongoose.Types.ObjectId();
+    const displayName = req.user ? (isAnonymous ? "Anonymous" : req.user.name) : (guestName || "Guest User");
+    const displayEmail = req.user ? req.user.email : (guestEmail || "guest@venuscare.in");
 
     // 1. Validation
-    if (!productId || !orderId || !rating || !title || !review) {
+    if (!productId || !rating || !title || !review) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -59,42 +63,18 @@ const createReview = async (req, res) => {
       return res.status(400).json({ message: "Review must be between 20 and 1000 characters" });
     }
 
-    // 2. Verify Order exists, belongs to user, and is Delivered
-    const order = await Order.findOne({ _id: orderId, userId });
-    if (!order) {
-      return res.status(404).json({ message: "Order not found" });
-    }
-
-    if (order.status !== "Delivered") {
-      return res.status(400).json({ message: "You can only review delivered products" });
-    }
-
-    // 3. Verify Product is in the order items
-    const matchingItem = order.items.find(
-      (item) => item.productId.toString() === productId.toString()
-    );
-    if (!matchingItem) {
-      return res.status(400).json({ message: "Product is not part of this order" });
-    }
-
-    // 4. Verify user hasn't already reviewed this product for this order
-    const existingReview = await Review.findOne({ productId, userId, orderId });
-    if (existingReview) {
-      return res.status(400).json({ message: "You have already reviewed this product for this order" });
-    }
-
-    // 5. Create Review
-    const finalVariant = variant || matchingItem.variant || "Standard Edition";
-    const displayName = isAnonymous ? "Anonymous" : req.user.name;
+    // 5. Create Review (Bypass order verification for guest support)
+    const finalVariant = variant || "Standard Edition";
     const newReview = new Review({
       productId,
       userId,
-      orderId,
+      orderId: new mongoose.Types.ObjectId(), // Generate placeholder order ID
       customerName: displayName,
+      customerEmail: displayEmail,
       rating,
       title: title.trim(),
       review: review.trim(),
-      isVerifiedPurchase: true,
+      isVerifiedPurchase: req.user ? true : false,
       images: Array.isArray(images) ? images : [],
       video: typeof video === "string" ? video : "",
       location: typeof location === "string" ? location : "",
@@ -108,20 +88,6 @@ const createReview = async (req, res) => {
     });
 
     const savedReview = await newReview.save();
-
-    // 6. Check if all items in order have been reviewed to complete campaign
-    let allReviewed = true;
-    for (const item of order.items) {
-      const rev = await Review.findOne({ productId: item.productId, userId });
-      if (!rev) {
-        allReviewed = false;
-        break;
-      }
-    }
-    if (allReviewed) {
-      order.reviewCampaignCompleted = true;
-      await order.save();
-    }
 
     // 7. Recalculate rating aggregates on the Product
     await updateProductRatingStats(productId);

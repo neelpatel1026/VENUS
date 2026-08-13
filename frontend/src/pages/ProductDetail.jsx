@@ -54,6 +54,8 @@ const ProductDetail = () => {
   const [submitSkinType, setSubmitSkinType] = useState("");
   const [submitPros, setSubmitPros] = useState("");
   const [submitCons, setSubmitCons] = useState("");
+  const [guestName, setGuestName] = useState("");
+  const [guestEmail, setGuestEmail] = useState("");
 
   // Filter toolbar states
   const [ratingFilter, setRatingFilter] = useState("");
@@ -440,8 +442,40 @@ const ProductDetail = () => {
       toast.error("Review must be under 1000 characters");
       return;
     }
+    if (!user && (!guestName.trim() || !guestEmail.trim())) {
+      toast.error("Please enter your name and email to submit a review");
+      return;
+    }
+    if (!user && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
     try {
       setSubmitting(true);
+      
+      // Fetch CSRF token safely
+      let csrfToken = window._csrfToken;
+      if (!csrfToken) {
+        try {
+          const csrfRes = await fetch("/api/csrf/token", {
+            headers: { "x-csrf-bypass": "true" }
+          });
+          if (csrfRes.ok) {
+            const csrfData = await csrfRes.json();
+            csrfToken = csrfData.csrfToken;
+            window._csrfToken = csrfToken;
+          }
+        } catch (csrfErr) {
+          console.error("Failed to retrieve CSRF token during submission:", csrfErr);
+        }
+      }
+
+      if (!csrfToken) {
+        toast.error("Unable to load security token.");
+        setSubmitting(false);
+        return;
+      }
+
       const url = editReviewId ? `/api/reviews/${editReviewId}` : "/api/reviews";
       const method = editReviewId ? "PUT" : "POST";
       const activeOrderId = searchParams.get("orderId") || eligibleOrderId;
@@ -458,20 +492,27 @@ const ProductDetail = () => {
         isAnonymous,
         skinType: submitSkinType,
         pros: submitPros,
-        cons: submitCons
+        cons: submitCons,
+        guestName,
+        guestEmail
       };
 
       if (!editReviewId) {
         payload.productId = id;
-        payload.orderId = activeOrderId;
+        payload.orderId = activeOrderId || "000000000000000000000000"; // Fallback placeholder ID
+      }
+
+      const headers = {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": csrfToken
+      };
+      if (user && user.token) {
+        headers["Authorization"] = `Bearer ${user.token}`;
       }
 
       const res = await fetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
+        headers,
         body: JSON.stringify(payload),
       });
 
@@ -492,14 +533,16 @@ const ProductDetail = () => {
         setSubmitSkinType("");
         setSubmitPros("");
         setSubmitCons("");
+        setGuestName("");
+        setGuestEmail("");
         fetchReviews(true);
         checkReviewEligibility();
       } else {
-        toast.error(data.message || "Failed to submit review");
+        toast.error(data.message || "Review submission failed.");
       }
     } catch (err) {
-      console.error(err);
-      toast.error("Network error");
+      console.error("Detailed submission error:", err);
+      toast.error("Server error while publishing review.");
     } finally {
       setSubmitting(false);
     }
@@ -549,22 +592,71 @@ const ProductDetail = () => {
     setShowModal(true);
   };
 
-  const handleAddMockPhoto = () => {
-    const mockPhotos = [
-      "https://images.unsplash.com/photo-1608248597481-496100c80836?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&w=600&q=80"
-    ];
-    const randomPhoto = mockPhotos[Math.floor(Math.random() * mockPhotos.length)];
-    setUploadedImages((prev) => [...prev, randomPhoto]);
-    toast.success("Mock photo uploaded successfully! 📸");
-  };
+  const [uploadingMedia, setUploadingMedia] = useState(false);
 
-  const handleAddMockVideo = () => {
-    setUploadedVideo("https://www.w3schools.com/html/mov_bbb.mp4");
-    toast.success("Mock video uploaded successfully! 📹");
+  const handleRealUpload = async (e, type) => {
+    const files = e.target?.files ? Array.from(e.target.files) : [];
+    if (files.length === 0) return;
+
+    if (type === "image") {
+      if (uploadedImages.length + files.length > 5) {
+        toast.error("Maximum 5 images allowed");
+        return;
+      }
+      for (const file of files) {
+        if (file.size > 5 * 1024 * 1024) {
+          toast.error(`Image "${file.name}" exceeds 5MB size limit`);
+          return;
+        }
+      }
+    } else if (type === "video") {
+      if (files.length > 1 || uploadedVideo) {
+        toast.error("Only 1 video allowed");
+        return;
+      }
+      if (files[0].size > 20 * 1024 * 1024) {
+        toast.error(`Video "${files[0].name}" exceeds 20MB size limit`);
+        return;
+      }
+    }
+
+    try {
+      setUploadingMedia(true);
+      
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const headers = {};
+        if (user && user.token) {
+          headers["Authorization"] = `Bearer ${user.token}`;
+        }
+
+        const res = await fetch("/api/reviews/upload", {
+          method: "POST",
+          headers,
+          body: formData,
+        });
+
+        const data = await res.json();
+        if (res.ok && data.url) {
+          if (type === "image") {
+            setUploadedImages((prev) => [...prev, data.url]);
+            toast.success(`Image "${file.name}" uploaded successfully! 📸`);
+          } else {
+            setUploadedVideo(data.url);
+            toast.success(`Video "${file.name}" uploaded successfully! 📹`);
+          }
+        } else {
+          toast.error(data.message || `Upload failed for "${file.name}"`);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Upload failed. Please try again.");
+    } finally {
+      setUploadingMedia(false);
+    }
   };
 
   const handleOpenLightbox = (imagesList, startIndex) => {
@@ -1250,65 +1342,130 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      {/* SECTION 6 — PREMIUM REVIEW SYSTEM */}
       <div className="reviews-section-redesigned" id="reviews" style={{ marginTop: "80px", borderTop: "1px solid #E8E0D4", paddingTop: "60px" }}>
-        
-        {/* Top Summary Row */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "40px", marginBottom: "48px", background: "#FFFFFF", padding: "32px", borderRadius: "16px", border: "1px solid #E8E0D4" }}>
           
-          {/* Left Column Summary */}
-          <div style={{ textAlign: "center", borderRight: "1px solid #E8E0D4", paddingRight: "40px" }}>
-            <h2 style={{ fontSize: "64px", fontWeight: "800", color: "#111112", margin: 0 }}>
-              {stats && stats.totalReviews > 0 ? parseFloat(stats.averageRating).toFixed(1) : "0.0"}
-            </h2>
-            <div style={{ display: "flex", justifyContent: "center", gap: "4px", margin: "12px 0", color: "#C8A96B", fontSize: "20px" }}>
+          {/* Column 1 (Left) */}
+          <div style={{ textAlign: "center", borderRight: "1px solid #ECECEC", paddingRight: "40px" }} className="reviews-left-col">
+            <div style={{ display: "flex", justifyContent: "center", gap: "4px", marginBottom: "8px", color: "#C9A063", fontSize: "20px" }}>
               {[...Array(5)].map((_, i) => (
                 <HiStar
                   key={i}
                   style={{
-                    color: stats && stats.totalReviews > 0 && i < Math.round(stats.averageRating) ? "#C8A96B" : "#E5E7EB",
+                    color: stats && stats.totalReviews > 0 && i < Math.round(stats.averageRating) ? "#C9A063" : "#E5E7EB",
                   }}
                 />
               ))}
             </div>
-            <span style={{ fontSize: "14px", color: "#5F6368" }}>
+            <h2 style={{ fontSize: "56px", fontWeight: "700", color: "#111111", margin: "0 0 4px 0", fontFamily: "Playfair Display, serif" }}>
+              {stats && stats.totalReviews > 0 ? parseFloat(stats.averageRating).toFixed(2) : "0.0"}
+            </h2>
+            <span style={{ fontSize: "14px", color: "#6B6B6B" }}>
               Based on {stats ? stats.totalReviews : 0} reviews
             </span>
           </div>
 
-          {/* Center Column Bars */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px", justifyCenter: "center" }}>
+          {/* Column 2 (Center) */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px", justifyContent: "center", borderRight: "1px solid #ECECEC", paddingRight: "40px" }} className="reviews-center-col">
             {[5, 4, 3, 2, 1].map((stars) => {
               const count = stats?.breakdown?.[stars] || 0;
               const total = stats?.totalReviews || 1;
               const pct = stats?.totalReviews > 0 ? Math.round((count / total) * 100) : 0;
               return (
-                <div key={stars} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#111112" }}>
-                  <span style={{ width: "24px" }}>{stars}★</span>
-                  <div style={{ flex: 1, height: "6px", background: "#FAF7F2", borderRadius: "3px", overflow: "hidden" }}>
-                    <div style={{ width: `${pct}%`, height: "100%", background: "#C8A96B" }}></div>
+                <div key={stars} style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "13px", color: "#111111" }}>
+                  <span style={{ width: "28px", fontWeight: "600" }}>{stars}★</span>
+                  <div style={{ flex: 1, height: "8px", background: "#F7F1E8", borderRadius: "4px", overflow: "hidden" }}>
+                    <div style={{ width: `${pct}%`, height: "100%", background: "#C9A063", borderRadius: "4px" }}></div>
                   </div>
-                  <span style={{ width: "32px", textAlign: "right" }}>{pct}%</span>
+                  <span style={{ width: "40px", textAlign: "right", color: "#6B6B6B" }}>{count}</span>
                 </div>
               );
             })}
           </div>
 
-          {/* Right Column Action */}
-            {eligible ? (
-              <button 
-                onClick={openWriteReviewModal} 
-                style={{ background: "#111112", color: "#FFFFFF", padding: "16px 28px", border: "none", borderRadius: "12px", fontSize: "14px", fontWeight: "700", cursor: "pointer", textTransform: "uppercase", letterSpacing: "1px" }}
-              >
-                Write A Review
-              </button>
-            ) : (
-              <div style={{ textAlign: "center", fontSize: "13px", color: "#5F6368" }}>
-                🔒 Only customers who purchased this product can write a review.
-              </div>
-            )}
+          {/* Column 3 (Right) */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }} className="reviews-right-col">
+            <h4 style={{ fontSize: "16px", fontWeight: "700", color: "#111111", margin: "0 0 8px 0", fontFamily: "Playfair Display, serif" }}>Share your experience</h4>
+            <p style={{ fontSize: "13px", color: "#6B6B6B", margin: "0 0 20px 0", lineHeight: "1.5" }}>Help other shoppers by reviewing this product.</p>
+            <button 
+              onClick={openWriteReviewModal} 
+              style={{ 
+                background: "#111111", 
+                color: "#FFFFFF", 
+                width: "220px", 
+                height: "44px", 
+                border: "none", 
+                borderRadius: "8px", 
+                fontSize: "13px", 
+                fontWeight: "700", 
+                cursor: "pointer", 
+                textTransform: "uppercase", 
+                letterSpacing: "1px"
+              }}
+              className="write-review-btn-luxury"
+            >
+              Write a review
+            </button>
           </div>
         </div>
+
+        {/* Customer photos & videos gallery (Bellavita Style) */}
+        {customerGallery && customerGallery.length > 0 && (
+          <div style={{ marginBottom: "40px" }} className="customer-media-gallery-section">
+            <h4 style={{ fontSize: "14px", fontWeight: "700", color: "#6B6B6B", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "1px" }}>Customer photos & videos</h4>
+            <div 
+              style={{ 
+                display: "flex", 
+                gap: "12px", 
+                overflowX: "auto", 
+                paddingBottom: "8px", 
+                scrollbarWidth: "none" 
+              }}
+              className="customer-media-scroll"
+            >
+              {customerGallery.slice(0, 10).map((media, idx) => {
+                let mediaUrl = "";
+                if (typeof media === "string") {
+                  mediaUrl = media;
+                } else if (media && typeof media === "object") {
+                  mediaUrl = media.url || media.secure_url || media.path || "";
+                }
+                
+                if (!mediaUrl) return null;
+                const isVideo = mediaUrl.includes(".mp4") || mediaUrl.includes(".mov") || mediaUrl.includes(".webm");
+                
+                return (
+                  <div 
+                    key={idx} 
+                    onClick={() => handleOpenLightbox(customerGallery.map(m => typeof m === "string" ? m : (m?.url || m?.secure_url || m?.path || "")).filter(Boolean), idx)}
+                    style={{ 
+                      position: "relative", 
+                      width: "84px", 
+                      height: "84px", 
+                      borderRadius: "8px", 
+                      overflow: "hidden", 
+                      cursor: "pointer", 
+                      flexShrink: 0,
+                      border: "1px solid #ECECEC",
+                      transition: "transform 0.2s ease"
+                    }}
+                    className="customer-media-thumb"
+                  >
+                    {isVideo ? (
+                      <video src={mediaUrl} muted style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    ) : (
+                      <img src={mediaUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    )}
+                    {isVideo && (
+                      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFFFFF", fontSize: "12px" }}>
+                        ▶
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       {/* SECTION 7 — YOU MAY ALSO LIKE */}
       {recommendations.length > 0 && (
         <div className="related-products-section" style={{ marginTop: "80px", paddingTop: "40px", background: "#FFFFFF", borderTop: "1px solid #ECECEC" }}>
@@ -1433,8 +1590,32 @@ const ProductDetail = () => {
                 </span>
               </div>
 
-              <form onSubmit={handleSubmitReview} className="modal-form-luxury" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                {/* Step 2 — Essential fields */}
+               <form onSubmit={handleSubmitReview} className="modal-form-luxury" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                 {!user && (
+                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }} className="guest-info-fields">
+                     <div className="form-input-group">
+                       <label style={{ fontWeight: "600", fontSize: "13px", color: "#1A1A1A" }}>Your Name</label>
+                       <input
+                         type="text"
+                         placeholder="Enter your name"
+                         value={guestName}
+                         onChange={(e) => setGuestName(e.target.value)}
+                         required
+                       />
+                     </div>
+                     <div className="form-input-group">
+                       <label style={{ fontWeight: "600", fontSize: "13px", color: "#1A1A1A" }}>Your Email</label>
+                       <input
+                         type="email"
+                         placeholder="Enter your email"
+                         value={guestEmail}
+                         onChange={(e) => setGuestEmail(e.target.value)}
+                         required
+                       />
+                     </div>
+                   </div>
+                 )}
+                 {/* Step 2 — Essential fields */}
                 <div className="form-input-group">
                   <label style={{ fontWeight: "600", fontSize: "13px", color: "#1A1A1A" }}>Review Title</label>
                   <input
@@ -1532,54 +1713,133 @@ const ProductDetail = () => {
                   </div>
                 </details>
 
-                {/* Step 4 — Premium Media Upload Box */}
-                <div className="form-upload-section-luxury" style={{ border: "2px dashed #EAE5D9", borderRadius: "16px", padding: "16px", textAlign: "center", background: "#FAF8F5" }}>
-                  <label style={{ display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer", gap: "6px" }}>
-                    <FiCamera style={{ fontSize: "2rem", color: "#C8A165" }} />
-                    <span style={{ fontSize: "14px", fontWeight: "600", color: "#1A1A1A" }}>Upload photos (optional)</span>
-                    <span style={{ fontSize: "11px", color: "#8B7355" }}>Max 5 images (Up to 5MB each)</span>
-                    <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
-                      <button type="button" onClick={handleAddMockPhoto} className="btn-mock-upload-choice" style={{ padding: "6px 12px", border: "1px solid #C8A165", background: "#FFFFFF", color: "#C8A165", borderRadius: "6px", cursor: "pointer", fontSize: "12px" }}>
-                        + Add Mock Photo
-                      </button>
-                      <button type="button" onClick={handleAddMockVideo} className="btn-mock-upload-choice" style={{ padding: "6px 12px", border: "1px solid #C8A165", background: "#FFFFFF", color: "#C8A165", borderRadius: "6px", cursor: "pointer", fontSize: "12px" }}>
-                        + Add Mock Video
-                      </button>
-                    </div>
-                  </label>
+                                     {/* Step 4 — Premium Media Upload Box (Bellavita Style with Real Picker & Drag & Drop) */}
+                 <div 
+                   className="form-upload-section-luxury" 
+                   onDragOver={(e) => e.preventDefault()}
+                   onDrop={(e) => {
+                     e.preventDefault();
+                     const files = Array.from(e.dataTransfer.files);
+                     const isVideo = files.some(f => f.type.startsWith("video/"));
+                     handleRealUpload({ target: { files: e.dataTransfer.files } }, isVideo ? "video" : "image");
+                   }}
+                   style={{ 
+                     border: "2px dashed #DCCFB6", 
+                     borderRadius: "20px", 
+                     padding: "32px", 
+                     textAlign: "center", 
+                     background: "#FBF8F2",
+                     cursor: "pointer"
+                   }}
+                 >
+                   <FiCamera style={{ fontSize: "56px", color: "#C59B5A", marginBottom: "12px" }} />
+                   <h4 style={{ fontSize: "18px", fontWeight: "600", color: "#111111", margin: "0 0 4px 0" }}>Add photos or a video</h4>
+                   <p style={{ fontSize: "14px", color: "#6B7280", margin: "0 0 24px 0" }}>Drag and drop files here, or choose from your device.</p>
+                   
+                   <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap", marginBottom: "16px" }} className="upload-buttons-row">
+                     <label 
+                       className="upload-btn-premium"
+                       style={{ 
+                         display: "inline-flex", 
+                         alignItems: "center", 
+                         justifyContent: "center", 
+                         background: "#FFFFFF", 
+                         border: "1px solid #D9C8A8", 
+                         borderRadius: "12px", 
+                         height: "44px", 
+                         padding: "0 22px", 
+                         cursor: "pointer", 
+                         fontSize: "13px", 
+                         fontWeight: "600",
+                         color: "#111111",
+                         minWidth: "140px"
+                       }}
+                     >
+                       📷 Choose Photos
+                       <input 
+                         type="file" 
+                         accept="image/*" 
+                         multiple 
+                         onChange={(e) => handleRealUpload(e, "image")} 
+                         style={{ display: "none" }} 
+                       />
+                     </label>
+                     
+                     <label 
+                       className="upload-btn-premium"
+                       style={{ 
+                         display: "inline-flex", 
+                         alignItems: "center", 
+                         justifyContent: "center", 
+                         background: "#FFFFFF", 
+                         border: "1px solid #D9C8A8", 
+                         borderRadius: "12px", 
+                         height: "44px", 
+                         padding: "0 22px", 
+                         cursor: "pointer", 
+                         fontSize: "13px", 
+                         fontWeight: "600",
+                         color: "#111111",
+                         minWidth: "140px"
+                       }}
+                     >
+                       🎥 Choose Video
+                       <input 
+                         type="file" 
+                         accept="video/*" 
+                         onChange={(e) => handleRealUpload(e, "video")} 
+                         style={{ display: "none" }} 
+                       />
+                     </label>
+                   </div>
 
-                  {/* Previews */}
-                  {((uploadedImages.length > 0) || uploadedVideo) && (
-                    <div className="uploaded-previews-flex" style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "12px", justifyContent: "center" }}>
-                      {uploadedImages.map((img, idx) => (
-                        <div key={idx} className="preview-media-card" style={{ position: "relative", width: "60px", height: "60px", borderRadius: "8px", overflow: "hidden" }}>
-                          <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                          <button 
-                            type="button" 
-                            onClick={() => setUploadedImages(prev => prev.filter((_, i) => i !== idx))} 
-                            className="remove-media-btn"
-                            style={{ position: "absolute", top: "2px", right: "2px", background: "rgba(0,0,0,0.6)", border: "none", color: "#FFFFFF", borderRadius: "50%", width: "18px", height: "18px", display: "flex", alignItems: "center", justifyItems: "center", fontSize: "10px", cursor: "pointer" }}
-                          >
-                            <FiX />
-                          </button>
-                        </div>
-                      ))}
-                      {uploadedVideo && (
-                        <div className="preview-media-card video-card" style={{ position: "relative", width: "60px", height: "60px", borderRadius: "8px", overflow: "hidden" }}>
-                          <video src={uploadedVideo} muted playsInline style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                          <button 
-                            type="button" 
-                            onClick={() => setUploadedVideo("")} 
-                            className="remove-media-btn"
-                            style={{ position: "absolute", top: "2px", right: "2px", background: "rgba(0,0,0,0.6)", border: "none", color: "#FFFFFF", borderRadius: "50%", width: "18px", height: "18px", display: "flex", alignItems: "center", justifyItems: "center", fontSize: "10px", cursor: "pointer" }}
-                          >
-                            <FiX />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
+                   {uploadingMedia && (
+                     <div style={{ fontSize: "13px", color: "#C59B5A", fontWeight: "600", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", margin: "12px 0" }}>
+                       <span className="spinner" style={{ display: "inline-block", width: "16px", height: "16px", border: "2px solid #C59B5A", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 1s linear infinite" }}></span>
+                       Uploading media to Cloudinary...
+                     </div>
+                   )}
+
+                   {/* Previews */}
+                   {((uploadedImages.length > 0) || uploadedVideo) && (
+                     <div className="uploaded-previews-flex" style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginTop: "20px", justifyContent: "center" }}>
+                       {uploadedImages.map((img, idx) => (
+                         <div key={idx} className="preview-media-card" style={{ position: "relative", width: "88px", height: "88px", borderRadius: "14px", overflow: "hidden", border: "1px solid #ECECEC" }}>
+                           <img src={img} alt="Preview attachment" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                           <button 
+                             type="button" 
+                             onClick={() => setUploadedImages(prev => prev.filter((_, i) => i !== idx))} 
+                             className="remove-media-btn"
+                             aria-label="Remove image"
+                             style={{ position: "absolute", top: "4px", right: "4px", background: "rgba(0,0,0,0.6)", border: "none", color: "#FFFFFF", borderRadius: "50%", width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", cursor: "pointer" }}
+                           >
+                             <FiX />
+                           </button>
+                         </div>
+                       ))}
+                       {uploadedVideo && (
+                         <div className="preview-media-card video-card" style={{ position: "relative", width: "88px", height: "88px", borderRadius: "14px", overflow: "hidden", border: "1px solid #ECECEC" }}>
+                           <video src={uploadedVideo} muted playsInline style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                           <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFFFFF", pointerEvents: "none" }}>▶</div>
+                           <button 
+                             type="button" 
+                             onClick={() => setUploadedVideo("")} 
+                             className="remove-media-btn"
+                             aria-label="Remove video"
+                             style={{ position: "absolute", top: "4px", right: "4px", background: "rgba(0,0,0,0.6)", border: "none", color: "#FFFFFF", borderRadius: "50%", width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", cursor: "pointer" }}
+                           >
+                             <FiX />
+                           </button>
+                         </div>
+                       )}
+                     </div>
+                   )}
+
+                   {/* Privacy text */}
+                   <p style={{ fontSize: "11px", color: "#8B7355", margin: "16px 0 0 0" }}>
+                     Your email is used only for review communication and verification purposes.
+                   </p>
+                 </div>
 
                 <div style={{ display: "flex", gap: "8px", margin: "8px 0" }}>
                   <label className="modal-toggle-label font-outfit" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#1A1A1A", cursor: "pointer" }}>

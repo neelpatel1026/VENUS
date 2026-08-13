@@ -23,12 +23,42 @@ const router = express.Router();
 // Public routes
 router.get("/product/:productId", getProductReviews);
 
-// Private/customer routes
+// Real file upload to Cloudinary for reviews (allow guest upload)
+const returnUpload = require("../middleware/returnUpload");
+const cloudinary = require("../config/cloudinary");
+router.post("/upload", returnUpload.single("file"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    const resourceType = req.file.mimetype.startsWith("video/") ? "video" : "image";
+    const uploadFromBuffer = (fileBuffer) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "venus-reviews", resource_type: resourceType },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(fileBuffer);
+      });
+    };
+    const uploadResult = await uploadFromBuffer(req.file.buffer);
+    res.status(200).json({ url: uploadResult.secure_url });
+  } catch (error) {
+    console.error("🔴 Cloudinary review upload error:", error);
+    res.status(500).json({ message: "Upload failed: " + error.message });
+  }
+});
+
 const { reviewSubmitLimiter } = require("../middleware/authLimiter");
+router.post("/", reviewSubmitLimiter, createReview);
+
+// Private/customer routes
 router.use(protect);
 router.get("/check-eligibility", checkEligibility);
 router.get("/myreviews", getMyReviews);
-router.post("/", reviewSubmitLimiter, createReview);
 router.put("/:id", reviewSubmitLimiter, editReview);
 router.delete("/:id", deleteReview);
 router.post("/:id/helpful", voteHelpful);
