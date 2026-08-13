@@ -1,0 +1,57 @@
+/* ================= PREMIUM ANNOUNCEMENT BAR ================= */
+.announcement-bar {
+  background: #111112; /* Elegant dark charcoal */
+  color: #E7C98B; /* Soft gold text */
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 0.2px;
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+  z-index: 1001; /* Directly above navbar */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* Subtle border */
+}
+
+/* Content Wrapper & Text */
+.announcement-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.announcement-text {
+  color: #E7C98B;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 768px) {
+  .announcement-bar {
+    height: 38px;
+    padding: 0 8px;
+  }
+  .announcement-text {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .announcement-bar {
+    height: 38px;
+    padding: 0 8px;
+  }
+  .announcement-text {
+    font-size: 11px;
+    white-space: normal;
+    line-height: 1.3;
+  }
+}

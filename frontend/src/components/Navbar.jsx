@@ -333,12 +333,15 @@ const Navbar = () => {
                   <button 
                     ref={triggerRef}
                     onClick={handleProfileToggle}
-                    className={`nav-icon-btn ${profileOpen ? "active" : ""}`}
+                    className={`nav-icon-btn premium-profile-btn ${profileOpen ? "active" : ""}`}
                     aria-haspopup="true"
                     aria-expanded={profileOpen}
                     aria-label="User Account Menu"
                   >
-                    <FiUser className="nav-icon" />
+                    <div className="profile-icon-wrapper-luxury">
+                      <FiUser className="nav-icon premium-profile-icon" />
+                      <span className="premium-logged-in-dot" />
+                    </div>
                   </button>
 
                   <div 
@@ -403,8 +406,8 @@ const Navbar = () => {
                   </div>
                 </>
               ) : (
-                <Link to="/login" className="nav-icon-btn" aria-label="Account login">
-                  <FiUser className="nav-icon" />
+                <Link to="/login" className="nav-icon-btn premium-profile-btn" aria-label="Account login">
+                  <FiUser className="nav-icon premium-profile-icon" />
                 </Link>
               )}
             </div>
@@ -476,12 +479,15 @@ const Navbar = () => {
 
           {/* Profile Icon */}
           {user ? (
-            <Link to="/profile" className="mobile-header-icon-btn" aria-label="My Profile">
-              <FiUser className="mobile-header-icon" />
+            <Link to="/profile" className="mobile-header-icon-btn premium-profile-btn" aria-label="My Profile">
+              <div className="profile-icon-wrapper-luxury" style={{ display: "inline-flex" }}>
+                <FiUser className="mobile-header-icon premium-profile-icon" />
+                <span className="premium-logged-in-dot mobile" />
+              </div>
             </Link>
           ) : (
-            <Link to="/login" className="mobile-header-icon-btn" aria-label="Account login">
-              <FiUser className="mobile-header-icon" />
+            <Link to="/login" className="mobile-header-icon-btn premium-profile-btn" aria-label="Account login">
+              <FiUser className="mobile-header-icon premium-profile-icon" />
             </Link>
           )}
 

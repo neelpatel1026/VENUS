@@ -122,7 +122,8 @@ window.fetch = async function (url, options = {}) {
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
-import OfferBar from "./components/OfferBar";
+import AnnouncementBar from "./components/common/AnnouncementBar.jsx";
+import WhatsAppSupportButton from "./components/common/WhatsAppSupportButton.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
 import { ToastContainer } from "./components/ToastContainer.jsx";
 import CartDrawer from "./components/CartDrawer.jsx";
@@ -263,7 +264,7 @@ function App() {
 
       {/* NAVBAR */}
 
-      <OfferBar />
+      <AnnouncementBar />
       <Navbar />
       <CartDrawer />
 
@@ -399,8 +400,7 @@ function App() {
         </ErrorBoundary>
       </div>
 
-      {/* FOOTER */}
-
+      <WhatsAppSupportButton />
       <Footer />
     </Router>
   );

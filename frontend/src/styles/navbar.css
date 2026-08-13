@@ -226,6 +226,62 @@
   transform: translateY(-1px) scale(1.05); /* 1.05 max hover scale & 1px up */
 }
 
+/* ================= PREMIUM ACCOUNT ICON OVERRIDES ================= */
+.premium-profile-btn {
+  background: transparent !important;
+  border: none !important;
+  padding: 6px !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 250ms ease-out !important;
+}
+
+.premium-profile-btn:hover {
+  transform: scale(1.06) !important;
+}
+
+.premium-profile-btn:focus-visible {
+  outline: 2px solid var(--luxury-gold, #C8A96B);
+  outline-offset: 2px;
+}
+
+.premium-profile-icon {
+  font-size: 22px !important;
+  stroke-width: 1.6px !important; /* Thin outline style */
+  color: #111112 !important;
+  transition: color 250ms ease-out !important;
+}
+
+.premium-profile-btn:hover .premium-profile-icon {
+  color: var(--luxury-gold, #C8A96B) !important;
+}
+
+/* Logged-In Indicator status dot */
+.profile-icon-wrapper-luxury {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.premium-logged-in-dot {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 6px;
+  height: 6px;
+  background-color: var(--luxury-gold, #C8A96B);
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(200, 169, 107, 0.6);
+}
+
+.premium-logged-in-dot.mobile {
+  top: 0px;
+  right: 0px;
+}
+
 /* Cart Icon Badge */
 .cart-icon-wrapper {
   position: relative;

@@ -57,7 +57,11 @@ const ProductCard = ({ product }) => {
   const savingsAmount = product.originalPrice - product.price;
 
   return (
-    <div className="product-card-luxury font-outfit">
+    <Link 
+      to={`/product/${product._id}`} 
+      className="product-card-luxury font-outfit"
+      style={{ textDecoration: "none", color: "inherit", display: "flex", flexDirection: "column" }}
+    >
       
       {/* 1. Image and Badge container */}
       <div className="product-image-container-luxury">
@@ -83,8 +87,7 @@ const ProductCard = ({ product }) => {
           )}
         </button>
  
-        {/* Link wraps image for navigation */}
-        <Link to={`/product/${product._id}`} className="product-image-click-block">
+        <div className="product-image-click-block">
           <img
             src={image600}
             srcSet={`${image300} 300w, ${image600} 600w`}
@@ -97,12 +100,7 @@ const ProductCard = ({ product }) => {
               e.target.src = "/cosmetic_1.avif";
             }}
           />
-        </Link>
-
-        {/* Quick View Hover overlay banner */}
-        <Link to={`/product/${product._id}`} className="luxury-quick-view-overlay-btn font-serif">
-          <FaEye /> Quick View
-        </Link>
+        </div>
       </div>
 
       {/* 2. Product Metadata Content */}
@@ -116,8 +114,8 @@ const ProductCard = ({ product }) => {
         )}
 
         {/* Product Title */}
-        <h3 className="luxury-product-title">
-          <Link to={`/product/${product._id}`}>{product.name}</Link>
+        <h3 className="luxury-product-title" style={{ margin: "0 0 10px 0" }}>
+          {product.name}
         </h3>
 
         {/* Rating and Reviews block */}
@@ -153,7 +151,7 @@ const ProductCard = ({ product }) => {
       </div>
 
       {/* 3. Action Buttons */}
-      <div className="product-action-footer-luxury">
+      <div className="product-action-footer-luxury" style={{ padding: "0 24px 20px 24px", marginTop: "auto" }}>
         {user?.role !== "admin" ? (
           <button
             type="button"
@@ -161,6 +159,7 @@ const ProductCard = ({ product }) => {
             disabled={product.stock === 0}
             onClick={(e) => {
               e.preventDefault();
+              e.stopPropagation(); // Prevent card navigation trigger
               if (product.stock === 0) {
                 toast.error("Product is out of stock");
                 return;
@@ -180,16 +179,15 @@ const ProductCard = ({ product }) => {
             {product.stock > 0 ? "Add To Cart" : "Out Of Stock"}
           </button>
         ) : (
-          <Link 
-            to={`/product/${product._id}`} 
+          <div 
             className="luxury-add-to-cart-btn font-serif"
-            style={{ textAlign: "center", textDecoration: "none" }}
+            style={{ textAlign: "center", textDecoration: "none", display: "block" }}
           >
             View Details
-          </Link>
+          </div>
         )}
       </div>
-    </div>
+    </Link>
   );
 };
 
