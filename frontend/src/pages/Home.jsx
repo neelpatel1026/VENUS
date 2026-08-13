@@ -52,6 +52,7 @@ const Home = () => {
       console.log(`[PERFORMANCE] Frontend Home Products load: ${duration}ms | Retry: ${isRetryAttempt}`);
 
       if (res.data && Array.isArray(res.data)) {
+        console.log('Featured API response:', res.data);
         setProducts(res.data);
         try {
           localStorage.setItem("venus_products_cache", JSON.stringify(res.data));

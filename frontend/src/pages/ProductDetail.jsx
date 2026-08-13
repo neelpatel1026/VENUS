@@ -11,6 +11,8 @@ import { getOptimizedImageUrl } from "../utils/imageHelper.js";
 import { updateSEOMetadata, injectJsonLd } from "../utils/seoHelper";
 import "../styles/product.css";
 
+import ProductCard from "../components/ProductCard";
+
 const ProductDetail = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
@@ -20,6 +22,7 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [openFaq, setOpenFaq] = useState(null);
+  const [recommendations, setRecommendations] = useState([]);
 
   // Reviews States
   const [reviews, setReviews] = useState([]);
@@ -140,10 +143,21 @@ const ProductDetail = () => {
 
         try {
           const viewed = JSON.parse(localStorage.getItem("venus_recently_viewed") || "[]");
-          const updated = [data, ...viewed.filter((p) => p._id !== data._id)].slice(0, 4);
+          const updated = [data, ...viewed.filter((p) => p._id !== data._id)].slice(0, 8);
           localStorage.setItem("venus_recently_viewed", JSON.stringify(updated));
         } catch (e) {
           console.error("Failed to save recently viewed product", e);
+        }
+
+        // Fetch recommended/featured products
+        try {
+          const rRes = await fetch("/api/products/featured");
+          if (rRes.ok) {
+            const rData = await rRes.json();
+            setRecommendations(rData.filter((item) => item._id !== data._id).slice(0, 4));
+          }
+        } catch (re) {
+          console.error("Failed to fetch recommended products", re);
         }
       } catch (err) {
         console.error(err);
@@ -1295,44 +1309,50 @@ const ProductDetail = () => {
             )}
           </div>
         </div>
+      {/* SECTION 7 — YOU MAY ALSO LIKE */}
+      {recommendations.length > 0 && (
+        <div className="related-products-section" style={{ marginTop: "80px", paddingTop: "40px", background: "#FFFFFF", borderTop: "1px solid #ECECEC" }}>
+          <h2 style={{ fontSize: "32px", fontFamily: "Playfair Display, serif", fontWeight: "600", color: "#111111", marginBottom: "36px", textAlign: "center" }}>You May Also Like</h2>
+          <div 
+            className="related-products-grid"
+            style={{ 
+              display: "grid", 
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", 
+              gap: "28px", 
+              maxWidth: "1360px", 
+              margin: "0 auto",
+              padding: "0 24px"
+            }}
+          >
+            {recommendations.map((item) => (
+              <ProductCard key={item._id} product={item} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 8 — RECENTLY VIEWED */}
       {(() => {
         try {
           const viewed = JSON.parse(localStorage.getItem("venus_recently_viewed") || "[]");
-          const items = viewed.filter((p) => p._id !== product._id).slice(0, 4);
+          const items = viewed.filter((p) => p._id !== product._id).slice(0, 8);
           if (items.length === 0) return null;
           return (
-            <div style={{ marginTop: "60px", borderTop: "1px solid #ECE6DC", paddingTop: "40px" }}>
-              <h3 style={{ fontSize: "1.4rem", fontFamily: "'Cinzel', serif", fontWeight: "700", color: "#1F2937", marginBottom: "25px", textAlign: "center" }}>Recently Viewed</h3>
+            <div className="recently-viewed-section" style={{ marginTop: "80px", paddingTop: "40px", background: "#FFFFFF", borderTop: "1px solid #ECECEC" }}>
+              <h2 style={{ fontSize: "32px", fontFamily: "Playfair Display, serif", fontWeight: "600", color: "#111111", marginBottom: "36px", textAlign: "center" }}>Recently Viewed</h2>
               <div 
+                className="recently-viewed-grid"
                 style={{ 
                   display: "grid", 
-                  gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", 
-                  gap: "20px", 
-                  maxWidth: "1000px", 
-                  margin: "0 auto" 
+                  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", 
+                  gap: "28px", 
+                  maxWidth: "1360px", 
+                  margin: "0 auto",
+                  padding: "0 24px"
                 }}
               >
                 {items.map((item) => (
-                  <Link 
-                    key={item._id} 
-                    to={`/product/${item._id}`} 
-                    style={{ textDecoration: "none", color: "inherit", background: "#FFFFFF", border: "1px solid #ECE6DC", borderRadius: "12px", overflow: "hidden", display: "flex", flexDirection: "column", transition: "transform 0.2s ease" }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-4px)"}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
-                  >
-                    <div style={{ aspectRatio: "1/1", background: "#FAF7F2", overflow: "hidden", position: "relative" }}>
-                      <img 
-                        src={getOptimizedImageUrl(item.imageUrl || item.image || "/cosmetic_1.avif", 400)} 
-                        alt={item.name} 
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }} 
-                      />
-                    </div>
-                    <div style={{ padding: "12px", display: "flex", flexDirection: "column", gap: "6px" }}>
-                      <span style={{ fontSize: "10px", textTransform: "uppercase", color: "#8B7355", fontWeight: "700" }}>{item.category}</span>
-                      <h4 style={{ margin: 0, fontSize: "13px", fontWeight: "600", color: "#1F2937", height: "36px", overflow: "hidden" }}>{item.name}</h4>
-                      <strong style={{ fontSize: "14px", color: "#1F2937" }}>₹{parseFloat(item.price).toFixed(2)}</strong>
-                    </div>
-                  </Link>
+                  <ProductCard key={item._id} product={item} />
                 ))}
               </div>
             </div>
@@ -1341,6 +1361,7 @@ const ProductDetail = () => {
           return null;
         }
       })()}
+
 
 
       {/* Write/Edit Review Modal Overlay */}
@@ -1628,11 +1649,12 @@ const ProductDetail = () => {
 
       {/* Sticky Mobile Add To Cart / Buy Now Panel */}
       {user?.role !== "admin" && product.stock > 0 && (
-        <div className="mobile-sticky-action-bar">
+        <div className="mobile-sticky-cart">
           <button 
             onClick={handleAddToCart}
             className="mobile-sticky-btn add-to-cart"
             type="button"
+            style={{ flex: 1, height: "52px", border: "1px solid #111111", background: "none", color: "#111111", borderRadius: "8px", fontWeight: "700", cursor: "pointer" }}
           >
             Add to Bag
           </button>
@@ -1643,6 +1665,7 @@ const ProductDetail = () => {
             }}
             className="mobile-sticky-btn buy-now"
             type="button"
+            style={{ flex: 1, height: "52px", border: "none", background: "#111111", color: "#FFFFFF", borderRadius: "8px", fontWeight: "700", cursor: "pointer" }}
           >
             Buy Now
           </button>

@@ -3580,4 +3580,116 @@
     height: 40px;
     border-radius: 8px;
   }
+}
+
+/* ================= MOBILE PRODUCT DETAIL REDESIGN ================= */
+@media (max-width: 767px) {
+  :root {
+    --mobile-padding: 16px;
+    --mobile-section-gap: 40px;
+  }
+
+  .product-detail-wrapper {
+    padding: 16px !important;
+  }
+
+  /* Sticky Top Header */
+  .mobile-product-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: 56px;
+    background: #ffffff;
+    border-bottom: 1px solid #ececec;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+  }
+
+  /* Two column layout to single column stack */
+  .product-detail-layout {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  /* Gallery column positioning reset */
+  .product-gallery-column {
+    position: static !important;
+    width: 100% !important;
+  }
+
+  .product-gallery-card {
+    height: 360px !important;
+    border-radius: 20px !important;
+    padding: 12px !important;
+  }
+
+  .detail-image {
+    height: 320px !important;
+  }
+
+  /* Custom Typography scaling */
+  .product-detail-title {
+    font-size: 2rem !important;
+    line-height: 1.15 !important;
+    font-weight: 700 !important;
+  }
+
+  .product-price {
+    font-size: 1.9rem !important;
+  }
+
+  /* Bottom sticky CTA bar rules */
+  .mobile-sticky-cart {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 120;
+    background: #ffffff;
+    border-top: 1px solid #ececec;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    display: flex;
+    gap: 12px;
+  }
+
+  /* Add bottom offset to wrapper to prevent overlay hide */
+  .product-detail-wrapper {
+    padding-bottom: 96px !important;
+  }
+
+  /* Trust badges 2x2 grid */
+  .trust-icons-container {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .trust-card {
+    min-height: 88px;
+    background: #FFFFFF !important;
+    border: 1px solid #ECECEC !important;
+  }
+
+  /* Carousel layout overrides */
+  .related-products-grid,
+  .recently-viewed-grid {
+    display: flex !important;
+    gap: 16px !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    padding-bottom: 8px !important;
+    scrollbar-width: none; /* Hide scrollbars */
+  }
+
+  .related-products-grid::-webkit-scrollbar,
+  .recently-viewed-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .related-products-grid > *,
+  .recently-viewed-grid > * {
+    flex: 0 0 180px !important;
+    scroll-snap-align: start !important;
+  }
 }

@@ -58,11 +58,22 @@ const getProducts = async (req, res) => {
 const getFeaturedProducts = async (req, res) => {
   const startTime = Date.now();
   try {
-    const products = await Product.find({ isBestSeller: true })
+    let products = await Product.find({ isBestSeller: true })
       .select("_id name slug price originalPrice rating imageUrl stock category subtitle")
       .limit(8)
       .maxTimeMS(3000)
       .lean();
+
+    if (!products || products.length === 0) {
+      products = await Product.find({})
+        .select("_id name slug price originalPrice rating imageUrl stock category subtitle")
+        .sort({ createdAt: -1 })
+        .limit(8)
+        .maxTimeMS(3000)
+        .lean();
+    }
+
+    console.log('Featured products count:', products.length);
 
     const duration = Date.now() - startTime;
     console.log(`[PERFORMANCE] GET /api/products/featured | Duration: ${duration}ms | Payload size: ~${JSON.stringify(products).length} bytes`);
