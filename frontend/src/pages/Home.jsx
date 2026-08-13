@@ -40,12 +40,17 @@ const Home = () => {
   const [error, setError] = useState("");
   const [visibleProductsCount, setVisibleProductsCount] = useState(8);
 
-  const fetchProducts = async (signal) => {
+  const fetchProducts = async (signal, isRetryAttempt = false) => {
+    const fetchStart = Date.now();
     try {
       setLoading(true);
       setError("");
 
-      const res = await api.get("/api/products", { signal });
+      // Query the optimized, lightweight featured products API endpoint
+      const res = await api.get("/api/products/featured", { signal });
+      const duration = Date.now() - fetchStart;
+      console.log(`[PERFORMANCE] Frontend Home Products load: ${duration}ms | Retry: ${isRetryAttempt}`);
+
       if (res.data && Array.isArray(res.data)) {
         setProducts(res.data);
         try {
@@ -60,13 +65,19 @@ const Home = () => {
         console.log("Fetch products request aborted");
         return;
       }
-      console.error(err);
+      console.error("Products load failed:", err);
+
+      // Auto-retry once on failure if this was the first attempt
+      if (!isRetryAttempt) {
+        console.log("Attempting automatic retry for products...");
+        return fetchProducts(signal, true);
+      }
       
       // If we already have cached backup products, keep them and do not render the error screen
       if (products && products.length > 0) {
         console.log("Product fetch failed; serving cached backup list");
       } else {
-        setError("Unable to load products. Please try again.");
+        setError("Unable to load products. Please check your internet connection.");
       }
     } finally {
       setLoading(false);

@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { addToCart, removeFromCart } from "../redux/cartSlice";
 import toast from "react-hot-toast";
 import { HiStar, HiCheckCircle, HiChevronUp, HiChevronDown } from "react-icons/hi";
-import { FiPlay, FiX, FiMapPin, FiThumbsUp, FiThumbsDown, FiCamera, FiVideo, FiMaximize2, FiLock } from "react-icons/fi";
+import { FiPlay, FiX, FiMapPin, FiThumbsUp, FiThumbsDown, FiCamera, FiVideo, FiMaximize2, FiLock, FiShare2 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../context/AuthContext";
 import { getOptimizedImageUrl } from "../utils/imageHelper.js";
@@ -559,6 +559,9 @@ const ProductDetail = () => {
     setShowLightbox(true);
   };
 
+  // Quantity selector state
+  const [selectedQty, setSelectedQty] = useState(1);
+
   // Add To Cart
   const handleAddToCart = () => {
     if (!product || product.stock === 0) return;
@@ -570,7 +573,7 @@ const ProductDetail = () => {
         price: product.price,
         imageUrl: product.imageUrl,
         stock: product.stock,
-        qty: 1,
+        qty: selectedQty,
       }),
     );
 
@@ -592,44 +595,49 @@ const ProductDetail = () => {
       : 0;
   }, [product]);
 
+  // Multi-image gallery state for premium display
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const productImages = useMemo(() => {
+    if (!product) return [];
+    // Prioritize product.gallery if exists, fallback to product.images, fallback to imageUrl
+    if (Array.isArray(product.gallery) && product.gallery.length > 0) {
+      return product.gallery.map(img => getOptimizedImageUrl(img, 1000));
+    }
+    if (Array.isArray(product.images) && product.images.length > 0) {
+      return product.images.map(img => getOptimizedImageUrl(img, 1000));
+    }
+    const mainImg = getOptimizedImageUrl(product.imageUrl || product.image, 1000);
+    return [
+      mainImg,
+      "https://images.unsplash.com/photo-1608248597481-496100c80836?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=1000&q=80"
+    ];
+  }, [product]);
+
+  // State to track expanded accordion block (1, 2, 3, 4, 5, 6)
+  const [expandedAccordion, setExpandedAccordion] = useState(1);
+
   if (loading) {
     return (
-      <div className="product-detail-wrapper route-fade-in">
-        <div className="product-detail">
-          <div className="detail-image-container">
+      <div className="product-detail-wrapper route-fade-in" style={{ background: "#FFFFFF" }}>
+        <div className="product-detail" style={{ background: "#FFFFFF", border: "none" }}>
+          <div className="detail-image-container" style={{ background: "#FFFFFF", borderRadius: "16px" }}>
             <div className="shimmer-bg" style={{ width: "100%", height: "100%", aspectRatio: "1/1", minHeight: "450px", borderRadius: "16px" }} />
           </div>
           <div className="detail-info" style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "10px" }}>
-            {/* Category Breadcrumb */}
             <div className="shimmer-bg" style={{ height: "12px", width: "120px", borderRadius: "4px" }} />
-            {/* Title */}
             <div className="shimmer-bg" style={{ height: "32px", width: "85%", borderRadius: "4px" }} />
-            
-            {/* Rating Stars placeholder */}
             <div style={{ display: "flex", gap: "4px", margin: "4px 0" }}>
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="shimmer-bg" style={{ width: "16px", height: "16px", borderRadius: "50%" }}></div>
               ))}
             </div>
-            
-            {/* Price lines */}
             <div className="shimmer-bg" style={{ height: "28px", width: "180px", borderRadius: "4px" }} />
-            
-            {/* Divider */}
             <div style={{ height: "1px", background: "rgba(0,0,0,0.06)", margin: "8px 0" }} />
-            
-            {/* Short info blocks */}
             <div className="shimmer-bg" style={{ height: "60px", width: "100%", borderRadius: "12px" }} />
-            
-            {/* Main Action Button */}
             <div className="shimmer-bg" style={{ height: "48px", width: "100%", borderRadius: "12px", marginTop: "12px" }} />
-            
-            {/* Description lines */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "16px" }}>
-              <div className="shimmer-bg" style={{ height: "14px", width: "100%", borderRadius: "4px" }} />
-              <div className="shimmer-bg" style={{ height: "14px", width: "95%", borderRadius: "4px" }} />
-              <div className="shimmer-bg" style={{ height: "14px", width: "70%", borderRadius: "4px" }} />
-            </div>
           </div>
         </div>
       </div>
@@ -646,92 +654,163 @@ const ProductDetail = () => {
   }
 
   return (
-    <div className="product-detail-wrapper route-fade-in">
+    <div className="product-detail-wrapper route-fade-in" style={{ background: "#FFFFFF", padding: "40px 24px" }}>
       {/* Breadcrumb */}
-      <div className="product-detail-breadcrumb">
-        <Link to="/" style={{ color: "#C8A165", textDecoration: "none" }}>Home</Link>
+      <div className="product-detail-breadcrumb" style={{ color: "#666666", fontSize: "14px", marginBottom: "24px" }}>
+        <Link to="/" style={{ color: "#B8945A", textDecoration: "none" }}>Home</Link>
         {" / "}
-        <Link to="/shop" style={{ color: "#C8A165", textDecoration: "none" }}>Shop</Link>
+        <Link to="/shop" style={{ color: "#B8945A", textDecoration: "none" }}>Shop</Link>
         {" / "}
         {product.category}
         {" / "}
-        <span style={{ color: "#1F2937", fontWeight: "600" }}>{product.name}</span>
+        <span style={{ color: "#111111", fontWeight: "600" }}>{product.name}</span>
       </div>
 
       {/* Main product detail */}
-      <div className="product-detail">
-        {/* Left Column: Image wrapper */}
-        <div className="detail-image-container">
-          {discount > 0 && (
-            <span className="discount-badge" style={{ top: "20px", left: "20px" }}>
-              {discount}% OFF
-            </span>
-          )}
-          <img
-            src={getOptimizedImageUrl(product.imageUrl || product.image, 1000)}
-            alt={product.name}
-            className="detail-image"
-            loading="lazy"
-            onError={(e) => {
-              e.target.src = "/cosmetic_1.avif";
-            }}
-          />
+      <div className="product-detail-layout" style={{ display: "grid", gridTemplateColumns: "minmax(520px, 620px) minmax(420px, 520px)", gap: "64px", background: "transparent", border: "none", padding: 0, boxShadow: "none", alignItems: "start" }}>
+        
+        {/* Left Column (Sticky Gallery) */}
+        <div className="product-gallery-column" style={{ display: "flex", flexDirection: "column", gap: "16px", position: "sticky", top: "96px", alignSelf: "start", height: "fit-content" }}>
+          <div className="product-gallery-card" style={{ background: "#FFFFFF", border: "1px solid #ECECEC", borderRadius: "28px", padding: "24px", position: "relative", height: "560px", boxShadow: "none" }}>
+            {discount > 0 && (
+              <span className="discount-badge" style={{ top: "24px", left: "24px", background: "#B8945A", color: "#FFFFFF", padding: "6px 12px", fontSize: "11px", fontWeight: "700" }}>
+                {discount}% OFF
+              </span>
+            )}
+            <img
+              src={productImages[activeImageIndex]}
+              alt={product.name}
+              className="detail-image"
+              loading="lazy"
+              style={{ width: "90%", height: "90%", objectFit: "contain", transition: "transform 0.3s ease" }}
+              onError={(e) => {
+                e.target.src = "/cosmetic_1.avif";
+              }}
+            />
+          </div>
+
+          {/* Thumbnail row */}
+          <div style={{ display: "flex", gap: "12px", overflowX: "auto", paddingBottom: "8px" }}>
+            {productImages.map((img, idx) => (
+              <button
+                key={idx}
+                onClick={() => setActiveImageIndex(idx)}
+                style={{
+                  width: "80px",
+                  height: "80px",
+                  border: activeImageIndex === idx ? "2px solid #C8A96B" : "1px solid #E8E0D4",
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  background: "#FFFFFF",
+                  cursor: "pointer",
+                  padding: 0
+                }}
+              >
+                <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Right Column: Info and Purchase panel */}
-        <div className="detail-info" style={{ gap: "24px" }}>
+        <div className="product-info-column" style={{ display: "flex", flexDirection: "column", gap: "28px", minWidth: 0 }}>
           <div>
-            <span style={{ color: "#8B7355", fontSize: "0.8rem", letterSpacing: "2px", textTransform: "uppercase", fontWeight: "700" }}>
+            <span style={{ color: "#C9A063", fontSize: "11px", letterSpacing: "2px", textTransform: "uppercase", fontWeight: "700" }}>
               {product.category}
             </span>
-            <h1 className="product-detail-title">
-              {product.name}
-            </h1>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px" }}>
+              <h1 className="product-detail-title" style={{ fontFamily: "Cinzel, serif", fontSize: "40px", color: "#111112", margin: "8px 0 4px 0", fontWeight: "600", flex: 1 }}>
+                {product.name}
+              </h1>
+              <button
+                type="button"
+                onClick={async () => {
+                  const shareData = {
+                    title: product.name,
+                    text: product.subtitle || "Check out this product from VENUS CARE",
+                    url: window.location.href
+                  };
+                  if (navigator.share) {
+                    try {
+                      await navigator.share(shareData);
+                    } catch (err) {
+                      console.log(err);
+                    }
+                    navigator.clipboard.writeText(window.location.href);
+                    toast.success("Product link copied to clipboard! 📋");
+                  }
+                }}
+                style={{
+                  background: "none",
+                  border: "1px solid #E8E0D4",
+                  borderRadius: "50%",
+                  width: "44px",
+                  height: "44px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  color: "#111112",
+                  marginTop: "8px",
+                  transition: "all 0.3s ease"
+                }}
+                title="Share Product"
+              >
+                <FiShare2 style={{ width: "20px", height: "20px" }} />
+              </button>
+            </div>
+            {product.subtitle && (
+              <p style={{ margin: "0 0 12px 0", fontSize: "14px", fontStyle: "italic", color: "#5F6368" }}>{product.subtitle}</p>
+            )}
             
             {/* Stars & Reviews */}
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.9rem", color: "#F59E0B" }}>
-              <HiStar style={{ width: "18px", height: "18px", color: (stats && stats.totalReviews > 0) ? "#C8A165" : "#E5E7EB" }} />
-              <strong style={{ color: "#1F2937" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "14px", color: "#C8A96B" }}>
+              <HiStar style={{ width: "18px", height: "18px", color: "#C8A96B" }} />
+              <strong style={{ color: "#111112", fontWeight: "700" }}>
                 {stats && stats.totalReviews > 0 ? parseFloat(stats.averageRating).toFixed(1) : "0.0"}
               </strong>
-              <span style={{ color: "#6B7280" }}>
+              <a href="#reviews" style={{ color: "#5F6368", textDecoration: "underline" }}>
                 ({stats ? stats.totalReviews : 0} reviews)
-              </span>
-              <span style={{ color: "#C8A165", margin: "0 8px" }}>|</span>
-              <span style={{ color: "#10B981", fontWeight: "600" }}>Verified Buyer Trust</span>
+              </a>
             </div>
           </div>
 
           {/* Pricing Details */}
-          <div className="product-detail-price-card">
-            <div className="product-detail-price-row">
-              <span className="detail-price" style={{ color: "#1F2937" }}>₹{product.price.toFixed(2)}</span>
+          <div style={{ padding: "0 0 16px 0", borderBottom: "1px solid #E8E0D4" }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
+              <span style={{ color: "#111112", fontSize: "36px", fontWeight: "800", fontFamily: "Cinzel, serif" }}>₹{product.price.toFixed(2)}</span>
               {discount > 0 && (
                 <>
-                  <span className="product-detail-original-price">
+                  <span style={{ textDecoration: "line-through", color: "#6B6B6B", fontSize: "20px" }}>
                     ₹{product.originalPrice.toFixed(2)}
                   </span>
-                  <span className="product-detail-save-amount">
-                    Save ₹{(product.originalPrice - product.price).toFixed(2)}
+                  <span style={{ color: "#C9A063", fontSize: "16px", fontWeight: "700" }}>
+                    ({discount}% OFF)
                   </span>
                 </>
               )}
             </div>
-            <p style={{ margin: "8px 0 0 0", fontSize: "0.8rem", color: "#6B7280" }}>Inclusive of all taxes</p>
+            <p style={{ margin: "4px 0 0 0", fontSize: "12px", color: "#6B6B6B" }}>Inclusive of all taxes</p>
+
+            {/* Prepaid discount bar */}
+            <div style={{ marginTop: "16px", padding: "12px 16px", background: "#F7F2E8", border: "1px solid #E7D8BF", borderRadius: "8px", display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#1B1B1B", fontWeight: "600" }}>
+              <span>🪙</span> Pay only <strong style={{ color: "#C9A063" }}>₹{(product.price * 0.95).toFixed(2)}</strong> with Prepaid Discounts
+            </div>
           </div>
 
-          {/* Description */}
-          <div>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: "700", color: "#1F2937", marginBottom: "10px" }}>
-              Product Formula Overview
-            </h3>
-            <p className="product-detail-description">
-              {product.description}
-            </p>
-          </div>
+          {/* Where to use tags */}
+          {Array.isArray(product.wearTags) && product.wearTags.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", margin: "4px 0" }}>
+              {product.wearTags.map((tag, i) => (
+                <span key={i} style={{ background: "#FFFDF9", border: "1px solid #E7D8BF", padding: "6px 14px", borderRadius: "20px", fontSize: "12px", color: "#1B1B1B", fontWeight: "600" }}>
+                  📍 {tag}
+                </span>
+              ))}
+            </div>
+          )}
 
-          {/* Actions */}
-          <div>
+          {/* Quantity and CTA Actions */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             {product.stock > 0 && product.stock <= 5 && (
               <div 
                 style={{ 
@@ -741,727 +820,481 @@ const ProductDetail = () => {
                   padding: "10px 14px", 
                   borderRadius: "8px", 
                   fontSize: "12px", 
-                  fontWeight: "600", 
-                  marginBottom: "12px",
+                  fontWeight: "600",
                   display: "flex",
                   alignItems: "center",
                   gap: "6px"
                 }}
               >
-                ⚠️ Hurrah! Only {product.stock} items remaining in stock. Order soon!
+                ⚠️ Limited Stock: Only {product.stock} items remaining.
               </div>
             )}
             
             {user?.role !== "admin" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                {product.stock === 0 ? (
-                  <button
-                    disabled
-                    className="add-to-cart-btn"
-                    style={{ background: "#9CA3AF", cursor: "not-allowed" }}
-                  >
-                    Out Of Stock
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleAddToCart}
-                    className="product-detail-add-btn"
-                  >
-                    Add to Shopping Cart
-                  </button>
-                )}
-              </div>
-            )}
-            
-            <p style={{ marginTop: "12px", fontSize: "0.9rem", color: product.stock > 0 ? "#10B981" : "#EF4444", fontWeight: "600", display: "flex", alignItems: "center", gap: "6px" }}>
-              <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: product.stock > 0 ? "#10B981" : "#EF4444" }}></span>
-              {product.stock > 0
-                ? `In Stock (${product.stock} items remaining)`
-                : `Temporarily Out of Stock`}
-            </p>
-          </div>
-
-          {/* Delivery & Timeline metadata */}
-          <div style={{ borderTop: "1px solid #ECE6DC", paddingTop: "20px" }}>
-            <h4 style={{ fontSize: "0.95rem", fontWeight: "700", color: "#1F2937", marginBottom: "12px" }}>Fulfillment Information</h4>
-            <div className="fulfillment-grid">
-              <div>🚚 Delivery ETA: <strong>{(() => {
-                const date = new Date();
-                date.setDate(date.getDate() + 3);
-                const first = date.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
-                date.setDate(date.getDate() + 2);
-                const second = date.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
-                return `Arrives between ${first} - ${second}`;
-              })()}</strong></div>
-              <div>🛡️ Return Policy: <strong>7-Days Returns</strong></div>
-              <div>⚡ Payments: <strong>COD & Online available</strong></div>
-              <div>✨ Brand Purity: <strong>100% Authentic Product</strong></div>
-            </div>
-            
-            {/* Inline Trust Badges */}
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "16px", background: "#FAF7F2", padding: "12px", borderRadius: "8px", border: "1px solid #E8DFD2" }}>
-              <span style={{ fontSize: "11px", color: "#8B7355", fontWeight: "600" }}>🛡️ Secure Checkout</span>
-              <span style={{ fontSize: "11px", color: "#8B7355", fontWeight: "600" }}>🌱 100% Vegan</span>
-              <span style={{ fontSize: "11px", color: "#8B7355", fontWeight: "600" }}>🧪 Acid-Free</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Highlights checklist & How to use below details */}
-      <div className="detail-standards-apply-row">
-        
-        {/* Why choose us */}
-        <div style={{ background: "#FAF7F2", padding: "35px", borderRadius: "24px", border: "1px solid #E8DFD2" }}>
-          <h3 style={{ fontSize: "1.25rem", fontWeight: "700", color: "#1F2937", marginBottom: "20px" }}>Formula Standards</h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <HiCheckCircle style={{ color: "#C8A165", width: "22px", height: "22px" }} />
-              <span style={{ fontSize: "0.95rem", color: "#4B5563" }}>Dermatologically Tested Purity</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <HiCheckCircle style={{ color: "#C8A165", width: "22px", height: "22px" }} />
-              <span style={{ fontSize: "0.95rem", color: "#4B5563" }}>100% Cruelty Free & Vegan-Grade</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <HiCheckCircle style={{ color: "#C8A165", width: "22px", height: "22px" }} />
-              <span style={{ fontSize: "0.95rem", color: "#4B5563" }}>Formulated without Parabens or Sulfates</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <HiCheckCircle style={{ color: "#C8A165", width: "22px", height: "22px" }} />
-              <span style={{ fontSize: "0.95rem", color: "#4B5563" }}>Hydrating active ingredients suited for sensitive skin</span>
-            </div>
-          </div>
-        </div>
-
-        {/* How to use */}
-        <div>
-          <h3 style={{ fontSize: "1.25rem", fontWeight: "700", color: "#1F2937", marginBottom: "20px" }}>How to Apply</h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-            <div style={{ display: "flex", gap: "16px" }}>
-              <div style={{ width: "30px", height: "30px", borderRadius: "50%", background: "#C8A165", color: "#fff", display: "flex", alignItems: "center", justifyCenter: "center", flexShrink: 0, fontWeight: "700", fontSize: "0.9rem", justifyContent: "center" }}>1</div>
-              <div>
-                <h4 style={{ margin: "0 0 4px 0", fontSize: "0.95rem", color: "#1F2937" }}>Dispense Application</h4>
-                <p style={{ margin: 0, fontSize: "0.85rem", color: "#6B7280", lineHeight: "1.5" }}>Take a small coin-sized drop onto dry fingertips.</p>
-              </div>
-            </div>
-            <div style={{ display: "flex", gap: "16px" }}>
-              <div style={{ width: "30px", height: "30px", borderRadius: "50%", background: "#C8A165", color: "#fff", display: "flex", alignItems: "center", justifyCenter: "center", flexShrink: 0, fontWeight: "700", fontSize: "0.9rem", justifyContent: "center" }}>2</div>
-              <div>
-                <h4 style={{ margin: "0 0 4px 0", fontSize: "0.95rem", color: "#1F2937" }}>Massage Skin</h4>
-                <p style={{ margin: 0, fontSize: "0.85rem", color: "#6B7280", lineHeight: "1.5" }}>Gently sweep over face and neck area in smooth upward circular motions.</p>
-              </div>
-            </div>
-            <div style={{ display: "flex", gap: "16px" }}>
-              <div style={{ width: "30px", height: "30px", borderRadius: "50%", background: "#C8A165", color: "#fff", display: "flex", alignItems: "center", justifyCenter: "center", flexShrink: 0, fontWeight: "700", fontSize: "0.9rem", justifyContent: "center" }}>3</div>
-              <div>
-                <h4 style={{ margin: "0 0 4px 0", fontSize: "0.95rem", color: "#1F2937" }}>Absorb Thoroughly</h4>
-                <p style={{ margin: 0, fontSize: "0.85rem", color: "#6B7280", lineHeight: "1.5" }}>Let formula sit for 1 minute before following up with sunscreen or beauty tools.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Accordion FAQ section */}
-      <div style={{ marginTop: "60px", borderTop: "1px solid #ECE6DC", paddingTop: "40px" }}>
-        <h3 style={{ fontSize: "1.4rem", fontWeight: "700", color: "#1F2937", marginBottom: "25px", textAlign: "center" }}>Frequently Asked Questions</h3>
-        <div style={{ maxWidth: "800px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "12px" }}>
-          
-          {/* FAQ 1 */}
-          <div style={{ border: "1px solid #E8DFD2", borderRadius: "12px", overflow: "hidden" }}>
-            <button
-              onClick={() => toggleFaq(0)}
-              style={{ width: "100%", padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FAF7F2", border: "none", cursor: "pointer", outline: "none", textAlign: "left" }}
-            >
-              <span style={{ fontSize: "0.95rem", fontWeight: "600", color: "#1F2937" }}>Is this formula suitable for sensitive skin?</span>
-              {getStageClass(0) ? <HiChevronUp style={{ width: "20px", height: "20px" }} /> : <HiChevronDown style={{ width: "20px", height: "20px" }} />}
-            </button>
-            {getStageClass(0) && (
-              <div style={{ padding: "16px 20px", background: "#fff", borderTop: "1px solid #E8DFD2", fontSize: "0.9rem", color: "#6B7280", lineHeight: "1.6" }}>
-                Yes, VENUS CARE formulations undergo clinical checks and are blended without harsh parabens, toxic sulfates, or artificial fragrances.
-              </div>
-            )}
-          </div>
-
-          {/* FAQ 2 */}
-          <div style={{ border: "1px solid #E8DFD2", borderRadius: "12px", overflow: "hidden" }}>
-            <button
-              onClick={() => toggleFaq(1)}
-              style={{ width: "100%", padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FAF7F2", border: "none", cursor: "pointer", outline: "none", textAlign: "left" }}
-            >
-              <span style={{ fontSize: "0.95rem", fontWeight: "600", color: "#1F2937" }}>How long does delivery take?</span>
-              {getStageClass(1) ? <HiChevronUp style={{ width: "20px", height: "20px" }} /> : <HiChevronDown style={{ width: "20px", height: "20px" }} />}
-            </button>
-            {getStageClass(1) && (
-              <div style={{ padding: "16px 20px", background: "#fff", borderTop: "1px solid #E8DFD2", fontSize: "0.9rem", color: "#6B7280", lineHeight: "1.6" }}>
-                Orders dispatch within 24 hours of confirmation and are delivered to destinations across India in 3 to 4 business days.
-              </div>
-            )}
-          </div>
-
-          {/* FAQ 3 */}
-          <div style={{ border: "1px solid #E8DFD2", borderRadius: "12px", overflow: "hidden" }}>
-            <button
-              onClick={() => toggleFaq(2)}
-              style={{ width: "100%", padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#FAF7F2", border: "none", cursor: "pointer", outline: "none", textAlign: "left" }}
-            >
-              <span style={{ fontSize: "0.95rem", fontWeight: "600", color: "#1F2937" }}>What is the returns and refund workflow?</span>
-              {getStageClass(2) ? <HiChevronUp style={{ width: "20px", height: "20px" }} /> : <HiChevronDown style={{ width: "20px", height: "20px" }} />}
-            </button>
-            {getStageClass(2) && (
-              <div style={{ padding: "16px 20px", background: "#fff", borderTop: "1px solid #E8DFD2", fontSize: "0.9rem", color: "#6B7280", lineHeight: "1.6" }}>
-                If you are unsatisfied, you can request a return from your profile order section within 7 days of delivery.
-              </div>
-            )}
-          </div>
-
-        </div>
-      </div>
-
-      {/* Reviews Section */}
-      <div className="reviews-section-redesigned" id="reviews">
-        <h3 className="section-title-luxury">Customer Feedbacks & Ratings</h3>
-
-        <div className="reviews-layout-grid-luxury">
-          {/* Left Column: Summary Analytics Panel */}
-          <div className="reviews-summary-panel-luxury">
-            
-            {/* Section 1: Customer Ratings Summary */}
-            <div className="reviews-stats-card-luxury">
-              <div className="stats-header-gold">
-                <h2>{stats && stats.totalReviews > 0 ? parseFloat(stats.averageRating).toFixed(1) : "0.0"}</h2>
-                <div className="reviews-stars-row-luxury">
-                  {[...Array(5)].map((_, i) => (
-                    <HiStar
-                      key={i}
-                      style={{
-                        color: stats && stats.totalReviews > 0 && i < Math.round(stats.averageRating) ? "#C8A165" : "#E5E7EB",
-                      }}
-                    />
-                  ))}
-                </div>
-                <span className="reviews-count-sub font-outfit">
-                  {stats && stats.totalReviews > 0 
-                    ? `Based on ${stats.totalReviews} verified purchase reviews` 
-                    : "No reviews yet"}
-                </span>
-              </div>
-
-              {stats && stats.totalReviews > 0 && stats.recommendRate !== undefined && (
-                <div className="reviews-recommendation-block-luxury">
-                  <div className="recommend-circle">
-                    <span className="pct-text">{stats.recommendRate}%</span>
-                  </div>
-                  <p className="recommendation-desc font-outfit">
-                    of verified owners highly recommend this skincare formula.
-                  </p>
-                </div>
-              )}
-
-              {/* Trust Indicators */}
-              <div className="reviews-trust-badges-grid">
-                <div className="trust-badge-item">
-                  <span className="badge-icon">✓</span>
-                  <div className="badge-text">
-                    <strong>Verified Buyers</strong>
-                    <span>100% authenticated</span>
-                  </div>
-                </div>
-                <div className="trust-badge-item">
-                  <span className="badge-icon">↩</span>
-                  <div className="badge-text">
-                    <strong>Repeat Purchase</strong>
-                    <span>High formula loyalty</span>
-                  </div>
-                </div>
-                <div className="trust-badge-item">
-                  <span className="badge-icon">📸</span>
-                  <div className="badge-text">
-                    <strong>Photo Reviews</strong>
-                    <span>Real skincare results</span>
-                  </div>
-                </div>
-                <div className="trust-badge-item">
-                  <span className="badge-icon">🎥</span>
-                  <div className="badge-text">
-                    <strong>Video Reviews</strong>
-                    <span>Formulation demos</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Section 2: Star Breakdown Progress Bars */}
-            {stats && stats.totalReviews > 0 && (
-              <div className="reviews-breakdown-card-luxury">
-                <h4 className="card-sub-title-luxury">Rating Distribution</h4>
-                <div className="breakdown-bars-list">
-                  {[5, 4, 3, 2, 1].map((stars) => {
-                    const count = stats?.breakdown?.[stars] || 0;
-                    const total = stats?.totalReviews || 1;
-                    const pct = stats?.totalReviews > 0 ? Math.round((count / total) * 100) : 0;
-                    return (
-                      <div 
-                        key={stars} 
-                        className={`rating-bar-row-luxury ${ratingFilter === String(stars) ? "active-row" : ""}`}
-                        onClick={() => setRatingFilter(ratingFilter === String(stars) ? "" : String(stars))}
-                        style={{ cursor: "pointer" }}
-                        title={`Filter by ${stars} Stars`}
-                      >
-                        <span className="rating-star-label-luxury">
-                          {stars} ★
-                        </span>
-                        <div className="rating-progress-track-luxury">
-                          <div className="rating-progress-bar-luxury" style={{ width: `${pct}%` }} />
-                        </div>
-                        <span className="rating-count-label-luxury">{pct}%</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Featured editorial reviews summary */}
-            {featuredReviews && (featuredReviews.topPositiveReview || featuredReviews.topCriticalReview || featuredReviews.latestReview) && (
-              <div className="reviews-editorials-box-luxury">
-                <h4 className="card-sub-title-luxury">Editorial Reviews</h4>
-                
-                {featuredReviews.topPositiveReview && (
-                  <div className="editorial-mini-card positive">
-                    <span className="editorial-badge positive">Top Positive Review</span>
-                    <h5>{featuredReviews.topPositiveReview.title}</h5>
-                    <p>"{featuredReviews.topPositiveReview.review.slice(0, 120)}..."</p>
-                    <span className="editorial-author">— {featuredReviews.topPositiveReview.customerName}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                {/* Quantity picker */}
+                {product.stock > 0 && (
+                  <div style={{ display: "flex", alignItems: "center", border: "1px solid #E8E0D4", borderRadius: "12px", background: "#FFFFFF", overflow: "hidden" }}>
+                    <button 
+                      type="button" 
+                      onClick={() => setSelectedQty(prev => Math.max(1, prev - 1))}
+                      style={{ padding: "12px 18px", border: "none", background: "none", cursor: "pointer", fontSize: "16px", fontWeight: "700" }}
+                    >
+                      -
+                    </button>
+                    <span style={{ padding: "0 10px", minWidth: "24px", textAlign: "center", fontWeight: "700" }}>{selectedQty}</span>
+                    <button 
+                      type="button" 
+                      onClick={() => setSelectedQty(prev => Math.min(product.stock, prev + 1))}
+                      style={{ padding: "12px 18px", border: "none", background: "none", cursor: "pointer", fontSize: "16px", fontWeight: "700" }}
+                    >
+                      +
+                    </button>
                   </div>
                 )}
 
-                {featuredReviews.topCriticalReview && (
-                  <div className="editorial-mini-card critical">
-                    <span className="editorial-badge critical">Top Critical Review</span>
-                    <h5>{featuredReviews.topCriticalReview.title}</h5>
-                    <p>"{featuredReviews.topCriticalReview.review.slice(0, 120)}..."</p>
-                    <span className="editorial-author">— {featuredReviews.topCriticalReview.customerName}</span>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Right Column: Interactive Review Feed */}
-          <div className="reviews-feed-panel-luxury">
-            
-            {/* Customer Media Gallery Header Grid */}
-            {customerGallery.length > 0 && (
-              <div className="feed-gallery-preview-luxury">
-                <h4 className="feed-sub-title-luxury">Customer Gallery ({customerGallery.length} media uploads)</h4>
-                <div className="gallery-preview-horizontal">
-                  {customerGallery.slice(0, 6).map((media, idx) => {
-                    const isVideo = media.video && !media.images?.length;
-                    const activeImg = media.images?.[0] || "";
-                    return (
-                      <div 
-                        key={idx} 
-                        className="gallery-preview-thumb-card"
-                        onClick={() => handleOpenLightbox(
-                          customerGallery.map(m => m.video || m.images?.[0]).filter(Boolean),
-                          idx
-                        )}
-                      >
-                        {isVideo ? (
-                          <div className="video-thumb-placeholder">
-                            <video src={media.video} muted playsInline style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                            <span className="play-btn-overlay"><FiPlay /></span>
-                          </div>
-                        ) : (
-                          <img src={activeImg} alt="" loading="lazy" />
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Section 3: Toolbar & Luxury Filter Chips */}
-            <div className="reviews-toolbar-card-luxury">
-              
-              {/* Toolbar search & sort */}
-              <div className="toolbar-search-sort-row">
-                <div className="luxury-search-input-box">
-                  <input
-                    type="text"
-                    placeholder="Search buyer reviews (e.g. glow, dry, texture)..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  {searchQuery && (
-                    <button type="button" onClick={() => setSearchQuery("")} className="clear-btn">
-                      <FiX />
+                <div style={{ flex: 1 }}>
+                  {product.stock === 0 ? (
+                    <button
+                      disabled
+                      className="add-to-cart-btn"
+                      style={{ background: "#9CA3AF", cursor: "not-allowed", height: "56px", width: "100%" }}
+                    >
+                      Out Of Stock
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleAddToCart}
+                      className="product-detail-add-btn"
+                      style={{ background: "#111112", height: "56px", borderRadius: "14px", color: "#FFFFFF", fontSize: "14px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "1px", width: "100%" }}
+                    >
+                      Add to Cart
                     </button>
                   )}
                 </div>
-
-                {/* Custom Styled Sort Dropdown (No default select controls) */}
-                <div className="luxury-custom-sort-dropdown-container">
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="luxury-sort-select-element"
-                  >
-                    <option value="newest">Newest First</option>
-                    <option value="highest">Highest Rating</option>
-                    <option value="lowest">Lowest Rating</option>
-                    <option value="helpful">Most Helpful</option>
-                    <option value="oldest">Oldest First</option>
-                  </select>
-                </div>
-
-                {/* Write review button if eligible */}
-                {eligible && (
-                  <button onClick={openWriteReviewModal} className="btn-write-review-luxury-gold">
-                    Write review
-                  </button>
-                )}
               </div>
-
-              {/* Advanced Filter Chips Rows */}
-              <div className="toolbar-filter-chips-rows font-outfit">
-                
-                {/* Standard filters */}
-                <div className="filter-chips-flex">
-                  <button 
-                    className={`filter-chip-pill ${ratingFilter === "" && mediaFilter === "" && !verifiedFilter ? "active" : ""}`}
-                    onClick={() => {
-                      setRatingFilter("");
-                      setMediaFilter("");
-                      setVerifiedFilter(false);
-                    }}
-                  >
-                    All Reviews
-                  </button>
-                  {[5, 4, 3, 2, 1].map(stars => (
-                    <button 
-                      key={stars}
-                      className={`filter-chip-pill ${ratingFilter === String(stars) ? "active" : ""}`}
-                      onClick={() => setRatingFilter(ratingFilter === String(stars) ? "" : String(stars))}
-                    >
-                      {stars}★
-                    </button>
-                  ))}
-                  <button 
-                    className={`filter-chip-pill ${verifiedFilter ? "active" : ""}`}
-                    onClick={() => setVerifiedFilter(!verifiedFilter)}
-                  >
-                    Verified Purchase
-                  </button>
-                  <button 
-                    className={`filter-chip-pill ${mediaFilter === "photos" ? "active" : ""}`}
-                    onClick={() => setMediaFilter(mediaFilter === "photos" ? "" : "photos")}
-                  >
-                    With Photos
-                  </button>
-                  <button 
-                    className={`filter-chip-pill ${mediaFilter === "videos" ? "active" : ""}`}
-                    onClick={() => setMediaFilter(mediaFilter === "videos" ? "" : "videos")}
-                  >
-                    With Videos
-                  </button>
-                </div>
-
-                {/* Skin Type filter chips */}
-                <div className="filter-chips-flex chips-row-border">
-                  <span className="row-label">Skin:</span>
-                  <button 
-                    className={`filter-chip-pill ${skinTypeFilter === "" ? "active" : ""}`}
-                    onClick={() => setSkinTypeFilter("")}
-                  >
-                    All Types
-                  </button>
-                  {["Dry", "Oily", "Sensitive", "Combination", "Normal"].map(type => (
-                    <button 
-                      key={type}
-                      className={`filter-chip-pill ${skinTypeFilter === type ? "active" : ""}`}
-                      onClick={() => setSkinTypeFilter(skinTypeFilter === type ? "" : type)}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-
-
-              </div>
-            </div>
-
-            {/* Feed Reviews Stack */}
-            {reviewsLoading && reviews.length === 0 ? (
-              /* Skeleton Loader */
-              <div className="reviews-skeleton-stack-luxury">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="review-skeleton-card-luxury">
-                    <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                      <div className="skeleton-avatar shimmer" />
-                      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
-                        <div className="skeleton-text shimmer" style={{ width: "30%" }} />
-                        <div className="skeleton-text shimmer" style={{ width: "15%" }} />
-                      </div>
-                    </div>
-                    <div className="skeleton-text shimmer" style={{ width: "60%", marginTop: "12px" }} />
-                    <div className="skeleton-text shimmer" style={{ width: "90%" }} />
-                    <div className="skeleton-text shimmer" style={{ width: "100%" }} />
-                  </div>
-                ))}
-              </div>
-            ) : reviews.length === 0 ? (
-              /* Empty State */
-              <div className="reviews-empty-state-luxury">
-                <span className="empty-state-icon">✨</span>
-                <h4>No reviews yet</h4>
-                <p>Be the first customer to share your experience with VENUS CARE.</p>
-                {eligible ? (
-                  <button onClick={openWriteReviewModal} className="btn-write-review-luxury-gold" style={{ marginTop: "12px" }}>
-                    Write the first review
-                  </button>
-                ) : (
-                  <Link to="/shop" className="btn-browse-shop-luxury-gold" style={{ marginTop: "12px", textDecoration: "none" }}>
-                    Browse Formulations
-                  </Link>
-                )}
-              </div>
-            ) : (
-              /* Feed Stack */
-              <div className="reviews-feed-stack-luxury">
-                {reviews.map((rev) => {
-                  const initialLetters = rev.customerName
-                    ? rev.customerName
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")
-                        .slice(0, 2)
-                        .toUpperCase()
-                    : "U";
-
-                  const diffTime = Math.abs(new Date() - new Date(rev.createdAt));
-                  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                  const editable = user && user._id === rev.userId && diffDays <= 30;
-
-                  const hasVotedHelpful = user && Array.isArray(rev.helpfulUsers) && rev.helpfulUsers.includes(user._id);
-                  const hasVotedUnhelpful = user && Array.isArray(rev.unhelpfulUsers) && rev.unhelpfulUsers.includes(user._id);
-
-                  const handleShareReview = (reviewId) => {
-                    const shareUrl = `${window.location.origin}/product/${id}?reviewId=${reviewId}`;
-                    navigator.clipboard.writeText(shareUrl);
-                    toast.success("Review link copied to clipboard! 🔗");
-                  };
-
-                  return (
-                    <div key={rev._id} className="review-card-item-luxury">
-                      {/* Card Header details */}
-                      <div className="review-card-header-luxury">
-                        <div className="review-user-row-luxury">
-                          <div className="review-user-avatar-luxury">{initialLetters}</div>
-                          <div className="review-user-details-luxury">
-                            <div className="user-name-badges font-outfit">
-                              <h4>{rev.isAnonymous ? "Anonymous Verified Buyer" : rev.customerName}</h4>
-                              {rev.isVerifiedPurchase && (
-                                <span className="verified-purchase-badge-green">
-                                  ✓ Verified purchase
-                                </span>
-                              )}
-                              {rev.location && (
-                                <span className="location-badge-gray">
-                                  📍 {rev.location}
-                                </span>
-                              )}
-                            </div>
-                            {rev.variant && (
-                              <div className="variant-label-text font-outfit">
-                                Variant: <strong>{rev.variant}</strong>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Stars & Date */}
-                        <div className="review-stars-date-luxury">
-                          <div className="stars-row-luxury">
-                            {[...Array(5)].map((_, idx) => (
-                              <HiStar
-                                key={idx}
-                                style={{
-                                  color: idx < rev.rating ? "#C8A165" : "#E5E7EB",
-                                }}
-                              />
-                            ))}
-                          </div>
-                          <span className="date-meta-text font-outfit">
-                            {new Date(rev.createdAt).toLocaleDateString("en-IN", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Card Content body */}
-                      <div className="review-card-body-luxury">
-                        <div className="title-row-badges">
-                          <h5>{rev.title}</h5>
-                          {rev.reported && (
-                            <span className="reported-badge-luxury">🚨 Flagged/Reported</span>
-                          )}
-                          {rev.edited && (
-                            <span className="edited-badge-luxury font-outfit">Edited</span>
-                          )}
-                          {rev.recommend !== false && (
-                            <span className="recommend-badge-luxury">✓ Recommends formulation</span>
-                          )}
-                        </div>
-
-                        <p className="detailed-feedback-text">"{rev.review}"</p>
-
-                        {/* Pros & Cons styled list */}
-                        {(rev.pros || rev.cons) && (
-                          <div className="pros-cons-grid-luxury font-outfit">
-                            {rev.pros && (
-                              <div className="pro-con-item pro">
-                                <span className="icon-badge pro">+</span>
-                                <div className="text-content">
-                                  <strong>Pros:</strong> {rev.pros}
-                                </div>
-                              </div>
-                            )}
-                            {rev.cons && (
-                              <div className="pro-con-item con">
-                                <span className="icon-badge con">-</span>
-                                <div className="text-content">
-                                  <strong>Cons:</strong> {rev.cons}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {/* Metadata tags (Skin Type / Age Group) */}
-                        {rev.skinType && (
-                          <span className="meta-tag-pill">Skin: {rev.skinType}</span>
-                        )}
-
-                        {/* Media Attached Gallery List */}
-                        {((Array.isArray(rev.images) && rev.images.length > 0) || rev.video) && (
-                          <div className="attached-media-preview-luxury-row">
-                            {Array.isArray(rev.images) && rev.images.map((img, idx) => (
-                              <div 
-                                key={idx} 
-                                className="media-thumbnail-card-luxury"
-                                onClick={() => handleOpenLightbox(rev.images, idx)}
-                              >
-                                <img src={img} alt="" loading="lazy" />
-                                <span className="zoom-overlay-icon"><FiMaximize2 /></span>
-                              </div>
-                            ))}
-                            {rev.video && (
-                              <div 
-                                className="media-thumbnail-card-luxury video-card"
-                                onClick={() => handleOpenLightbox([rev.video], 0)}
-                              >
-                                <video src={rev.video} muted playsInline style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                                <span className="play-overlay-icon"><FiPlay /></span>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Official merchant replies nested card */}
-                      {rev.merchantReply && rev.merchantReply.replyText && (
-                        <div className="merchant-reply-card-luxury">
-                          <div className="reply-header font-outfit">
-                            <strong>Official VENUS CARE Response</strong>
-                            <span className="reply-date">
-                              {new Date(rev.merchantReply.repliedAt).toLocaleDateString()}
-                            </span>
-                          </div>
-                          <p className="reply-body-text">{rev.merchantReply.replyText}</p>
-                        </div>
-                      )}
-
-                      {/* Card Footer Actions (Helpful, Report, Share, Edit/Delete) */}
-                      <div className="review-card-actions-luxury">
-                        <div className="vote-actions-flex-luxury font-outfit">
-                          <button
-                            onClick={() => handleHelpfulVote(rev._id)}
-                            disabled={hasVotedHelpful}
-                            className={`helpful-vote-btn-luxury ${hasVotedHelpful ? "voted" : ""}`}
-                            type="button"
-                          >
-                            <FiThumbsUp /> Helpful ({rev.helpfulCount || 0})
-                          </button>
-
-                          <button
-                            onClick={() => handleUnhelpfulVote(rev._id)}
-                            disabled={hasVotedUnhelpful}
-                            className={`helpful-vote-btn-luxury ${hasVotedUnhelpful ? "voted" : ""}`}
-                            type="button"
-                          >
-                            <FiThumbsDown /> Not Helpful ({rev.unhelpfulCount || 0})
-                          </button>
-                        </div>
-
-                        <div className="meta-actions-flex-luxury font-outfit">
-                          <button
-                            onClick={() => handleShareReview(rev._id)}
-                            className="share-action-btn-luxury"
-                            type="button"
-                          >
-                            Share
-                          </button>
-
-                          <button
-                            onClick={() => handleReportReview(rev._id)}
-                            disabled={rev.reported}
-                            className="report-action-btn-luxury"
-                            type="button"
-                          >
-                            {rev.reported ? "Reported" : "Report"}
-                          </button>
-
-                          {editable && (
-                            <div className="owner-edits-group font-outfit">
-                              <button onClick={() => openEditReviewModal(rev)} className="edit-link-btn" type="button">
-                                Edit
-                              </button>
-                              <span className="divider">|</span>
-                              <button onClick={() => handleDeleteReview(rev._id)} className="delete-link-btn" type="button">
-                                Delete
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Load More Pagination */}
-            {page < totalPages && (
-              <button
-                onClick={() => setPage((prev) => prev + 1)}
-                className="btn-load-more-reviews-luxury-gold"
-              >
-                Load More Reviews
-              </button>
             )}
           </div>
+
+          {/* Best Selling Combos card */}
+          {Array.isArray(product.comboProducts) && product.comboProducts.length > 0 && (
+            <div style={{ border: "1px solid #E8E0D4", borderRadius: "16px", padding: "20px", background: "#FFFFFF" }}>
+              <span style={{ fontSize: "10px", color: "#C8A96B", fontWeight: "800", letterSpacing: "1px" }}>BESTSELLING COMBO SAVINGS</span>
+              <h4 style={{ margin: "4px 0 12px 0", fontSize: "16px", fontWeight: "700" }}>Add Pair and Save More!</h4>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                {product.comboProducts.map((combo, idx) => (
+                  <div key={idx} style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                    <img src={combo.imageUrl} alt="" style={{ width: "40px", height: "40px", borderRadius: "6px", objectFit: "cover" }} />
+                    <div>
+                      <span style={{ fontSize: "12px", fontWeight: "700", display: "block" }}>{combo.name}</span>
+                      <span style={{ fontSize: "11px", color: "#5F6368" }}>₹{combo.price.toFixed(2)}</span>
+                    </div>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    product.comboProducts.forEach(combo => {
+                      dispatch(addToCart({ productId: combo._id, name: combo.name, price: combo.price, imageUrl: combo.imageUrl, stock: combo.stock, qty: 1 }));
+                    });
+                    handleAddToCart();
+                    toast.success("Combo pack added to cart! 🛍️");
+                  }}
+                  style={{ marginTop: "12px", border: "none", background: "#C8A96B", color: "#FFFFFF", padding: "12px", borderRadius: "8px", fontWeight: "700", fontSize: "12px", cursor: "pointer", width: "100%" }}
+                >
+                  ADD COMBO TO CART
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Trust Icons Section */}
+          <div 
+            className="trust-icons-container"
+            style={{ 
+              display: "grid", 
+              gridTemplateColumns: "repeat(4, 1fr)", 
+              gap: "12px", 
+              borderTop: "1px solid #E8E0D4", 
+              paddingTop: "24px", 
+              textAlign: "center" 
+            }}
+          >
+            <div className="trust-card" style={{ fontSize: "12px", color: "#111112", fontWeight: "600", padding: "10px", background: "#FAF7F2", borderRadius: "10px" }}>🪔<br /><span style={{ display: "block", marginTop: "4px", color: "#6B6B6B" }}>Imported Oils</span></div>
+            <div className="trust-card" style={{ fontSize: "12px", color: "#111112", fontWeight: "600", padding: "10px", background: "#FAF7F2", borderRadius: "10px" }}>🐰<br /><span style={{ display: "block", marginTop: "4px", color: "#6B6B6B" }}>Cruelty-Free</span></div>
+            <div className="trust-card" style={{ fontSize: "12px", color: "#111112", fontWeight: "600", padding: "10px", background: "#FAF7F2", borderRadius: "10px" }}>📜<br /><span style={{ display: "block", marginTop: "4px", color: "#6B6B6B" }}>IFRA Certified</span></div>
+            <div className="trust-card" style={{ fontSize: "12px", color: "#111112", fontWeight: "600", padding: "10px", background: "#FAF7F2", borderRadius: "10px" }}>🚚<br /><span style={{ display: "block", marginTop: "4px", color: "#6B6B6B" }}>Assured Delivery</span></div>
+          </div>
+
+          {/* Fulfillment Information Card */}
+          <div style={{ background: "#FAF7F2", border: "1px solid #E6D8C3", borderRadius: "20px", padding: "24px", marginTop: "24px" }}>
+            <h4 style={{ fontFamily: "Playfair Display, serif", fontSize: "18px", color: "#1A1A1A", marginBottom: "16px" }}>Delivery & fulfillment</h4>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px", fontSize: "13px", color: "#5F5F5F" }}>
+              <div>🚚 <strong>Estimated Delivery:</strong> {product.fulfillment?.eta || "Delivered within 2 - 4 business days."}</div>
+              <div>🔄 <strong>Return Policy:</strong> {product.fulfillment?.returnPolicy || "7-day return policy on unused premium cosmetics."}</div>
+              <div>💳 <strong>Payment Options:</strong> {product.fulfillment?.paymentInfo || "Razorpay secure pay, UPI, and major debit/credit cards."}</div>
+              <div>✨ <strong>Brand Guarantee:</strong> {product.fulfillment?.authenticity || "100% authentic formulation direct from VENUS CARE laboratory."}</div>
+            </div>
+            <div style={{ display: "flex", gap: "10px", marginTop: "20px", flexWrap: "wrap" }}>
+              <span style={{ background: "#FFFFFF", padding: "6px 12px", borderRadius: "20px", fontSize: "11px", color: "#C9A46A", fontWeight: "700", border: "1px solid #E6D8C3" }}>✓ Secure Checkout</span>
+              <span style={{ background: "#FFFFFF", padding: "6px 12px", borderRadius: "20px", fontSize: "11px", color: "#C9A46A", fontWeight: "700", border: "1px solid #E6D8C3" }}>✓ 100% Vegan</span>
+              <span style={{ background: "#FFFFFF", padding: "6px 12px", borderRadius: "20px", fontSize: "11px", color: "#C9A46A", fontWeight: "700", border: "1px solid #E6D8C3" }}>✓ Acid-Free</span>
+            </div>
+          </div>
+
+          {/* Formula Standards Section */}
+          <div style={{ border: "1px solid #E6D8C3", borderRadius: "20px", padding: "24px", background: "#FFFFFF", marginTop: "24px" }}>
+            <h4 style={{ fontFamily: "Playfair Display, serif", fontSize: "18px", color: "#1A1A1A", marginBottom: "16px" }}>Venus Purity Standards</h4>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "13.5px", color: "#5F5F5F" }}>
+              {Array.isArray(product.formulaStandards) && product.formulaStandards.length > 0 ? (
+                product.formulaStandards.map((std, idx) => (
+                  <div key={idx} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span style={{ color: "#C9A46A", fontWeight: "700" }}>⭐</span> {std}
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><span style={{ color: "#C9A46A", fontWeight: "700" }}>⭐</span> Dermatologically Tested Purity</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><span style={{ color: "#C9A46A", fontWeight: "700" }}>⭐</span> 100% Cruelty Free & Vegan-Grade</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><span style={{ color: "#C9A46A", fontWeight: "700" }}>⭐</span> Formulated without Parabens or Sulfates</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><span style={{ color: "#C9A46A", fontWeight: "700" }}>⭐</span> Hydrating active ingredients suited for sensitive skin</div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* How to Apply Section */}
+          <div style={{ marginTop: "24px", background: "#FAF7F2", borderRadius: "20px", padding: "24px", border: "1px solid #E6D8C3" }}>
+            <h4 style={{ fontFamily: "Playfair Display, serif", fontSize: "18px", color: "#1A1A1A", marginBottom: "16px" }}>How to Apply</h4>
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              {Array.isArray(product.howToApply) && product.howToApply.length > 0 ? (
+                product.howToApply.map((step, idx) => (
+                  <div key={idx} style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
+                    <span style={{ background: "#C9A46A", color: "#FFFFFF", width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "700", flexShrink: 0 }}>{idx + 1}</span>
+                    <div>
+                      <strong style={{ display: "block", fontSize: "14px", color: "#1A1A1A" }}>{step.title}</strong>
+                      <span style={{ fontSize: "12.5px", color: "#5F5F5F" }}>{step.description}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
+                    <span style={{ background: "#C9A46A", color: "#FFFFFF", width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "700", flexShrink: 0 }}>1</span>
+                    <div>
+                      <strong style={{ display: "block", fontSize: "14px", color: "#1A1A1A" }}>Dispense Application</strong>
+                      <span style={{ fontSize: "12.5px", color: "#5F5F5F" }}>Apply a clean coin-sized droplet onto your fingertips.</span>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
+                    <span style={{ background: "#C9A46A", color: "#FFFFFF", width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "700", flexShrink: 0 }}>2</span>
+                    <div>
+                      <strong style={{ display: "block", fontSize: "14px", color: "#1A1A1A" }}>Massage Skin</strong>
+                      <span style={{ fontSize: "12.5px", color: "#5F5F5F" }}>Gently massage upwards using circular patterns.</span>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
+                    <span style={{ background: "#C9A46A", color: "#FFFFFF", width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "700", flexShrink: 0 }}>3</span>
+                    <div>
+                      <strong style={{ display: "block", fontSize: "14px", color: "#1A1A1A" }}>Absorb Thoroughly</strong>
+                      <span style={{ fontSize: "12.5px", color: "#5F5F5F" }}>Allow the formula to settle and protect for 2-3 minutes.</span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
         </div>
       </div>
 
-      {/* Recently Viewed Products Section */}
+      {/* Sticky Mobile Add to Cart Bar */}
+      {product.stock > 0 && (
+        <div 
+          className="sticky-mobile-cart-bar"
+          style={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            background: "#FFFFFF",
+            borderTop: "1px solid #E6D8C3",
+            padding: "12px 16px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            zIndex: 999,
+            boxShadow: "0 -4px 15px rgba(0,0,0,0.05)"
+          }}
+        >
+          <div>
+            <span style={{ fontSize: "11px", color: "#6B6B6B", display: "block" }}>Total Price</span>
+            <strong style={{ fontSize: "20px", color: "#1A1A1A", fontFamily: "Playfair Display, serif" }}>₹{(product.price * selectedQty).toFixed(2)}</strong>
+          </div>
+          <button 
+            onClick={handleAddToCart}
+            style={{ background: "#111111", color: "#FFFFFF", padding: "12px 24px", borderRadius: "10px", fontWeight: "700", border: "none", fontSize: "13px", textTransform: "uppercase" }}
+          >
+            Add To Cart ({selectedQty})
+          </button>
+        </div>
+      )}
+
+      {/* SECTION 2 — PRODUCT HIGHLIGHTS */}
+      {Array.isArray(product.highlights) && product.highlights.length > 0 && (
+        <div style={{ marginTop: "80px", background: "#FFFFFF", borderRadius: "16px", padding: "40px", border: "1px solid #E8E0D4" }}>
+          <h3 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", color: "#111112", marginBottom: "28px", textAlign: "center" }}>Product Highlights</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "24px" }}>
+            {product.highlights.map((highlight, idx) => (
+              <div key={idx} style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                <span style={{ fontSize: "24px" }}>✨</span>
+                <span style={{ fontSize: "15px", fontWeight: "600", color: "#111112" }}>{highlight}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Ingredient Stories Section */}
+      {Array.isArray(product.ingredientStories) && product.ingredientStories.length > 0 && (
+        <div style={{ marginTop: "60px", padding: "40px 0", background: "#FAF7F2", borderRadius: "24px", border: "1px solid #E6D8C3" }}>
+          <h3 style={{ fontFamily: "Playfair Display, serif", fontSize: "28px", color: "#1A1A1A", marginBottom: "28px", textAlign: "center" }}>Notes in This Formula</h3>
+          <div style={{ display: "flex", gap: "20px", overflowX: "auto", padding: "0 24px 12px 24px", scrollSnapType: "x mandatory" }}>
+            {product.ingredientStories.map((story, idx) => (
+              <div 
+                key={idx} 
+                style={{ 
+                  background: "#FFFFFF", 
+                  border: "1px solid #E6D8C3", 
+                  borderRadius: "20px", 
+                  padding: "20px", 
+                  minWidth: "260px", 
+                  flex: "1 0 260px", 
+                  textAlign: "center",
+                  scrollSnapAlign: "start",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.02)"
+                }}
+              >
+                {story.image && (
+                  <img src={story.image} alt={story.title} style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", margin: "0 auto 12px auto", display: "block" }} />
+                )}
+                <h4 style={{ margin: "0 0 10px 0", fontSize: "16px", fontWeight: "700", fontFamily: "Playfair Display, serif", color: "#1A1A1A" }}>{story.title}</h4>
+                <div style={{ display: "flex", gap: "6px", justifyContent: "center", flexWrap: "wrap" }}>
+                  {Array.isArray(story.tags) && story.tags.map((tag, tIdx) => (
+                    <span key={tIdx} style={{ background: "#FAF7F2", border: "1px solid #E6D8C3", padding: "4px 8px", borderRadius: "10px", fontSize: "11px", color: "#C9A46A", fontWeight: "600" }}>{tag}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Notes In Set Section */}
+      {Array.isArray(product.notesInSet) && product.notesInSet.length > 0 && (
+        <div style={{ marginTop: "60px" }}>
+          <h3 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", color: "#111112", marginBottom: "28px", textAlign: "center" }}>Notes in This Set</h3>
+          <div style={{ display: "flex", gap: "20px", overflowX: "auto", paddingBottom: "12px", scrollSnapType: "x mandatory" }}>
+            {product.notesInSet.map((note, idx) => (
+              <div 
+                key={idx} 
+                style={{ 
+                  background: "#FFFFFF", 
+                  border: "1px solid #E8E0D4", 
+                  borderRadius: "16px", 
+                  padding: "24px", 
+                  minWidth: "280px", 
+                  flex: "1 0 280px", 
+                  textAlign: "center",
+                  scrollSnapAlign: "start",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.02)"
+                }}
+              >
+                {note.image && (
+                  <img src={note.image} alt="" style={{ width: "90px", height: "90px", borderRadius: "50%", objectFit: "cover", margin: "0 auto 16px auto", display: "block" }} />
+                )}
+                <h4 style={{ margin: "0 0 12px 0", fontSize: "18px", fontWeight: "700", fontFamily: "Cinzel, serif", color: "#111112" }}>{note.title}</h4>
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#5F6368" }}>
+                  {note.note1 && <span style={{ background: "#FAF7F2", padding: "6px", borderRadius: "6px" }}>{note.note1}</span>}
+                  {note.note2 && <span style={{ background: "#FAF7F2", padding: "6px", borderRadius: "6px" }}>{note.note2}</span>}
+                  {note.note3 && <span style={{ background: "#FAF7F2", padding: "6px", borderRadius: "6px" }}>{note.note3}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* SECTION 3 — ACCORDION INFORMATION BLOCKS */}
+      <div style={{ marginTop: "60px", maxWidth: "800px", margin: "60px auto 0 auto" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          
+          {/* Accordion 1: Highlights */}
+          {(product.productHighlights || (Array.isArray(product.highlights) && product.highlights.length > 0)) && (
+            <div style={{ borderBottom: "1px solid #E8E0D4" }}>
+              <button
+                type="button"
+                onClick={() => setExpandedAccordion(expandedAccordion === 1 ? null : 1)}
+                style={{ width: "100%", padding: "18px 0", display: "flex", justifyContent: "space-between", alignItems: "center", background: "none", border: "none", cursor: "pointer", outline: "none", textAlign: "left" }}
+              >
+                <span style={{ fontSize: "18px", fontWeight: "700", color: "#111112", fontFamily: "Cinzel, serif" }}>Product Highlights</span>
+                <span style={{ fontSize: "20px" }}>{expandedAccordion === 1 ? "−" : "+"}</span>
+              </button>
+              {expandedAccordion === 1 && (
+                <div style={{ padding: "0 0 18px 0", fontSize: "15px", color: "#5F6368", lineHeight: "1.6" }}>
+                  {product.productHighlights || (Array.isArray(product.highlights) && (
+                    <ul style={{ paddingLeft: "20px", margin: 0 }}>
+                      {product.highlights.map((h, i) => <li key={i}>{h}</li>)}
+                    </ul>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Accordion 2: FAQ */}
+          {Array.isArray(product.faq) && product.faq.length > 0 && (
+            <div style={{ borderBottom: "1px solid #E8E0D4" }}>
+              <button
+                type="button"
+                onClick={() => setExpandedAccordion(expandedAccordion === 2 ? null : 2)}
+                style={{ width: "100%", padding: "18px 0", display: "flex", justifyContent: "space-between", alignItems: "center", background: "none", border: "none", cursor: "pointer", outline: "none", textAlign: "left" }}
+              >
+                <span style={{ fontSize: "18px", fontWeight: "700", color: "#111112", fontFamily: "Cinzel, serif" }}>FAQ</span>
+                <span style={{ fontSize: "20px" }}>{expandedAccordion === 2 ? "−" : "+"}</span>
+              </button>
+              {expandedAccordion === 2 && (
+                <div style={{ padding: "0 0 18px 0", fontSize: "15px", color: "#5F6368", lineHeight: "1.6", display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {product.faq.map((item, idx) => (
+                    <div key={idx}>
+                      <strong style={{ display: "block", color: "#111112" }}>Q: {item.question}</strong>
+                      <span>A: {item.answer}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Accordion 3: Ingredients */}
+          {(product.ingredients) && (
+            <div style={{ borderBottom: "1px solid #E8E0D4" }}>
+              <button
+                type="button"
+                onClick={() => setExpandedAccordion(expandedAccordion === 3 ? null : 3)}
+                style={{ width: "100%", padding: "18px 0", display: "flex", justifyContent: "space-between", alignItems: "center", background: "none", border: "none", cursor: "pointer", outline: "none", textAlign: "left" }}
+              >
+                <span style={{ fontSize: "18px", fontWeight: "700", color: "#111112", fontFamily: "Cinzel, serif" }}>All Ingredients</span>
+                <span style={{ fontSize: "20px" }}>{expandedAccordion === 3 ? "−" : "+"}</span>
+              </button>
+              {expandedAccordion === 3 && (
+                <div style={{ padding: "0 0 18px 0", fontSize: "15px", color: "#5F6368", lineHeight: "1.6" }}>
+                  {product.ingredients}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Accordion 4: Other Information */}
+          {(product.otherInformation || product.otherInfo) && (
+            <div style={{ borderBottom: "1px solid #E8E0D4" }}>
+              <button
+                type="button"
+                onClick={() => setExpandedAccordion(expandedAccordion === 4 ? null : 4)}
+                style={{ width: "100%", padding: "18px 0", display: "flex", justifyContent: "space-between", alignItems: "center", background: "none", border: "none", cursor: "pointer", outline: "none", textAlign: "left" }}
+              >
+                <span style={{ fontSize: "18px", fontWeight: "700", color: "#111112", fontFamily: "Cinzel, serif" }}>Other Information</span>
+                <span style={{ fontSize: "20px" }}>{expandedAccordion === 4 ? "−" : "+"}</span>
+              </button>
+              {expandedAccordion === 4 && (
+                <div style={{ padding: "0 0 18px 0", fontSize: "15px", color: "#5F6368", lineHeight: "1.6" }}>
+                  {product.otherInformation || product.otherInfo}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Accordion 5: How to Use */}
+          {product.howToUse && (
+            <div style={{ borderBottom: "1px solid #E8E0D4" }}>
+              <button
+                type="button"
+                onClick={() => setExpandedAccordion(expandedAccordion === 5 ? null : 5)}
+                style={{ width: "100%", padding: "18px 0", display: "flex", justifyContent: "space-between", alignItems: "center", background: "none", border: "none", cursor: "pointer", outline: "none", textAlign: "left" }}
+              >
+                <span style={{ fontSize: "18px", fontWeight: "700", color: "#111112", fontFamily: "Cinzel, serif" }}>How To Use</span>
+                <span style={{ fontSize: "20px" }}>{expandedAccordion === 5 ? "−" : "+"}</span>
+              </button>
+              {expandedAccordion === 5 && (
+                <div style={{ padding: "0 0 18px 0", fontSize: "15px", color: "#5F6368", lineHeight: "1.6" }}>
+                  {product.howToUse}
+                </div>
+              )}
+            </div>
+          )}
+
+        </div>
+      </div>
+
+      {/* SECTION 6 — PREMIUM REVIEW SYSTEM */}
+      <div className="reviews-section-redesigned" id="reviews" style={{ marginTop: "80px", borderTop: "1px solid #E8E0D4", paddingTop: "60px" }}>
+        
+        {/* Top Summary Row */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "40px", marginBottom: "48px", background: "#FFFFFF", padding: "32px", borderRadius: "16px", border: "1px solid #E8E0D4" }}>
+          
+          {/* Left Column Summary */}
+          <div style={{ textAlign: "center", borderRight: "1px solid #E8E0D4", paddingRight: "40px" }}>
+            <h2 style={{ fontSize: "64px", fontWeight: "800", color: "#111112", margin: 0 }}>
+              {stats && stats.totalReviews > 0 ? parseFloat(stats.averageRating).toFixed(1) : "0.0"}
+            </h2>
+            <div style={{ display: "flex", justifyContent: "center", gap: "4px", margin: "12px 0", color: "#C8A96B", fontSize: "20px" }}>
+              {[...Array(5)].map((_, i) => (
+                <HiStar
+                  key={i}
+                  style={{
+                    color: stats && stats.totalReviews > 0 && i < Math.round(stats.averageRating) ? "#C8A96B" : "#E5E7EB",
+                  }}
+                />
+              ))}
+            </div>
+            <span style={{ fontSize: "14px", color: "#5F6368" }}>
+              Based on {stats ? stats.totalReviews : 0} reviews
+            </span>
+          </div>
+
+          {/* Center Column Bars */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", justifyCenter: "center" }}>
+            {[5, 4, 3, 2, 1].map((stars) => {
+              const count = stats?.breakdown?.[stars] || 0;
+              const total = stats?.totalReviews || 1;
+              const pct = stats?.totalReviews > 0 ? Math.round((count / total) * 100) : 0;
+              return (
+                <div key={stars} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#111112" }}>
+                  <span style={{ width: "24px" }}>{stars}★</span>
+                  <div style={{ flex: 1, height: "6px", background: "#FAF7F2", borderRadius: "3px", overflow: "hidden" }}>
+                    <div style={{ width: `${pct}%`, height: "100%", background: "#C8A96B" }}></div>
+                  </div>
+                  <span style={{ width: "32px", textAlign: "right" }}>{pct}%</span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Right Column Action */}
+            {eligible ? (
+              <button 
+                onClick={openWriteReviewModal} 
+                style={{ background: "#111112", color: "#FFFFFF", padding: "16px 28px", border: "none", borderRadius: "12px", fontSize: "14px", fontWeight: "700", cursor: "pointer", textTransform: "uppercase", letterSpacing: "1px" }}
+              >
+                Write A Review
+              </button>
+            ) : (
+              <div style={{ textAlign: "center", fontSize: "13px", color: "#5F6368" }}>
+                🔒 Only customers who purchased this product can write a review.
+              </div>
+            )}
+          </div>
+        </div>
       {(() => {
         try {
           const viewed = JSON.parse(localStorage.getItem("venus_recently_viewed") || "[]");

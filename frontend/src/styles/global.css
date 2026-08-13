@@ -51,8 +51,9 @@ body{
   background:#FFFFFF; /* Clean editorial layout */
 }
 /* ================= MAIN CONTENT ================= */
- .main-content {
+.main-content {
   min-height: 85vh;
+  overflow: visible;
   animation: fadeInPage 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 

@@ -66,7 +66,7 @@ const ProductCard = ({ product }) => {
       {/* 1. Image and Badge container */}
       <div className="product-image-container-luxury">
         
-        {/* Discount Badge (Shown once here) */}
+        {/* Discount Badge */}
         {discount > 0 && (
           <span className="luxury-discount-pill">
             -{discount}%

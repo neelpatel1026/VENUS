@@ -31,7 +31,7 @@ const getProducts = async (req, res) => {
     sortOption[sortBy] = sortOrder;
 
     const products = await Product.find({})
-      .select("name description category price originalPrice stock imageUrl rating reviewCount availableAsGift giftWrapAvailable luxuryGiftBoxAvailable giftMessageAllowed giftBadgeText estimatedPackingTime giftPrice createdAt")
+      .select("name description category price originalPrice stock imageUrl images subtitle tagline highlights howToUse ingredients benefits faq otherInfo comboProducts notes usageTags isBestSeller discountPercentage rating reviewCount availableAsGift giftWrapAvailable luxuryGiftBoxAvailable giftMessageAllowed giftBadgeText estimatedPackingTime giftPrice createdAt")
       .sort(sortOption)
       .skip(skip)
       .limit(limit)
@@ -55,6 +55,24 @@ const getProducts = async (req, res) => {
   }
 };
 
+const getFeaturedProducts = async (req, res) => {
+  const startTime = Date.now();
+  try {
+    const products = await Product.find({ isBestSeller: true })
+      .select("_id name slug price originalPrice rating imageUrl stock category subtitle")
+      .limit(8)
+      .maxTimeMS(3000)
+      .lean();
+
+    const duration = Date.now() - startTime;
+    console.log(`[PERFORMANCE] GET /api/products/featured | Duration: ${duration}ms | Payload size: ~${JSON.stringify(products).length} bytes`);
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("🔴 Error fetching featured products:", error);
+    res.status(500).json({ message: "Unable to load featured collection." });
+  }
+};
+
 const invalidateProductCache = () => {
   productCache = null;
   cacheTimestamp = 0;
@@ -66,7 +84,7 @@ const getProductById = async (req, res) => {
 
     const product = await Product.findById(
       req.params.id
-    );
+    ).populate('comboProducts');
 
     if (!product) {
       return res.status(404).json({
@@ -171,6 +189,31 @@ if (Number(stock) < 0) {
       giftBadgeText: req.body.giftBadgeText || "",
       estimatedPackingTime: req.body.estimatedPackingTime || "1-2 days",
       giftPrice: req.body.giftPrice || 0,
+      
+      // Extended Premium fields
+      images: req.body.images ? (typeof req.body.images === 'string' ? JSON.parse(req.body.images) : req.body.images) : [],
+      subtitle: req.body.subtitle || "",
+      tagline: req.body.tagline || "",
+      highlights: req.body.highlights ? (typeof req.body.highlights === 'string' ? JSON.parse(req.body.highlights) : req.body.highlights) : [],
+      howToUse: req.body.howToUse || "",
+      ingredients: req.body.ingredients || "",
+      benefits: req.body.benefits ? (typeof req.body.benefits === 'string' ? JSON.parse(req.body.benefits) : req.body.benefits) : [],
+      faq: req.body.faq ? (typeof req.body.faq === 'string' ? JSON.parse(req.body.faq) : req.body.faq) : [],
+      otherInfo: req.body.otherInfo || "",
+      comboProducts: req.body.comboProducts ? (typeof req.body.comboProducts === 'string' ? JSON.parse(req.body.comboProducts) : req.body.comboProducts) : [],
+      notes: req.body.notes ? (typeof req.body.notes === 'string' ? JSON.parse(req.body.notes) : req.body.notes) : [],
+      usageTags: req.body.usageTags ? (typeof req.body.usageTags === 'string' ? JSON.parse(req.body.usageTags) : req.body.usageTags) : [],
+      isBestSeller: req.body.isBestSeller === 'true' || req.body.isBestSeller === true,
+      discountPercentage: req.body.discountPercentage ? Number(req.body.discountPercentage) : 0,
+
+      // Redesign additions
+      gallery: req.body.gallery ? (typeof req.body.gallery === 'string' ? JSON.parse(req.body.gallery) : req.body.gallery) : [],
+      trustBadges: req.body.trustBadges ? (typeof req.body.trustBadges === 'string' ? JSON.parse(req.body.trustBadges) : req.body.trustBadges) : [],
+      notesInSet: req.body.notesInSet ? (typeof req.body.notesInSet === 'string' ? JSON.parse(req.body.notesInSet) : req.body.notesInSet) : [],
+      wearTags: req.body.wearTags ? (typeof req.body.wearTags === 'string' ? JSON.parse(req.body.wearTags) : req.body.wearTags) : [],
+      productHighlights: req.body.productHighlights || "",
+      otherInformation: req.body.otherInformation || "",
+      seo: req.body.seo ? (typeof req.body.seo === 'string' ? JSON.parse(req.body.seo) : req.body.seo) : { metaTitle: "", metaDescription: "", metaKeywords: "" }
     });
 
     invalidateProductCache();
@@ -257,6 +300,59 @@ const updateProduct = async (req, res) => {
     if (req.body.giftPrice !== undefined)
       product.giftPrice = req.body.giftPrice;
 
+    // Extended Premium fields
+    if (req.body.images !== undefined) {
+      product.images = typeof req.body.images === 'string' ? JSON.parse(req.body.images) : req.body.images;
+    }
+    if (req.body.subtitle !== undefined) product.subtitle = req.body.subtitle;
+    if (req.body.tagline !== undefined) product.tagline = req.body.tagline;
+    if (req.body.highlights !== undefined) {
+      product.highlights = typeof req.body.highlights === 'string' ? JSON.parse(req.body.highlights) : req.body.highlights;
+    }
+    if (req.body.howToUse !== undefined) product.howToUse = req.body.howToUse;
+    if (req.body.ingredients !== undefined) product.ingredients = req.body.ingredients;
+    if (req.body.benefits !== undefined) {
+      product.benefits = typeof req.body.benefits === 'string' ? JSON.parse(req.body.benefits) : req.body.benefits;
+    }
+    if (req.body.faq !== undefined) {
+      product.faq = typeof req.body.faq === 'string' ? JSON.parse(req.body.faq) : req.body.faq;
+    }
+    if (req.body.otherInfo !== undefined) product.otherInfo = req.body.otherInfo;
+    if (req.body.comboProducts !== undefined) {
+      product.comboProducts = typeof req.body.comboProducts === 'string' ? JSON.parse(req.body.comboProducts) : req.body.comboProducts;
+    }
+    if (req.body.notes !== undefined) {
+      product.notes = typeof req.body.notes === 'string' ? JSON.parse(req.body.notes) : req.body.notes;
+    }
+    if (req.body.usageTags !== undefined) {
+      product.usageTags = typeof req.body.usageTags === 'string' ? JSON.parse(req.body.usageTags) : req.body.usageTags;
+    }
+    if (req.body.isBestSeller !== undefined) {
+      product.isBestSeller = req.body.isBestSeller === 'true' || req.body.isBestSeller === true;
+    }
+    if (req.body.discountPercentage !== undefined) {
+      product.discountPercentage = Number(req.body.discountPercentage);
+    }
+
+    // Redesign additions
+    if (req.body.gallery !== undefined) {
+      product.gallery = typeof req.body.gallery === 'string' ? JSON.parse(req.body.gallery) : req.body.gallery;
+    }
+    if (req.body.trustBadges !== undefined) {
+      product.trustBadges = typeof req.body.trustBadges === 'string' ? JSON.parse(req.body.trustBadges) : req.body.trustBadges;
+    }
+    if (req.body.notesInSet !== undefined) {
+      product.notesInSet = typeof req.body.notesInSet === 'string' ? JSON.parse(req.body.notesInSet) : req.body.notesInSet;
+    }
+    if (req.body.wearTags !== undefined) {
+      product.wearTags = typeof req.body.wearTags === 'string' ? JSON.parse(req.body.wearTags) : req.body.wearTags;
+    }
+    if (req.body.productHighlights !== undefined) product.productHighlights = req.body.productHighlights;
+    if (req.body.otherInformation !== undefined) product.otherInformation = req.body.otherInformation;
+    if (req.body.seo !== undefined) {
+      product.seo = typeof req.body.seo === 'string' ? JSON.parse(req.body.seo) : req.body.seo;
+    }
+
     if (req.file) {
 
       const result =
@@ -320,6 +416,7 @@ const deleteProduct = async (req, res) => {
 
 module.exports = {
   getProducts,
+  getFeaturedProducts,
   getProductById,
   createProduct,
   updateProduct,

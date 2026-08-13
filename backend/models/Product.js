@@ -43,6 +43,83 @@ const productSchema = new mongoose.Schema(
     required: true
   },
 
+  images: {
+    type: [String],
+    default: []
+  },
+
+  subtitle: {
+    type: String,
+    default: ""
+  },
+
+  tagline: {
+    type: String,
+    default: ""
+  },
+
+  highlights: {
+    type: [String],
+    default: []
+  },
+
+  howToUse: {
+    type: String,
+    default: ""
+  },
+
+  ingredients: {
+    type: String,
+    default: ""
+  },
+
+  benefits: {
+    type: [String],
+    default: []
+  },
+
+  faq: [
+    {
+      question: { type: String, default: "" },
+      answer: { type: String, default: "" }
+    }
+  ],
+
+  otherInfo: {
+    type: String,
+    default: ""
+  },
+
+  comboProducts: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product"
+    }
+  ],
+
+  notes: [
+    {
+      title: { type: String, default: "" },
+      image: { type: String, default: "" },
+      description: { type: String, default: "" }
+    }
+  ],
+
+  usageTags: {
+    type: [String],
+    default: []
+  },
+
+  isBestSeller: {
+    type: Boolean,
+    default: false
+  },
+
+  discountPercentage: {
+    type: Number,
+    default: 0
+  },
+
   rating: {
     type: Number,
     default: 4.8,
@@ -88,6 +165,46 @@ const productSchema = new mongoose.Schema(
   giftPrice: {
     type: Number,
     default: 0
+  },
+
+  // Redesign Fields
+  gallery: {
+    type: [String],
+    default: []
+  },
+  trustBadges: {
+    type: [String],
+    default: []
+  },
+  notesInSet: [
+    {
+      image: { type: String, default: "" },
+      title: { type: String, default: "" },
+      note1: { type: String, default: "" },
+      note2: { type: String, default: "" },
+      note3: { type: String, default: "" }
+    }
+  ],
+  wearTags: {
+    type: [String],
+    default: []
+  },
+  productHighlights: {
+    type: String,
+    default: ""
+  },
+  otherInformation: {
+    type: String,
+    default: ""
+  },
+  seo: {
+    metaTitle: { type: String, default: "" },
+    metaDescription: { type: String, default: "" },
+    metaKeywords: { type: String, default: "" }
+  },
+  averageRating: {
+    type: Number,
+    default: 4.8
   }
 },
 {

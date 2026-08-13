@@ -1,7 +1,7 @@
 const { optimizeDiskImage, optimizeBufferImage } = require("../utils/sharpHelper");
 
 const allowedMimeTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
-const maxFileSizeBytes = 10 * 1024 * 1024; // 10MB limit
+const maxFileSizeBytes = 5 * 1024 * 1024; // 5MB limit
 
 const imageOptimization = async (req, res, next) => {
   try {
@@ -15,7 +15,7 @@ const imageOptimization = async (req, res, next) => {
 
       if (req.file.size > maxFileSizeBytes) {
         return res.status(400).json({
-          message: "File size exceeds 10MB limit. Please upload a smaller image.",
+          message: "File size exceeds 5MB limit. Please upload a smaller image.",
         });
       }
 
