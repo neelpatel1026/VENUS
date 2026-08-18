@@ -533,23 +533,6 @@ const Checkout = () => {
     }
   };
 
-  const saveOrderToLocalStorage = (paymentMethod, paymentStatus, paymentId) => {
-    const orderData = {
-      orderId: "ORD" + Date.now(),
-      items: cartItems,
-      address,
-      totalAmount: totalPrice,
-      paymentMethod,
-      paymentStatus,
-      paymentId,
-      status: "Processing",
-      orderDate: new Date().toISOString(),
-    };
-    const existingOrders = JSON.parse(localStorage.getItem("orders")) || [];
-    existingOrders.push(orderData);
-    localStorage.setItem("orders", JSON.stringify(existingOrders));
-  };
-
   const totalPrice = cartItems.reduce(
     (acc, item) => acc + item.price * item.qty,
     0
@@ -627,7 +610,7 @@ const Checkout = () => {
   // Razorpay Payment Gateway integration
   const handlePayment = async () => {
     try {
-      const orderRes = await fetch("/api/payment/create-order", {
+      const orderRes = await fetch("/api/payment/order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -638,7 +621,7 @@ const Checkout = () => {
       });
 
       if (!orderRes.ok) {
-        const errData = await orderRes.json();
+        const errData = await orderRes.json().catch(() => ({}));
         toast.error(errData.message || "Razorpay order creation failed");
         setIsPlacingOrder(false);
         return;
@@ -647,7 +630,7 @@ const Checkout = () => {
       const orderData = await orderRes.json();
 
       const options = {
-        key: "rzp_test_dummykey123",
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_dummykey123",
         amount: orderData.amount,
         currency: orderData.currency,
         name: "VENUS CARE",

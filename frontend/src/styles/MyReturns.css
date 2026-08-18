@@ -1,102 +1,197 @@
-.myreturns-page{
-max-width:1200px;
-margin:auto;
-padding:30px;
+/* ==========================================================================
+   LUXURY CUSTOMER RETURN & REVERSE LOGISTICS TRACKER - VENUS CARE
+   ========================================================================== */
+
+.myreturns-page {
+  max-width: 1200px;
+  margin: auto;
+  padding: 30px 20px 80px 20px;
+  font-family: 'Inter', -apple-system, sans-serif;
+  box-sizing: border-box;
 }
 
-.myreturns-page h1{
-margin-bottom:30px;
-color:#1F2937;
+@media (max-width: 768px) {
+  .myreturns-page {
+    padding: 16px 12px 60px 12px;
+  }
 }
 
-.returns-grid{
-display:grid;
-grid-template-columns:
-repeat(auto-fit,minmax(350px,1fr));
-gap:25px;
+.returns-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
 }
 
-.return-card{
-background:white;
-border-radius:20px;
-padding:25px;
-border:1px solid #E8DFD2;
-box-shadow:
-0 8px 25px rgba(0,0,0,.06);
+.return-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid #ECE7DF;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.return-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:15px;
+.return-card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
 }
 
-.images{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-margin-top:15px;
+@media (max-width: 600px) {
+  .return-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
 }
 
-.images img{
-width:90px;
-height:90px;
-object-fit:cover;
-border-radius:12px;
+/* Status Badges */
+.status {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.status{
-padding:8px 14px;
-border-radius:20px;
-font-size:13px;
-font-weight:600;
+.status.return-requested,
+.status.pending,
+.status.under-review {
+  background: #FEF3C7;
+  color: #92400E;
 }
 
-.status.pending{
-background:#FEF3C7;
-color:#92400E;
+.status.return-approved,
+.status.approved {
+  background: #DCFCE7;
+  color: #166534;
 }
 
-.status.approved{
-background:#DCFCE7;
-color:#166534;
+.status.pickup-scheduled,
+.status.pickup-created {
+  background: #DBEAFE;
+  color: #1E40AF;
 }
 
-.status.pickup-scheduled{
-background:#DBEAFE;
-color:#2563EB;
+.status.picked-up,
+.status.in-transit {
+  background: #E0E7FF;
+  color: #3730A3;
 }
 
-.status.picked-up{
-background:#E0E7FF;
-color:#4338CA;
+.status.product-received,
+.status.quality-check {
+  background: #FEF08A;
+  color: #854D0E;
 }
 
-.status.refund-initiated{
-background:#FCE7F3;
-color:#BE185D;
+.status.quality-check-passed,
+.status.refund-pending,
+.status.refund-initiated {
+  background: #FCE7F3;
+  color: #9D174D;
 }
 
-.status.refunded{
-background:#F3E8FF;
-color:#7E22CE;
+.status.refund-completed,
+.status.refunded {
+  background: #DCFCE7;
+  color: #15803D;
 }
 
-.status.rejected{
-background:#FEE2E2;
-color:#991B1B;
+.status.return-rejected,
+.status.quality-check-failed,
+.status.pickup-failed,
+.status.refund-failed,
+.status.rejected {
+  background: #FEE2E2;
+  color: #991B1B;
 }
 
-.empty-card{
-background:white;
-padding:40px;
-border-radius:20px;
-text-align:center;
+/* PROGRESS STEPPER (DESKTOP & MOBILE) */
+.return-progress-stepper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  gap: 8px;
 }
 
-.dates{
-margin-top:15px;
-color:#6B7280;
-font-size:14px;
+@media (max-width: 640px) {
+  .return-progress-stepper {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+.step-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 640px) {
+  .step-node {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+    gap: 12px;
+  }
+}
+
+.node-icon-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #E5E7EB;
+  color: #9CA3AF;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.step-node.completed .node-icon-circle {
+  background: #16A34A;
+  color: #FFFFFF;
+}
+
+.step-node.active .node-icon-circle {
+  background: #C8A165;
+  color: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(200, 161, 101, 0.2);
+}
+
+.node-text-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.node-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #9CA3AF;
+}
+
+.step-node.completed .node-label,
+.step-node.active .node-label {
+  color: #111112;
+}
+
+.node-desc {
+  font-size: 10px;
+  color: #9CA3AF;
+}
+
+.step-node.active .node-desc {
+  color: #C8A165;
+  font-weight: 600;
 }

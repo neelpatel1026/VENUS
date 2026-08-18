@@ -20,11 +20,12 @@ const {
 } = require('../controllers/authController.js');
 
 const { protect } = require('../middleware/authMiddleware.js');
+const { admin } = require('../middleware/adminMiddleware.js');
 const User = require('../models/User.js');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 
-router.get("/users", getUsers);
+router.get("/users", protect, admin, getUsers);
 router.post('/register', registerLimiter, registerUser);
 router.post('/login', loginLimiter, loginUser);
 router.post('/google-login', loginLimiter, googleLogin);

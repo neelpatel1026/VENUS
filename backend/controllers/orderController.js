@@ -21,7 +21,7 @@ const addOrderItems = async (req, res) => {
       });
     }
 
-    // Atomic stock check and deduction loop
+    // Atomic stock check and deduction loop with server-authoritative pricing
     for (const item of items) {
       const product = await Product.findOneAndUpdate(
         { _id: item.productId, stock: { $gte: item.qty } },
@@ -42,6 +42,12 @@ const addOrderItems = async (req, res) => {
           message: `${prod ? prod.name : "Product"} has insufficient stock or does not exist`,
         });
       }
+
+      // Enforce authoritative database pricing to prevent client price tampering
+      item.price = product.price;
+      item.productName = product.name;
+      item.productImage = product.imageUrl;
+
       deductedItems.push({ productId: item.productId, qty: item.qty });
     }
 

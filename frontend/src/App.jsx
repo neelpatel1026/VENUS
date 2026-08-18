@@ -343,7 +343,14 @@ function App() {
               <Route path="/disclaimer" element={<Disclaimer />} />
               <Route path="/return" element={<ReturnPolicy />} />
               <Route path="/return-policy" element={<ReturnPolicy />} />
-              <Route path="/return/:id" element={<ReturnRequest />} />
+              <Route
+                path="/return/:id"
+                element={
+                  <ProtectedRoute>
+                    <ReturnRequest />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/MyOrders"
                 element={
@@ -370,14 +377,14 @@ function App() {
               />
 
               {/* ADMIN ROUTES */}
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/add-product" element={<AddProduct />} />
-              <Route path="/admin/products" element={<AdminProducts />} />
-              <Route path="/admin/edit-product/:id" element={<EditProduct />} />
-              <Route path="/admin/orders" element={<AdminOrders />} />
-              <Route path="/admin/users" element={<AdminUsers />} />
-              <Route path="/admin/users/:id" element={<AdminUserDetails />} />
-              <Route path="/admin/orders/:id" element={<AdminOrderDetails />} />
+              <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/admin/add-product" element={<ProtectedRoute adminOnly><AddProduct /></ProtectedRoute>} />
+              <Route path="/admin/products" element={<ProtectedRoute adminOnly><AdminProducts /></ProtectedRoute>} />
+              <Route path="/admin/edit-product/:id" element={<ProtectedRoute adminOnly><EditProduct /></ProtectedRoute>} />
+              <Route path="/admin/orders" element={<ProtectedRoute adminOnly><AdminOrders /></ProtectedRoute>} />
+              <Route path="/admin/users" element={<ProtectedRoute adminOnly><AdminUsers /></ProtectedRoute>} />
+              <Route path="/admin/users/:id" element={<ProtectedRoute adminOnly><AdminUserDetails /></ProtectedRoute>} />
+              <Route path="/admin/orders/:id" element={<ProtectedRoute adminOnly><AdminOrderDetails /></ProtectedRoute>} />
               <Route
                 path="/order/:id"
                 element={
@@ -386,12 +393,19 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/admin/returns" element={<AdminReturns />} />
-              <Route path="/admin/complaints" element={<AdminComplaints />} />
-              <Route path="/admin/complaints/:id" element={<AdminComplaintDetails />} />
-              <Route path="/admin/reviews" element={<AdminReviews />} />
-              <Route path="/admin/coupons" element={<AdminCoupons />} />
-              <Route path="/return-success" element={<ReturnSuccess />} />
+              <Route path="/admin/returns" element={<ProtectedRoute adminOnly><AdminReturns /></ProtectedRoute>} />
+              <Route path="/admin/complaints" element={<ProtectedRoute adminOnly><AdminComplaints /></ProtectedRoute>} />
+              <Route path="/admin/complaints/:id" element={<ProtectedRoute adminOnly><AdminComplaintDetails /></ProtectedRoute>} />
+              <Route path="/admin/reviews" element={<ProtectedRoute adminOnly><AdminReviews /></ProtectedRoute>} />
+              <Route path="/admin/coupons" element={<ProtectedRoute adminOnly><AdminCoupons /></ProtectedRoute>} />
+              <Route
+                path="/return-success"
+                element={
+                  <ProtectedRoute>
+                    <ReturnSuccess />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* 404 PAGE */}
               <Route path="*" element={<NotFound />} />
