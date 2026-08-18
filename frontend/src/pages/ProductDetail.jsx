@@ -780,14 +780,14 @@ const ProductDetail = () => {
   return (
     <div className="product-detail-wrapper route-fade-in">
       {/* Breadcrumb */}
-      <div className="product-detail-breadcrumb" style={{ color: "#666666", fontSize: "14px", marginBottom: "24px" }}>
-        <Link to="/" style={{ color: "#B8945A", textDecoration: "none" }}>Home</Link>
+      <div className="product-detail-breadcrumb">
+        <Link to="/">Home</Link>
         {" / "}
-        <Link to="/shop" style={{ color: "#B8945A", textDecoration: "none" }}>Shop</Link>
+        <Link to="/shop">Shop</Link>
         {" / "}
-        {product.category}
+        <span className="breadcrumb-category">{product.category}</span>
         {" / "}
-        <span style={{ color: "#111111", fontWeight: "600" }}>{product.name}</span>
+        <span className="breadcrumb-product-name">{product.name}</span>
       </div>
 
       {/* Main product detail */}
@@ -797,7 +797,7 @@ const ProductDetail = () => {
         <div className="product-gallery-column">
           <div className="product-gallery-card">
             {discount > 0 && (
-              <span className="discount-badge" style={{ top: "24px", left: "24px", background: "#B8945A", color: "#FFFFFF", padding: "6px 12px", fontSize: "11px", fontWeight: "700" }}>
+              <span className="discount-badge">
                 {discount}% OFF
               </span>
             )}
@@ -806,7 +806,6 @@ const ProductDetail = () => {
               alt={product.name}
               className="detail-image"
               loading="lazy"
-              style={{ width: "90%", height: "90%", objectFit: "contain", transition: "transform 0.3s ease" }}
               onError={(e) => {
                 e.target.src = "/cosmetic_1.avif";
               }}
@@ -814,40 +813,34 @@ const ProductDetail = () => {
           </div>
 
           {/* Thumbnail row */}
-          <div style={{ display: "flex", gap: "12px", overflowX: "auto", paddingBottom: "8px" }}>
+          <div className="product-thumbnails-row">
             {productImages.map((img, idx) => (
               <button
                 key={idx}
+                type="button"
                 onClick={() => setActiveImageIndex(idx)}
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  border: activeImageIndex === idx ? "2px solid #C8A96B" : "1px solid #E8E0D4",
-                  borderRadius: "8px",
-                  overflow: "hidden",
-                  background: "#FFFFFF",
-                  cursor: "pointer",
-                  padding: 0
-                }}
+                className={`product-thumb-btn ${activeImageIndex === idx ? "active" : ""}`}
+                aria-label={`Product thumbnail ${idx + 1}`}
               >
-                <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src={img} alt="" />
               </button>
             ))}
           </div>
         </div>
 
         {/* Right Column: Info and Purchase panel */}
-        <div className="product-info-column" style={{ display: "flex", flexDirection: "column", gap: "28px", minWidth: 0 }}>
-          <div>
-            <span style={{ color: "#C9A063", fontSize: "11px", letterSpacing: "2px", textTransform: "uppercase", fontWeight: "700" }}>
+        <div className="product-info-column">
+          <div className="product-header-info">
+            <span className="product-category-tag">
               {product.category}
             </span>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px" }}>
+            <div className="product-title-row">
               <h1 className="product-detail-title">
                 {product.name}
               </h1>
               <button
                 type="button"
+                className="product-share-btn"
                 onClick={async () => {
                   const shareData = {
                     title: product.name,
@@ -860,73 +853,59 @@ const ProductDetail = () => {
                     } catch (err) {
                       console.log(err);
                     }
-                    navigator.clipboard.writeText(window.location.href);
-                    toast.success("Product link copied to clipboard! 📋");
                   }
-                }}
-                style={{
-                  background: "none",
-                  border: "1px solid #E8E0D4",
-                  borderRadius: "50%",
-                  width: "44px",
-                  height: "44px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
-                  color: "#111112",
-                  marginTop: "8px",
-                  transition: "all 0.3s ease"
+                  navigator.clipboard.writeText(window.location.href);
+                  toast.success("Product link copied to clipboard! 📋");
                 }}
                 title="Share Product"
               >
-                <FiShare2 style={{ width: "20px", height: "20px" }} />
+                <FiShare2 />
               </button>
             </div>
             {product.subtitle && (
-              <p style={{ margin: "0 0 12px 0", fontSize: "14px", fontStyle: "italic", color: "#5F6368" }}>{product.subtitle}</p>
+              <p className="product-subtitle">{product.subtitle}</p>
             )}
             
             {/* Stars & Reviews */}
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "14px", color: "#C8A96B" }}>
-              <HiStar style={{ width: "18px", height: "18px", color: "#C8A96B" }} />
-              <strong style={{ color: "#111112", fontWeight: "700" }}>
+            <div className="product-rating-row">
+              <HiStar className="rating-star-icon" />
+              <strong className="rating-score">
                 {stats && stats.totalReviews > 0 ? parseFloat(stats.averageRating).toFixed(1) : "0.0"}
               </strong>
-              <a href="#reviews" style={{ color: "#5F6368", textDecoration: "underline" }}>
+              <a href="#reviews" className="rating-count-link">
                 ({stats ? stats.totalReviews : 0} reviews)
               </a>
             </div>
           </div>
 
           {/* Pricing Details */}
-          <div style={{ padding: "0 0 16px 0", borderBottom: "1px solid #E8E0D4" }}>
-            <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
-              <span style={{ color: "#111112", fontSize: "36px", fontWeight: "800", fontFamily: "Cinzel, serif" }}>₹{product.price.toFixed(2)}</span>
+          <div className="product-pricing-card">
+            <div className="product-price-row">
+              <span className="product-current-price">₹{product.price.toFixed(2)}</span>
               {discount > 0 && (
                 <>
-                  <span style={{ textDecoration: "line-through", color: "#6B6B6B", fontSize: "20px" }}>
+                  <span className="product-original-price">
                     ₹{product.originalPrice.toFixed(2)}
                   </span>
-                  <span style={{ color: "#C9A063", fontSize: "16px", fontWeight: "700" }}>
+                  <span className="product-discount-pill">
                     ({discount}% OFF)
                   </span>
                 </>
               )}
             </div>
-            <p style={{ margin: "4px 0 0 0", fontSize: "12px", color: "#6B6B6B" }}>Inclusive of all taxes</p>
+            <p className="product-tax-note">Inclusive of all taxes</p>
 
             {/* Prepaid discount bar */}
-            <div style={{ marginTop: "16px", padding: "12px 16px", background: "#F7F2E8", border: "1px solid #E7D8BF", borderRadius: "8px", display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#1B1B1B", fontWeight: "600" }}>
-              <span>🪙</span> Pay only <strong style={{ color: "#C9A063" }}>₹{(product.price * 0.95).toFixed(2)}</strong> with Prepaid Discounts
+            <div className="product-prepaid-discount-banner">
+              <span>🪙</span> Pay only <strong className="prepaid-amount">₹{(product.price * 0.95).toFixed(2)}</strong> with Prepaid Discounts
             </div>
           </div>
 
           {/* Where to use tags */}
           {Array.isArray(product.wearTags) && product.wearTags.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", margin: "4px 0" }}>
+            <div className="product-wear-tags-row">
               {product.wearTags.map((tag, i) => (
-                <span key={i} style={{ background: "#FFFDF9", border: "1px solid #E7D8BF", padding: "6px 14px", borderRadius: "20px", fontSize: "12px", color: "#1B1B1B", fontWeight: "600" }}>
+                <span key={i} className="product-wear-tag">
                   📍 {tag}
                 </span>
               ))}
@@ -934,22 +913,9 @@ const ProductDetail = () => {
           )}
 
           {/* Quantity and CTA Actions */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div className="product-purchase-section">
             {product.stock > 0 && product.stock <= 5 && (
-              <div 
-                style={{ 
-                  background: "#FEF2F2", 
-                  border: "1px solid #FEE2E2", 
-                  color: "#991B1B", 
-                  padding: "10px 14px", 
-                  borderRadius: "8px", 
-                  fontSize: "12px", 
-                  fontWeight: "600",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px"
-                }}
-              >
+              <div className="product-stock-alert">
                 ⚠️ Limited Stock: Only {product.stock} items remaining.
               </div>
             )}
@@ -958,39 +924,37 @@ const ProductDetail = () => {
               <div className="product-purchase-actions-row">
                 {/* Quantity picker */}
                 {product.stock > 0 && (
-                  <div style={{ display: "flex", alignItems: "center", border: "1px solid #E8E0D4", borderRadius: "12px", background: "#FFFFFF", overflow: "hidden" }}>
+                  <div className="product-quantity-selector">
                     <button 
                       type="button" 
                       onClick={() => setSelectedQty(prev => Math.max(1, prev - 1))}
-                      style={{ padding: "12px 18px", border: "none", background: "none", cursor: "pointer", fontSize: "16px", fontWeight: "700" }}
+                      className="qty-btn"
                     >
                       -
                     </button>
-                    <span style={{ padding: "0 10px", minWidth: "24px", textAlign: "center", fontWeight: "700" }}>{selectedQty}</span>
+                    <span className="qty-value">{selectedQty}</span>
                     <button 
                       type="button" 
                       onClick={() => setSelectedQty(prev => Math.min(product.stock, prev + 1))}
-                      style={{ padding: "12px 18px", border: "none", background: "none", cursor: "pointer", fontSize: "16px", fontWeight: "700" }}
+                      className="qty-btn"
                     >
                       +
                     </button>
                   </div>
                 )}
 
-                <div style={{ flex: 1, minWidth: "160px" }}>
+                <div className="product-cta-btn-wrapper">
                   {product.stock === 0 ? (
                     <button
                       disabled
-                      className="add-to-cart-btn"
-                      style={{ background: "#9CA3AF", cursor: "not-allowed", height: "56px", width: "100%" }}
+                      className="product-add-cart-btn disabled"
                     >
                       Out Of Stock
                     </button>
                   ) : (
                     <button
                       onClick={handleAddToCart}
-                      className="product-detail-add-btn"
-                      style={{ background: "#111112", height: "56px", borderRadius: "14px", color: "#FFFFFF", fontSize: "14px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "1px", width: "100%" }}
+                      className="product-add-cart-btn"
                     >
                       Add to Cart
                     </button>
@@ -1002,16 +966,16 @@ const ProductDetail = () => {
 
           {/* Best Selling Combos card */}
           {Array.isArray(product.comboProducts) && product.comboProducts.length > 0 && (
-            <div style={{ border: "1px solid #E8E0D4", borderRadius: "16px", padding: "20px", background: "#FFFFFF" }}>
-              <span style={{ fontSize: "10px", color: "#C8A96B", fontWeight: "800", letterSpacing: "1px" }}>BESTSELLING COMBO SAVINGS</span>
-              <h4 style={{ margin: "4px 0 12px 0", fontSize: "16px", fontWeight: "700" }}>Add Pair and Save More!</h4>
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <div className="product-combos-card">
+              <span className="combo-tag">BESTSELLING COMBO SAVINGS</span>
+              <h4 className="combo-title">Add Pair and Save More!</h4>
+              <div className="combo-items-list">
                 {product.comboProducts.map((combo, idx) => (
-                  <div key={idx} style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                    <img src={combo.imageUrl} alt="" style={{ width: "40px", height: "40px", borderRadius: "6px", objectFit: "cover" }} />
+                  <div key={idx} className="combo-item-row">
+                    <img src={combo.imageUrl} alt="" className="combo-item-img" />
                     <div>
-                      <span style={{ fontSize: "12px", fontWeight: "700", display: "block" }}>{combo.name}</span>
-                      <span style={{ fontSize: "11px", color: "#5F6368" }}>₹{combo.price.toFixed(2)}</span>
+                      <span className="combo-item-name">{combo.name}</span>
+                      <span className="combo-item-price">₹{combo.price.toFixed(2)}</span>
                     </div>
                   </div>
                 ))}
@@ -1024,7 +988,7 @@ const ProductDetail = () => {
                     handleAddToCart();
                     toast.success("Combo pack added to cart! 🛍️");
                   }}
-                  style={{ marginTop: "12px", border: "none", background: "#C8A96B", color: "#FFFFFF", padding: "12px", borderRadius: "8px", fontWeight: "700", fontSize: "12px", cursor: "pointer", width: "100%" }}
+                  className="combo-add-all-btn"
                 >
                   ADD COMBO TO CART
                 </button>
@@ -1034,84 +998,84 @@ const ProductDetail = () => {
 
           {/* Trust Icons Section */}
           <div className="trust-icons-container">
-            <div className="trust-card" style={{ fontSize: "12px", color: "#111112", fontWeight: "600", padding: "10px", background: "#FAF7F2", borderRadius: "10px" }}>🪔<br /><span style={{ display: "block", marginTop: "4px", color: "#6B6B6B" }}>Imported Oils</span></div>
-            <div className="trust-card" style={{ fontSize: "12px", color: "#111112", fontWeight: "600", padding: "10px", background: "#FAF7F2", borderRadius: "10px" }}>🐰<br /><span style={{ display: "block", marginTop: "4px", color: "#6B6B6B" }}>Cruelty-Free</span></div>
-            <div className="trust-card" style={{ fontSize: "12px", color: "#111112", fontWeight: "600", padding: "10px", background: "#FAF7F2", borderRadius: "10px" }}>📜<br /><span style={{ display: "block", marginTop: "4px", color: "#6B6B6B" }}>IFRA Certified</span></div>
-            <div className="trust-card" style={{ fontSize: "12px", color: "#111112", fontWeight: "600", padding: "10px", background: "#FAF7F2", borderRadius: "10px" }}>🚚<br /><span style={{ display: "block", marginTop: "4px", color: "#6B6B6B" }}>Assured Delivery</span></div>
+            <div className="trust-card"><span className="trust-icon">🪔</span><span className="trust-text">Imported Oils</span></div>
+            <div className="trust-card"><span className="trust-icon">🐰</span><span className="trust-text">Cruelty-Free</span></div>
+            <div className="trust-card"><span className="trust-icon">📜</span><span className="trust-text">IFRA Certified</span></div>
+            <div className="trust-card"><span className="trust-icon">🚚</span><span className="trust-text">Assured Delivery</span></div>
           </div>
 
           {/* Fulfillment Information Card */}
-          <div style={{ background: "#FAF7F2", border: "1px solid #E6D8C3", borderRadius: "20px", padding: "24px", marginTop: "24px" }} className="fulfillment-card">
-            <h4 style={{ fontFamily: "Playfair Display, serif", fontSize: "18px", color: "#1A1A1A", marginBottom: "16px" }}>Delivery & fulfillment</h4>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px", fontSize: "13px", color: "#5F5F5F" }}>
-              <div>🚚 <strong>Estimated Delivery:</strong> {product.fulfillment?.eta || "Delivered within 2 - 4 business days."}</div>
-              <div>🔄 <strong>Return Policy:</strong> {product.fulfillment?.returnPolicy || "7-day return policy on unused premium cosmetics."}</div>
-              <div>💳 <strong>Payment Options:</strong> {product.fulfillment?.paymentInfo || "Razorpay secure pay, UPI, and major debit/credit cards."}</div>
-              <div>✨ <strong>Brand Guarantee:</strong> {product.fulfillment?.authenticity || "100% authentic formulation direct from VENUS CARE laboratory."}</div>
+          <div className="fulfillment-card">
+            <h4 className="fulfillment-card-title">Delivery & fulfillment</h4>
+            <div className="fulfillment-items-list">
+              <div className="fulfillment-item">🚚 <strong>Estimated Delivery:</strong> <span>{product.fulfillment?.eta || "Delivered within 2 - 4 business days."}</span></div>
+              <div className="fulfillment-item">🔄 <strong>Return Policy:</strong> <span>{product.fulfillment?.returnPolicy || "7-day return policy on unused premium cosmetics."}</span></div>
+              <div className="fulfillment-item">💳 <strong>Payment Options:</strong> <span>{product.fulfillment?.paymentInfo || "Razorpay secure pay, UPI, and major debit/credit cards."}</span></div>
+              <div className="fulfillment-item">✨ <strong>Brand Guarantee:</strong> <span>{product.fulfillment?.authenticity || "100% authentic formulation direct from VENUS CARE laboratory."}</span></div>
             </div>
-            <div style={{ display: "flex", gap: "10px", marginTop: "20px", flexWrap: "wrap" }}>
-              <span style={{ background: "#FFFFFF", padding: "6px 12px", borderRadius: "20px", fontSize: "11px", color: "#C9A46A", fontWeight: "700", border: "1px solid #E6D8C3" }}>✓ Secure Checkout</span>
-              <span style={{ background: "#FFFFFF", padding: "6px 12px", borderRadius: "20px", fontSize: "11px", color: "#C9A46A", fontWeight: "700", border: "1px solid #E6D8C3" }}>✓ 100% Vegan</span>
-              <span style={{ background: "#FFFFFF", padding: "6px 12px", borderRadius: "20px", fontSize: "11px", color: "#C9A46A", fontWeight: "700", border: "1px solid #E6D8C3" }}>✓ Acid-Free</span>
+            <div className="fulfillment-pills-row">
+              <span className="fulfillment-pill">✓ Secure Checkout</span>
+              <span className="fulfillment-pill">✓ 100% Vegan</span>
+              <span className="fulfillment-pill">✓ Acid-Free</span>
             </div>
           </div>
 
           {/* Formula Standards Section */}
-          <div style={{ border: "1px solid #E6D8C3", borderRadius: "20px", padding: "24px", background: "#FFFFFF", marginTop: "24px" }}>
-            <h4 style={{ fontFamily: "Playfair Display, serif", fontSize: "18px", color: "#1A1A1A", marginBottom: "16px" }}>Venus Purity Standards</h4>
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "13.5px", color: "#5F5F5F" }}>
+          <div className="purity-standards-card">
+            <h4 className="purity-standards-title">Venus Purity Standards</h4>
+            <div className="purity-standards-list">
               {Array.isArray(product.formulaStandards) && product.formulaStandards.length > 0 ? (
                 product.formulaStandards.map((std, idx) => (
-                  <div key={idx} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span style={{ color: "#C9A46A", fontWeight: "700" }}>⭐</span> {std}
+                  <div key={idx} className="purity-standard-item">
+                    <span className="purity-star">⭐</span> <span>{std}</span>
                   </div>
                 ))
               ) : (
                 <>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><span style={{ color: "#C9A46A", fontWeight: "700" }}>⭐</span> Dermatologically Tested Purity</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><span style={{ color: "#C9A46A", fontWeight: "700" }}>⭐</span> 100% Cruelty Free & Vegan-Grade</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><span style={{ color: "#C9A46A", fontWeight: "700" }}>⭐</span> Formulated without Parabens or Sulfates</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><span style={{ color: "#C9A46A", fontWeight: "700" }}>⭐</span> Hydrating active ingredients suited for sensitive skin</div>
+                  <div className="purity-standard-item"><span className="purity-star">⭐</span> <span>Dermatologically Tested Purity</span></div>
+                  <div className="purity-standard-item"><span className="purity-star">⭐</span> <span>100% Cruelty Free & Vegan-Grade</span></div>
+                  <div className="purity-standard-item"><span className="purity-star">⭐</span> <span>Formulated without Parabens or Sulfates</span></div>
+                  <div className="purity-standard-item"><span className="purity-star">⭐</span> <span>Hydrating active ingredients suited for sensitive skin</span></div>
                 </>
               )}
             </div>
           </div>
 
           {/* How to Apply Section */}
-          <div style={{ marginTop: "24px", background: "#FAF7F2", borderRadius: "20px", padding: "24px", border: "1px solid #E6D8C3" }}>
-            <h4 style={{ fontFamily: "Playfair Display, serif", fontSize: "18px", color: "#1A1A1A", marginBottom: "16px" }}>How to Apply</h4>
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div className="how-to-apply-card">
+            <h4 className="how-to-apply-title">How to Apply</h4>
+            <div className="how-to-apply-list">
               {Array.isArray(product.howToApply) && product.howToApply.length > 0 ? (
                 product.howToApply.map((step, idx) => (
-                  <div key={idx} style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
-                    <span style={{ background: "#C9A46A", color: "#FFFFFF", width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "700", flexShrink: 0 }}>{idx + 1}</span>
-                    <div>
-                      <strong style={{ display: "block", fontSize: "14px", color: "#1A1A1A" }}>{step.title}</strong>
-                      <span style={{ fontSize: "12.5px", color: "#5F5F5F" }}>{step.description}</span>
+                  <div key={idx} className="how-to-apply-step">
+                    <span className="step-number">{idx + 1}</span>
+                    <div className="step-text">
+                      <strong className="step-title">{step.title}</strong>
+                      <span className="step-desc">{step.description}</span>
                     </div>
                   </div>
                 ))
               ) : (
                 <>
-                  <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
-                    <span style={{ background: "#C9A46A", color: "#FFFFFF", width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "700", flexShrink: 0 }}>1</span>
-                    <div>
-                      <strong style={{ display: "block", fontSize: "14px", color: "#1A1A1A" }}>Dispense Application</strong>
-                      <span style={{ fontSize: "12.5px", color: "#5F5F5F" }}>Apply a clean coin-sized droplet onto your fingertips.</span>
+                  <div className="how-to-apply-step">
+                    <span className="step-number">1</span>
+                    <div className="step-text">
+                      <strong className="step-title">Dispense Application</strong>
+                      <span className="step-desc">Apply a clean coin-sized droplet onto your fingertips.</span>
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
-                    <span style={{ background: "#C9A46A", color: "#FFFFFF", width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "700", flexShrink: 0 }}>2</span>
-                    <div>
-                      <strong style={{ display: "block", fontSize: "14px", color: "#1A1A1A" }}>Massage Skin</strong>
-                      <span style={{ fontSize: "12.5px", color: "#5F5F5F" }}>Gently massage upwards using circular patterns.</span>
+                  <div className="how-to-apply-step">
+                    <span className="step-number">2</span>
+                    <div className="step-text">
+                      <strong className="step-title">Massage Skin</strong>
+                      <span className="step-desc">Gently massage upwards using circular patterns.</span>
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
-                    <span style={{ background: "#C9A46A", color: "#FFFFFF", width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "700", flexShrink: 0 }}>3</span>
-                    <div>
-                      <strong style={{ display: "block", fontSize: "14px", color: "#1A1A1A" }}>Absorb Thoroughly</strong>
-                      <span style={{ fontSize: "12.5px", color: "#5F5F5F" }}>Allow the formula to settle and protect for 2-3 minutes.</span>
+                  <div className="how-to-apply-step">
+                    <span className="step-number">3</span>
+                    <div className="step-text">
+                      <strong className="step-title">Absorb Thoroughly</strong>
+                      <span className="step-desc">Allow the formula to settle and protect for 2-3 minutes.</span>
                     </div>
                   </div>
                 </>
@@ -1124,30 +1088,15 @@ const ProductDetail = () => {
 
       {/* Sticky Mobile Add to Cart Bar */}
       {product.stock > 0 && (
-        <div 
-          className="sticky-mobile-cart-bar"
-          style={{
-            position: "fixed",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            background: "#FFFFFF",
-            borderTop: "1px solid #E6D8C3",
-            padding: "12px 16px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            zIndex: 999,
-            boxShadow: "0 -4px 15px rgba(0,0,0,0.05)"
-          }}
-        >
-          <div>
-            <span style={{ fontSize: "11px", color: "#6B6B6B", display: "block" }}>Total Price</span>
-            <strong style={{ fontSize: "20px", color: "#1A1A1A", fontFamily: "Playfair Display, serif" }}>₹{(product.price * selectedQty).toFixed(2)}</strong>
+        <div className="sticky-mobile-cart-bar">
+          <div className="sticky-cart-price-info">
+            <span className="sticky-cart-price-label">Total Price</span>
+            <strong className="sticky-cart-price-val">₹{(product.price * selectedQty).toFixed(2)}</strong>
           </div>
           <button 
+            type="button"
             onClick={handleAddToCart}
-            style={{ background: "#111111", color: "#FFFFFF", padding: "12px 24px", borderRadius: "10px", fontWeight: "700", border: "none", fontSize: "13px", textTransform: "uppercase" }}
+            className="sticky-cart-submit-btn"
           >
             Add To Cart ({selectedQty})
           </button>
@@ -1157,12 +1106,12 @@ const ProductDetail = () => {
       {/* SECTION 2 — PRODUCT HIGHLIGHTS */}
       {Array.isArray(product.highlights) && product.highlights.length > 0 && (
         <div className="product-highlights-box">
-          <h3 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", color: "#111112", marginBottom: "28px", textAlign: "center" }}>Product Highlights</h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "24px" }}>
+          <h3 className="section-title-luxury">Product Highlights</h3>
+          <div className="highlights-grid">
             {product.highlights.map((highlight, idx) => (
-              <div key={idx} style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-                <span style={{ fontSize: "24px" }}>✨</span>
-                <span style={{ fontSize: "15px", fontWeight: "600", color: "#111112" }}>{highlight}</span>
+              <div key={idx} className="highlight-item">
+                <span className="highlight-sparkle">✨</span>
+                <span className="highlight-text">{highlight}</span>
               </div>
             ))}
           </div>
@@ -1171,31 +1120,18 @@ const ProductDetail = () => {
 
       {/* Ingredient Stories Section */}
       {Array.isArray(product.ingredientStories) && product.ingredientStories.length > 0 && (
-        <div style={{ marginTop: "60px", padding: "40px 0", background: "#FAF7F2", borderRadius: "24px", border: "1px solid #E6D8C3" }}>
-          <h3 style={{ fontFamily: "Playfair Display, serif", fontSize: "28px", color: "#1A1A1A", marginBottom: "28px", textAlign: "center" }}>Notes in This Formula</h3>
-          <div style={{ display: "flex", gap: "20px", overflowX: "auto", padding: "0 24px 12px 24px", scrollSnapType: "x mandatory" }}>
+        <div className="product-ingredient-stories-section">
+          <h3 className="section-title-luxury">Notes in This Formula</h3>
+          <div className="ingredient-stories-scroll">
             {product.ingredientStories.map((story, idx) => (
-              <div 
-                key={idx} 
-                style={{ 
-                  background: "#FFFFFF", 
-                  border: "1px solid #E6D8C3", 
-                  borderRadius: "20px", 
-                  padding: "20px", 
-                  minWidth: "260px", 
-                  flex: "1 0 260px", 
-                  textAlign: "center",
-                  scrollSnapAlign: "start",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.02)"
-                }}
-              >
+              <div key={idx} className="ingredient-story-card">
                 {story.image && (
-                  <img src={story.image} alt={story.title} style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", margin: "0 auto 12px auto", display: "block" }} />
+                  <img src={story.image} alt={story.title} className="story-img" />
                 )}
-                <h4 style={{ margin: "0 0 10px 0", fontSize: "16px", fontWeight: "700", fontFamily: "Playfair Display, serif", color: "#1A1A1A" }}>{story.title}</h4>
-                <div style={{ display: "flex", gap: "6px", justifyContent: "center", flexWrap: "wrap" }}>
+                <h4 className="story-title">{story.title}</h4>
+                <div className="story-tags-row">
                   {Array.isArray(story.tags) && story.tags.map((tag, tIdx) => (
-                    <span key={tIdx} style={{ background: "#FAF7F2", border: "1px solid #E6D8C3", padding: "4px 8px", borderRadius: "10px", fontSize: "11px", color: "#C9A46A", fontWeight: "600" }}>{tag}</span>
+                    <span key={tIdx} className="story-tag">{tag}</span>
                   ))}
                 </div>
               </div>
@@ -1206,32 +1142,19 @@ const ProductDetail = () => {
 
       {/* Notes In Set Section */}
       {Array.isArray(product.notesInSet) && product.notesInSet.length > 0 && (
-        <div style={{ marginTop: "60px" }}>
-          <h3 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", color: "#111112", marginBottom: "28px", textAlign: "center" }}>Notes in This Set</h3>
-          <div style={{ display: "flex", gap: "20px", overflowX: "auto", paddingBottom: "12px", scrollSnapType: "x mandatory" }}>
+        <div className="product-notes-set-section">
+          <h3 className="section-title-luxury">Notes in This Set</h3>
+          <div className="notes-set-scroll">
             {product.notesInSet.map((note, idx) => (
-              <div 
-                key={idx} 
-                style={{ 
-                  background: "#FFFFFF", 
-                  border: "1px solid #E8E0D4", 
-                  borderRadius: "16px", 
-                  padding: "24px", 
-                  minWidth: "280px", 
-                  flex: "1 0 280px", 
-                  textAlign: "center",
-                  scrollSnapAlign: "start",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.02)"
-                }}
-              >
+              <div key={idx} className="note-set-card">
                 {note.image && (
-                  <img src={note.image} alt="" style={{ width: "90px", height: "90px", borderRadius: "50%", objectFit: "cover", margin: "0 auto 16px auto", display: "block" }} />
+                  <img src={note.image} alt="" className="note-img" />
                 )}
-                <h4 style={{ margin: "0 0 12px 0", fontSize: "18px", fontWeight: "700", fontFamily: "Cinzel, serif", color: "#111112" }}>{note.title}</h4>
-                <div style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "13px", color: "#5F6368" }}>
-                  {note.note1 && <span style={{ background: "#FAF7F2", padding: "6px", borderRadius: "6px" }}>{note.note1}</span>}
-                  {note.note2 && <span style={{ background: "#FAF7F2", padding: "6px", borderRadius: "6px" }}>{note.note2}</span>}
-                  {note.note3 && <span style={{ background: "#FAF7F2", padding: "6px", borderRadius: "6px" }}>{note.note3}</span>}
+                <h4 className="note-title">{note.title}</h4>
+                <div className="note-tags-column">
+                  {note.note1 && <span className="note-pill">{note.note1}</span>}
+                  {note.note2 && <span className="note-pill">{note.note2}</span>}
+                  {note.note3 && <span className="note-pill">{note.note3}</span>}
                 </div>
               </div>
             ))}
@@ -1240,24 +1163,24 @@ const ProductDetail = () => {
       )}
 
       {/* SECTION 3 — ACCORDION INFORMATION BLOCKS */}
-      <div style={{ marginTop: "60px", maxWidth: "800px", margin: "60px auto 0 auto" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      <div className="product-accordions-container">
+        <div className="accordions-list">
           
           {/* Accordion 1: Highlights */}
           {(product.productHighlights || (Array.isArray(product.highlights) && product.highlights.length > 0)) && (
-            <div style={{ borderBottom: "1px solid #E8E0D4" }}>
+            <div className="accordion-item">
               <button
                 type="button"
                 onClick={() => setExpandedAccordion(expandedAccordion === 1 ? null : 1)}
-                style={{ width: "100%", padding: "18px 0", display: "flex", justifyContent: "space-between", alignItems: "center", background: "none", border: "none", cursor: "pointer", outline: "none", textAlign: "left" }}
+                className="accordion-header-btn"
               >
-                <span style={{ fontSize: "18px", fontWeight: "700", color: "#111112", fontFamily: "Cinzel, serif" }}>Product Highlights</span>
-                <span style={{ fontSize: "20px" }}>{expandedAccordion === 1 ? "−" : "+"}</span>
+                <span className="accordion-heading">Product Highlights</span>
+                <span className="accordion-toggle-icon">{expandedAccordion === 1 ? "−" : "+"}</span>
               </button>
               {expandedAccordion === 1 && (
-                <div style={{ padding: "0 0 18px 0", fontSize: "15px", color: "#5F6368", lineHeight: "1.6" }}>
+                <div className="accordion-body-content">
                   {product.productHighlights || (Array.isArray(product.highlights) && (
-                    <ul style={{ paddingLeft: "20px", margin: 0 }}>
+                    <ul className="accordion-list-bullets">
                       {product.highlights.map((h, i) => <li key={i}>{h}</li>)}
                     </ul>
                   ))}
@@ -1268,23 +1191,25 @@ const ProductDetail = () => {
 
           {/* Accordion 2: FAQ */}
           {Array.isArray(product.faq) && product.faq.length > 0 && (
-            <div style={{ borderBottom: "1px solid #E8E0D4" }}>
+            <div className="accordion-item">
               <button
                 type="button"
                 onClick={() => setExpandedAccordion(expandedAccordion === 2 ? null : 2)}
-                style={{ width: "100%", padding: "18px 0", display: "flex", justifyContent: "space-between", alignItems: "center", background: "none", border: "none", cursor: "pointer", outline: "none", textAlign: "left" }}
+                className="accordion-header-btn"
               >
-                <span style={{ fontSize: "18px", fontWeight: "700", color: "#111112", fontFamily: "Cinzel, serif" }}>FAQ</span>
-                <span style={{ fontSize: "20px" }}>{expandedAccordion === 2 ? "−" : "+"}</span>
+                <span className="accordion-heading">FAQ</span>
+                <span className="accordion-toggle-icon">{expandedAccordion === 2 ? "−" : "+"}</span>
               </button>
               {expandedAccordion === 2 && (
-                <div style={{ padding: "0 0 18px 0", fontSize: "15px", color: "#5F6368", lineHeight: "1.6", display: "flex", flexDirection: "column", gap: "12px" }}>
-                  {product.faq.map((item, idx) => (
-                    <div key={idx}>
-                      <strong style={{ display: "block", color: "#111112" }}>Q: {item.question}</strong>
-                      <span>A: {item.answer}</span>
-                    </div>
-                  ))}
+                <div className="accordion-body-content">
+                  <div className="faq-list">
+                    {product.faq.map((item, idx) => (
+                      <div key={idx} className="faq-item">
+                        <strong className="faq-question">Q: {item.question}</strong>
+                        <span className="faq-answer">A: {item.answer}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -1292,17 +1217,17 @@ const ProductDetail = () => {
 
           {/* Accordion 3: Ingredients */}
           {(product.ingredients) && (
-            <div style={{ borderBottom: "1px solid #E8E0D4" }}>
+            <div className="accordion-item">
               <button
                 type="button"
                 onClick={() => setExpandedAccordion(expandedAccordion === 3 ? null : 3)}
-                style={{ width: "100%", padding: "18px 0", display: "flex", justifyContent: "space-between", alignItems: "center", background: "none", border: "none", cursor: "pointer", outline: "none", textAlign: "left" }}
+                className="accordion-header-btn"
               >
-                <span style={{ fontSize: "18px", fontWeight: "700", color: "#111112", fontFamily: "Cinzel, serif" }}>All Ingredients</span>
-                <span style={{ fontSize: "20px" }}>{expandedAccordion === 3 ? "−" : "+"}</span>
+                <span className="accordion-heading">All Ingredients</span>
+                <span className="accordion-toggle-icon">{expandedAccordion === 3 ? "−" : "+"}</span>
               </button>
               {expandedAccordion === 3 && (
-                <div style={{ padding: "0 0 18px 0", fontSize: "15px", color: "#5F6368", lineHeight: "1.6" }}>
+                <div className="accordion-body-content">
                   {product.ingredients}
                 </div>
               )}
@@ -1311,17 +1236,17 @@ const ProductDetail = () => {
 
           {/* Accordion 4: Other Information */}
           {(product.otherInformation || product.otherInfo) && (
-            <div style={{ borderBottom: "1px solid #E8E0D4" }}>
+            <div className="accordion-item">
               <button
                 type="button"
                 onClick={() => setExpandedAccordion(expandedAccordion === 4 ? null : 4)}
-                style={{ width: "100%", padding: "18px 0", display: "flex", justifyContent: "space-between", alignItems: "center", background: "none", border: "none", cursor: "pointer", outline: "none", textAlign: "left" }}
+                className="accordion-header-btn"
               >
-                <span style={{ fontSize: "18px", fontWeight: "700", color: "#111112", fontFamily: "Cinzel, serif" }}>Other Information</span>
-                <span style={{ fontSize: "20px" }}>{expandedAccordion === 4 ? "−" : "+"}</span>
+                <span className="accordion-heading">Other Information</span>
+                <span className="accordion-toggle-icon">{expandedAccordion === 4 ? "−" : "+"}</span>
               </button>
               {expandedAccordion === 4 && (
-                <div style={{ padding: "0 0 18px 0", fontSize: "15px", color: "#5F6368", lineHeight: "1.6" }}>
+                <div className="accordion-body-content">
                   {product.otherInformation || product.otherInfo}
                 </div>
               )}
@@ -1330,17 +1255,17 @@ const ProductDetail = () => {
 
           {/* Accordion 5: How to Use */}
           {product.howToUse && (
-            <div style={{ borderBottom: "1px solid #E8E0D4" }}>
+            <div className="accordion-item">
               <button
                 type="button"
                 onClick={() => setExpandedAccordion(expandedAccordion === 5 ? null : 5)}
-                style={{ width: "100%", padding: "18px 0", display: "flex", justifyContent: "space-between", alignItems: "center", background: "none", border: "none", cursor: "pointer", outline: "none", textAlign: "left" }}
+                className="accordion-header-btn"
               >
-                <span style={{ fontSize: "18px", fontWeight: "700", color: "#111112", fontFamily: "Cinzel, serif" }}>How To Use</span>
-                <span style={{ fontSize: "20px" }}>{expandedAccordion === 5 ? "−" : "+"}</span>
+                <span className="accordion-heading">How To Use</span>
+                <span className="accordion-toggle-icon">{expandedAccordion === 5 ? "−" : "+"}</span>
               </button>
               {expandedAccordion === 5 && (
-                <div style={{ padding: "0 0 18px 0", fontSize: "15px", color: "#5F6368", lineHeight: "1.6" }}>
+                <div className="accordion-body-content">
                   {product.howToUse}
                 </div>
               )}
@@ -1350,145 +1275,101 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      <div className="reviews-section-redesigned" id="reviews" style={{ marginTop: "80px", borderTop: "1px solid #E8E0D4", paddingTop: "60px" }}>
-          
-          {/* Column 1 (Left) */}
-          <div style={{ textAlign: "center", borderRight: "1px solid #ECECEC", paddingRight: "40px" }} className="reviews-left-col">
-            <div style={{ display: "flex", justifyContent: "center", gap: "4px", marginBottom: "8px", color: "#C9A063", fontSize: "20px" }}>
-              {[...Array(5)].map((_, i) => (
-                <HiStar
-                  key={i}
-                  style={{
-                    color: stats && stats.totalReviews > 0 && i < Math.round(stats.averageRating) ? "#C9A063" : "#E5E7EB",
-                  }}
-                />
-              ))}
-            </div>
-            <h2 style={{ fontSize: "56px", fontWeight: "700", color: "#111111", margin: "0 0 4px 0", fontFamily: "Playfair Display, serif" }}>
-              {stats && stats.totalReviews > 0 ? parseFloat(stats.averageRating).toFixed(2) : "0.0"}
-            </h2>
-            <span style={{ fontSize: "14px", color: "#6B6B6B" }}>
-              Based on {stats ? stats.totalReviews : 0} reviews
-            </span>
+      <div className="reviews-section-redesigned" id="reviews">
+        {/* Column 1 (Left) */}
+        <div className="reviews-left-col">
+          <div className="reviews-stars-summary-row">
+            {[...Array(5)].map((_, i) => (
+              <HiStar
+                key={i}
+                className={stats && stats.totalReviews > 0 && i < Math.round(stats.averageRating) ? "star-active" : "star-inactive"}
+              />
+            ))}
           </div>
+          <h2 className="reviews-avg-rating-score">
+            {stats && stats.totalReviews > 0 ? parseFloat(stats.averageRating).toFixed(2) : "0.0"}
+          </h2>
+          <span className="reviews-total-count-label">
+            Based on {stats ? stats.totalReviews : 0} reviews
+          </span>
+        </div>
 
-          {/* Column 2 (Center) */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px", justifyContent: "center", borderRight: "1px solid #ECECEC", paddingRight: "40px" }} className="reviews-center-col">
-            {[5, 4, 3, 2, 1].map((stars) => {
-              const count = stats?.breakdown?.[stars] || 0;
-              const total = stats?.totalReviews || 1;
-              const pct = stats?.totalReviews > 0 ? Math.round((count / total) * 100) : 0;
+        {/* Column 2 (Center) */}
+        <div className="reviews-center-col">
+          {[5, 4, 3, 2, 1].map((stars) => {
+            const count = stats?.breakdown?.[stars] || 0;
+            const total = stats?.totalReviews || 1;
+            const pct = stats?.totalReviews > 0 ? Math.round((count / total) * 100) : 0;
+            return (
+              <div key={stars} className="review-bar-row">
+                <span className="review-bar-star-label">{stars}★</span>
+                <div className="review-bar-track">
+                  <div style={{ width: `${pct}%` }} className="review-bar-fill"></div>
+                </div>
+                <span className="review-bar-count">{count}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Column 3 (Right) */}
+        <div className="reviews-right-col">
+          <h4 className="reviews-cta-title">Share your experience</h4>
+          <p className="reviews-cta-subtitle">Help other shoppers by reviewing this product.</p>
+          <button 
+            type="button"
+            onClick={openWriteReviewModal} 
+            className="write-review-btn-luxury"
+          >
+            Write a review
+          </button>
+        </div>
+      </div>
+
+      {/* Customer photos & videos gallery (Bellavita Style) */}
+      {customerGallery && customerGallery.length > 0 && (
+        <div className="customer-media-gallery-section">
+          <h4 className="customer-media-title">Customer photos & videos</h4>
+          <div className="customer-media-scroll">
+            {customerGallery.slice(0, 10).map((media, idx) => {
+              let mediaUrl = "";
+              if (typeof media === "string") {
+                mediaUrl = media;
+              } else if (media && typeof media === "object") {
+                mediaUrl = media.url || media.secure_url || media.path || "";
+              }
+              
+              if (!mediaUrl) return null;
+              const isVideo = mediaUrl.includes(".mp4") || mediaUrl.includes(".mov") || mediaUrl.includes(".webm");
+              
               return (
-                <div key={stars} style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "13px", color: "#111111" }}>
-                  <span style={{ width: "28px", fontWeight: "600" }}>{stars}★</span>
-                  <div style={{ flex: 1, height: "8px", background: "#F7F1E8", borderRadius: "4px", overflow: "hidden" }}>
-                    <div style={{ width: `${pct}%`, height: "100%", background: "#C9A063", borderRadius: "4px" }}></div>
-                  </div>
-                  <span style={{ width: "40px", textAlign: "right", color: "#6B6B6B" }}>{count}</span>
+                <div 
+                  key={idx} 
+                  onClick={() => handleOpenLightbox(customerGallery.map(m => typeof m === "string" ? m : (m?.url || m?.secure_url || m?.path || "")).filter(Boolean), idx)}
+                  className="customer-media-thumb"
+                >
+                  {isVideo ? (
+                    <video src={mediaUrl} muted playsInline />
+                  ) : (
+                    <img src={mediaUrl} alt="" />
+                  )}
+                  {isVideo && (
+                    <div className="video-play-overlay">
+                      ▶
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
-
-          {/* Column 3 (Right) */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }} className="reviews-right-col">
-            <h4 style={{ fontSize: "16px", fontWeight: "700", color: "#111111", margin: "0 0 8px 0", fontFamily: "Playfair Display, serif" }}>Share your experience</h4>
-            <p style={{ fontSize: "13px", color: "#6B6B6B", margin: "0 0 20px 0", lineHeight: "1.5" }}>Help other shoppers by reviewing this product.</p>
-            <button 
-              onClick={openWriteReviewModal} 
-              style={{ 
-                background: "#111111", 
-                color: "#FFFFFF", 
-                width: "220px", 
-                height: "44px", 
-                border: "none", 
-                borderRadius: "8px", 
-                fontSize: "13px", 
-                fontWeight: "700", 
-                cursor: "pointer", 
-                textTransform: "uppercase", 
-                letterSpacing: "1px"
-              }}
-              className="write-review-btn-luxury"
-            >
-              Write a review
-            </button>
-          </div>
         </div>
+      )}
 
-        {/* Customer photos & videos gallery (Bellavita Style) */}
-        {customerGallery && customerGallery.length > 0 && (
-          <div style={{ marginBottom: "40px" }} className="customer-media-gallery-section">
-            <h4 style={{ fontSize: "14px", fontWeight: "700", color: "#6B6B6B", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "1px" }}>Customer photos & videos</h4>
-            <div 
-              style={{ 
-                display: "flex", 
-                gap: "12px", 
-                overflowX: "auto", 
-                paddingBottom: "8px", 
-                scrollbarWidth: "none" 
-              }}
-              className="customer-media-scroll"
-            >
-              {customerGallery.slice(0, 10).map((media, idx) => {
-                let mediaUrl = "";
-                if (typeof media === "string") {
-                  mediaUrl = media;
-                } else if (media && typeof media === "object") {
-                  mediaUrl = media.url || media.secure_url || media.path || "";
-                }
-                
-                if (!mediaUrl) return null;
-                const isVideo = mediaUrl.includes(".mp4") || mediaUrl.includes(".mov") || mediaUrl.includes(".webm");
-                
-                return (
-                  <div 
-                    key={idx} 
-                    onClick={() => handleOpenLightbox(customerGallery.map(m => typeof m === "string" ? m : (m?.url || m?.secure_url || m?.path || "")).filter(Boolean), idx)}
-                    style={{ 
-                      position: "relative", 
-                      width: "84px", 
-                      height: "84px", 
-                      borderRadius: "8px", 
-                      overflow: "hidden", 
-                      cursor: "pointer", 
-                      flexShrink: 0,
-                      border: "1px solid #ECECEC",
-                      transition: "transform 0.2s ease"
-                    }}
-                    className="customer-media-thumb"
-                  >
-                    {isVideo ? (
-                      <video src={mediaUrl} muted style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                    ) : (
-                      <img src={mediaUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                    )}
-                    {isVideo && (
-                      <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFFFFF", fontSize: "12px" }}>
-                        ▶
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
       {/* SECTION 7 — YOU MAY ALSO LIKE */}
       {recommendations.length > 0 && (
-        <div className="related-products-section" style={{ marginTop: "80px", paddingTop: "40px", background: "#FFFFFF", borderTop: "1px solid #ECECEC" }}>
-          <h2 style={{ fontSize: "32px", fontFamily: "Playfair Display, serif", fontWeight: "600", color: "#111111", marginBottom: "36px", textAlign: "center" }}>You May Also Like</h2>
-          <div 
-            className="related-products-grid"
-            style={{ 
-              display: "grid", 
-              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", 
-              gap: "28px", 
-              maxWidth: "1360px", 
-              margin: "0 auto",
-              padding: "0 24px"
-            }}
-          >
+        <div className="related-products-section">
+          <h2 className="section-title-luxury">You May Also Like</h2>
+          <div className="related-products-grid">
             {recommendations.map((item) => (
               <ProductCard key={item._id} product={item} />
             ))}
@@ -1503,19 +1384,9 @@ const ProductDetail = () => {
           const items = viewed.filter((p) => p._id !== product._id).slice(0, 8);
           if (items.length === 0) return null;
           return (
-            <div className="recently-viewed-section" style={{ marginTop: "80px", paddingTop: "40px", background: "#FFFFFF", borderTop: "1px solid #ECECEC" }}>
-              <h2 style={{ fontSize: "32px", fontFamily: "Playfair Display, serif", fontWeight: "600", color: "#111111", marginBottom: "36px", textAlign: "center" }}>Recently Viewed</h2>
-              <div 
-                className="recently-viewed-grid"
-                style={{ 
-                  display: "grid", 
-                  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", 
-                  gap: "28px", 
-                  maxWidth: "1360px", 
-                  margin: "0 auto",
-                  padding: "0 24px"
-                }}
-              >
+            <div className="recently-viewed-section">
+              <h2 className="section-title-luxury">Recently Viewed</h2>
+              <div className="recently-viewed-grid">
                 {items.map((item) => (
                   <ProductCard key={item._id} product={item} />
                 ))}
