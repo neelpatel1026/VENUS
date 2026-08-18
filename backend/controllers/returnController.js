@@ -223,8 +223,12 @@ const createReturnRequest = async (req, res) => {
     await order.save();
 
     // 12. Send Return Request Notification Email Asynchronously
-    const { sendTimelineStatusEmailAsync } = require("../utils/notificationService.js");
-    sendTimelineStatusEmailAsync(order, "Return Requested").catch((err) => {
+    const { sendTransactionalNotification, NOTIFICATION_EVENTS } = require("../utils/notificationService.js");
+    sendTransactionalNotification({
+      event: NOTIFICATION_EVENTS.RETURN_REQUESTED,
+      order,
+      returnRequest: request,
+    }).catch((err) => {
       console.error("❌ Return Requested email failed:", err.message);
     });
 
@@ -367,9 +371,13 @@ const approveReturnAndCreatePickup = async (req, res) => {
     await order.save();
 
     // Send customer notification
-    const { sendTimelineStatusEmailAsync } = require("../utils/notificationService.js");
-    sendTimelineStatusEmailAsync(order, "Pickup Scheduled").catch((err) => {
-      console.error("❌ Pickup Scheduled email failed:", err.message);
+    const { sendTransactionalNotification, NOTIFICATION_EVENTS } = require("../utils/notificationService.js");
+    sendTransactionalNotification({
+      event: NOTIFICATION_EVENTS.RETURN_APPROVED,
+      order,
+      returnRequest,
+    }).catch((err) => {
+      console.error("❌ Return Approved email failed:", err.message);
     });
 
     res.status(200).json({
@@ -650,8 +658,13 @@ const processRefund = async (req, res) => {
     await order.save();
 
     // 7. Send Customer Confirmation Email
-    const { sendTimelineStatusEmailAsync } = require("../utils/notificationService.js");
-    sendTimelineStatusEmailAsync(order, "Refund Completed").catch((err) => {
+    const { sendTransactionalNotification, NOTIFICATION_EVENTS } = require("../utils/notificationService.js");
+    sendTransactionalNotification({
+      event: NOTIFICATION_EVENTS.REFUND_COMPLETED,
+      order,
+      returnRequest,
+      transactionId: returnRequest.refundId,
+    }).catch((err) => {
       console.error("❌ Refund Completed email failed:", err.message);
     });
 

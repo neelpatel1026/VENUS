@@ -134,10 +134,24 @@ const addOrderItems = async (req, res) => {
       }
     }
 
-    const calculatedTotal = parseFloat(Math.max(0, calculatedSubtotal - calculatedDiscount - requestCoinsUsed).toFixed(2));
+    // ---------------------------------------------------------
+    // AUTHORITATIVE FEES & TOTAL CALCULATION
+    // ---------------------------------------------------------
+    const paymentMethod = req.body.paymentMethod || "COD";
+    const isCOD = paymentMethod === "COD";
+    const authoritativeCodFee = isCOD ? 50 : 0;
+    const authoritativeShippingCharge = 0; // Standard Free Shipping
+
+    // Calculate maximum allowable coin discount (cannot exceed subtotal after coupon discount)
+    const postCouponSubtotal = Math.max(0, calculatedSubtotal - calculatedDiscount);
+    const validCoinsDiscount = Math.min(postCouponSubtotal, requestCoinsUsed);
+
+    const calculatedTotal = parseFloat(
+      Math.max(0, postCouponSubtotal - validCoinsDiscount + authoritativeCodFee + authoritativeShippingCharge).toFixed(2)
+    );
 
     // Verify against request tampering
-    if (Math.abs(calculatedTotal - totalAmount) > 0.05) {
+    if (Math.abs(calculatedTotal - Number(totalAmount)) > 0.05) {
       // Rollback stocks since validation failed!
       for (const rolledBackItem of deductedItems) {
         await Product.findByIdAndUpdate(rolledBackItem.productId, {
@@ -162,8 +176,8 @@ const addOrderItems = async (req, res) => {
       subtotal: calculatedSubtotal,
       discountAmount: calculatedDiscount,
       couponCode: couponCode ? couponCode.toUpperCase() : "",
-      coinsUsed: requestCoinsUsed,
-      shippingCharge: 0,
+      coinsUsed: validCoinsDiscount,
+      shippingCharge: authoritativeCodFee + authoritativeShippingCharge,
       taxAmount: 0,
       totalAmount: calculatedTotal,
       shippingAddress: {
