@@ -681,7 +681,6 @@ const Checkout = () => {
 
             const createdOrder = await saveOrderRes.json();
             if (saveOrderRes.ok) {
-              saveOrderToLocalStorage("Razorpay", "Paid", response.razorpay_payment_id);
               dispatch(clearCart());
               navigate("/ordersuccess", {
                 state: {
@@ -747,8 +746,6 @@ const Checkout = () => {
 
       const createdOrder = await saveOrderRes.json();
       if (saveOrderRes.ok) {
-        const paymentId = "COD_" + Date.now();
-        saveOrderToLocalStorage("COD", "Pending", paymentId);
         dispatch(clearCart());
         navigate("/ordersuccess", {
           state: {

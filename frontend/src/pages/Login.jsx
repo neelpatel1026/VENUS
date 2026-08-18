@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import { FiMail, FiLock } from "react-icons/fi";
@@ -24,6 +24,8 @@ const Login = () => {
 
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
   // Load saved credentials if "Remember Me" was previously selected
   useEffect(() => {
@@ -101,7 +103,7 @@ const Login = () => {
 
       login(data);
       toast.success("Welcome back! Login Successful.");
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (error) {
       console.error(error);
       if (!navigator.onLine) {
@@ -126,7 +128,7 @@ const Login = () => {
 
       login(res.data);
       toast.success("Google Login Successful! Welcome to VENUS CARE.");
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (error) {
       console.error(error);
       if (!navigator.onLine) {

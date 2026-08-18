@@ -31,67 +31,30 @@ const AdminProducts = () => {
     fetchProducts();
   }, []);
 
-  /* ================= DELETE PRODUCT ================= */
-  const handleDelete = (id) => {
-    toast((t) => (
-      <div className="custom-confirm-toast">
-        <p style={{ margin: "0 0 10px 0", fontWeight: "600", fontSize: "0.95rem" }}>Are you sure you want to delete this product?</p>
-        <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
-          <button
-            onClick={async () => {
-              toast.dismiss(t.id);
-              try {
-                const res = await axios.delete(`/api/products/${id}`, {
-                  headers: {
-                    Authorization: `Bearer ${user.token}`
-                  }
-                });
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-                setProducts(products.filter((p) => p._id !== id));
-                toast.success("Product deleted successfully");
-              } catch (error) {
-                console.error(error);
-                const errMsg = error.response?.data?.message || "Failed to delete product";
-                toast.error(errMsg);
-              }
-            }}
-            style={{
-              background: "#DC2626",
-              color: "#fff",
-              border: "none",
-              padding: "6px 14px",
-              borderRadius: "6px",
-              fontSize: "0.85rem",
-              fontWeight: "600",
-              cursor: "pointer"
-            }}
-          >
-            Delete
-          </button>
-          <button
-            onClick={() => toast.dismiss(t.id)}
-            style={{
-              background: "#F3F4F6",
-              color: "#1F2937",
-              border: "1px solid #E5E7EB",
-              padding: "6px 14px",
-              borderRadius: "6px",
-              fontSize: "0.85rem",
-              fontWeight: "600",
-              cursor: "pointer"
-            }}
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    ), {
-      duration: 8000,
-      position: "top-center",
-      style: {
-        borderLeft: "4px solid #DC2626",
-      }
-    });
+  /* ================= DELETE PRODUCT ================= */
+  const confirmDeleteProduct = async () => {
+    if (!deleteTarget || isDeleting) return;
+    setIsDeleting(true);
+    try {
+      const res = await axios.delete(`/api/products/${deleteTarget._id}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+
+      setProducts((prev) => prev.filter((p) => p._id !== deleteTarget._id));
+      toast.success(res.data?.message || "Product deleted successfully");
+      setDeleteTarget(null);
+    } catch (error) {
+      console.error(error);
+      const errMsg = error.response?.data?.message || "Unable to delete product. Please try again.";
+      toast.error(errMsg);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const totalProducts = products.length;
@@ -225,9 +188,12 @@ const AdminProducts = () => {
                   <tr key={product._id} className={rowClass}>
                     <td>
                       <img
-                        src={getThumbnailUrl(product.imageUrl)}
+                        src={getThumbnailUrl(product.imageUrl || (product.images && product.images[0]))}
                         alt={product.name}
                         loading="lazy"
+                        onError={(e) => {
+                          e.target.src = "/cosmetic_1.avif";
+                        }}
                         style={{
                           width: "44px",
                           height: "44px",
@@ -283,7 +249,8 @@ const AdminProducts = () => {
                           </Link>
                         )}
                         <button
-                          onClick={() => handleDelete(product._id)}
+                          type="button"
+                          onClick={() => setDeleteTarget(product)}
                           className="btn-admin-outline"
                           style={{ borderColor: "#DC2626", color: "#DC2626" }}
                         >
@@ -308,6 +275,116 @@ const AdminProducts = () => {
         </div>
 
       </div>
+
+      {/* DELETE CONFIRMATION MODAL */}
+      {deleteTarget && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+            padding: "16px",
+          }}
+          onClick={() => !isDeleting && setDeleteTarget(null)}
+        >
+          <div
+            style={{
+              backgroundColor: "#FFFFFF",
+              borderRadius: "16px",
+              maxWidth: "440px",
+              width: "100%",
+              padding: "24px",
+              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+              border: "1px solid #ECE7DF",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  backgroundColor: "#FEE2E2",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#DC2626",
+                  fontSize: "20px",
+                }}
+              >
+                <FiAlertTriangle />
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: "18px", color: "#111827", fontFamily: "'Cinzel', serif" }}>
+                  Delete Product
+                </h3>
+                <p style={{ margin: "2px 0 0 0", fontSize: "12px", color: "#6B7280" }}>
+                  Permanent catalog removal
+                </p>
+              </div>
+            </div>
+
+            <p style={{ fontSize: "14px", color: "#4B5563", lineHeight: "1.6", margin: "0 0 24px 0" }}>
+              Are you sure you want to delete <strong>"{deleteTarget.name}"</strong>? This will remove the item from the customer storefront and cannot be undone.
+            </p>
+
+            <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => setDeleteTarget(null)}
+                style={{
+                  padding: "10px 18px",
+                  borderRadius: "8px",
+                  fontSize: "13px",
+                  fontWeight: "600",
+                  backgroundColor: "#F3F4F6",
+                  color: "#374151",
+                  border: "1px solid #E5E7EB",
+                  cursor: isDeleting ? "not-allowed" : "pointer",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={confirmDeleteProduct}
+                style={{
+                  padding: "10px 20px",
+                  borderRadius: "8px",
+                  fontSize: "13px",
+                  fontWeight: "600",
+                  backgroundColor: "#DC2626",
+                  color: "#FFFFFF",
+                  border: "none",
+                  cursor: isDeleting ? "not-allowed" : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                {isDeleting ? (
+                  <>
+                    <span className="spinner-border animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+                    Deleting...
+                  </>
+                ) : (
+                  "Delete Product"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

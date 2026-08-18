@@ -7,10 +7,26 @@ import { motion } from "framer-motion";
 /* ================= LUXURY TOAST SYSTEM PARSING & CONTROLS ================= */
 
 const getToastMeta = (t) => {
-  const rawMsg = typeof t.message === "string" ? t.message : String(resolveValue(t.message, t));
+  const resolved = resolveValue(t.message, t);
+  let rawMsg = "";
+  let isCustomElement = false;
+
+  if (React.isValidElement(resolved)) {
+    isCustomElement = true;
+  } else if (typeof resolved === "string") {
+    rawMsg = resolved;
+  } else if (resolved && typeof resolved === "object") {
+    rawMsg = resolved.message || resolved.error || "Notification";
+  } else {
+    rawMsg = String(resolved || "");
+  }
+
+  if (rawMsg === "[object Object]") {
+    rawMsg = "Notification";
+  }
   
-  let type = "success";
-  let title = "Success";
+  let type = t.type || "success";
+  let title = type === "error" ? "Error" : "Success";
   let icon = <FiCheck />;
   let colorClass = "success-toast";
   let isCartSuccess = false;
@@ -85,7 +101,7 @@ const getToastMeta = (t) => {
     colorClass = "warning-toast";
   }
 
-  return { type, title, icon, colorClass, isCartSuccess, productData, rawMsg };
+  return { type, title, icon, colorClass, isCartSuccess, productData, rawMsg, isCustomElement, resolved };
 };
 
 const ToastItem = ({ t }) => {
@@ -102,6 +118,25 @@ const ToastItem = ({ t }) => {
       toast.dismiss(toastId);
     }
   };
+
+  // Custom interactive JSX elements
+  if (meta.isCustomElement) {
+    return (
+      <motion.div
+        layout
+        initial={{ y: -16, opacity: 0, scale: 0.96 }}
+        animate={t.visible ? { y: 0, opacity: 1, scale: 1 } : { y: -16, opacity: 0, scale: 0.96 }}
+        exit={{ y: -16, opacity: 0, scale: 0.96 }}
+        transition={{ duration: 0.22, ease: "easeOut" }}
+        className="luxury-toast-card"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={(e) => handleTouchEnd(e, t.id)}
+        style={{ pointerEvents: "auto", padding: "16px", minWidth: "300px" }}
+      >
+        {meta.resolved}
+      </motion.div>
+    );
+  }
 
   // Cart Success Notification (Bellavita-style luxury card)
   if (meta.isCartSuccess && meta.productData) {

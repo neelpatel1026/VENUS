@@ -111,7 +111,7 @@ const Cart = () => {
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
   const totalOriginal = cartItems.reduce((acc, item) => acc + (item.originalPrice || item.price) * item.qty, 0);
   const savings = totalOriginal > subtotal ? totalOriginal - subtotal : 0;
-  const shipping = subtotal > 500 ? 0 : 50; // free shipping over 500
+  const shipping = 0; // Standard Free Shipping (harmonized with Checkout)
   const gst = subtotal * 0.18; // GST included (18% display)
   const grandTotal = subtotal + shipping;
 

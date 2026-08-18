@@ -3,7 +3,7 @@
  * Supports automatic WebP/AVIF formatting, quality adjustments, and responsive thumbnail scaling.
  */
 export const getOptimizedImageUrl = (url, width = 800) => {
-  if (!url || typeof url !== "string") return "/placeholder.jpg";
+  if (!url || typeof url !== "string") return "/cosmetic_1.avif";
 
   // Check if the URL is hosted on Cloudinary
   if (url.includes("res.cloudinary.com") && url.includes("/upload/")) {
