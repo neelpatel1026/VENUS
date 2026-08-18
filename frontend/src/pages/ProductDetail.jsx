@@ -745,23 +745,139 @@ const ProductDetail = () => {
 
   if (loading) {
     return (
-      <div className="product-detail-wrapper route-fade-in" style={{ background: "#FFFFFF" }}>
-        <div className="product-detail" style={{ background: "#FFFFFF", border: "none" }}>
-          <div className="detail-image-container" style={{ background: "#FFFFFF", borderRadius: "16px" }}>
-            <div className="shimmer-bg" style={{ width: "100%", height: "100%", aspectRatio: "1/1", minHeight: "450px", borderRadius: "16px" }} />
-          </div>
-          <div className="detail-info" style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "10px" }}>
-            <div className="shimmer-bg" style={{ height: "12px", width: "120px", borderRadius: "4px" }} />
-            <div className="shimmer-bg" style={{ height: "32px", width: "85%", borderRadius: "4px" }} />
-            <div style={{ display: "flex", gap: "4px", margin: "4px 0" }}>
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="shimmer-bg" style={{ width: "16px", height: "16px", borderRadius: "50%" }}></div>
+      <div className="product-detail-wrapper route-fade-in product-detail-skeleton-container">
+        {/* 1. Breadcrumb skeleton */}
+        <div className="product-detail-breadcrumb skeleton-breadcrumb-row">
+          <div className="skeleton-pill shimmer-ivory" style={{ width: "50px", height: "13px" }} />
+          <span>/</span>
+          <div className="skeleton-pill shimmer-ivory" style={{ width: "45px", height: "13px" }} />
+          <span>/</span>
+          <div className="skeleton-pill shimmer-ivory" style={{ width: "70px", height: "13px" }} />
+          <span>/</span>
+          <div className="skeleton-pill shimmer-ivory" style={{ width: "110px", height: "13px" }} />
+        </div>
+
+        {/* Main Product Skeleton Layout (2-column on desktop, 1-column on mobile) */}
+        <div className="product-detail-layout">
+          {/* Left Column: Gallery */}
+          <div className="product-gallery-column">
+            <div className="product-gallery-card skeleton-gallery-card">
+              <div className="skeleton-main-image shimmer-ivory" />
+            </div>
+
+            {/* Thumbnail Row */}
+            <div className="product-thumbnails-row skeleton-thumbnails-row">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="skeleton-thumb shimmer-ivory" />
               ))}
             </div>
-            <div className="shimmer-bg" style={{ height: "28px", width: "180px", borderRadius: "4px" }} />
-            <div style={{ height: "1px", background: "rgba(0,0,0,0.06)", margin: "8px 0" }} />
-            <div className="shimmer-bg" style={{ height: "60px", width: "100%", borderRadius: "12px" }} />
-            <div className="shimmer-bg" style={{ height: "48px", width: "100%", borderRadius: "12px", marginTop: "12px" }} />
+          </div>
+
+          {/* Right Column: Info & Actions */}
+          <div className="product-info-column">
+            <div className="product-header-info">
+              {/* Category */}
+              <div className="skeleton-pill shimmer-ivory" style={{ width: "90px", height: "12px", marginBottom: "10px" }} />
+              
+              {/* Title */}
+              <div className="skeleton-line shimmer-ivory" style={{ width: "88%", height: "26px", marginBottom: "8px" }} />
+              <div className="skeleton-line shimmer-ivory" style={{ width: "55%", height: "26px", marginBottom: "14px" }} />
+              
+              {/* Rating */}
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "18px" }}>
+                <div style={{ display: "flex", gap: "4px" }}>
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="skeleton-star-item shimmer-ivory" />
+                  ))}
+                </div>
+                <div className="skeleton-pill shimmer-ivory" style={{ width: "28px", height: "14px" }} />
+                <div className="skeleton-pill shimmer-ivory" style={{ width: "75px", height: "14px" }} />
+              </div>
+            </div>
+
+            {/* Pricing Card */}
+            <div className="product-pricing-card" style={{ borderBottom: "1px solid #ECE7DF", paddingBottom: "16px" }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "12px", marginBottom: "8px" }}>
+                <div className="skeleton-line shimmer-ivory" style={{ width: "120px", height: "32px" }} />
+                <div className="skeleton-pill shimmer-ivory" style={{ width: "75px", height: "18px" }} />
+                <div className="skeleton-pill shimmer-ivory" style={{ width: "60px", height: "18px" }} />
+              </div>
+              <div className="skeleton-pill shimmer-ivory" style={{ width: "130px", height: "12px", marginBottom: "14px" }} />
+              
+              {/* Prepaid discount banner skeleton */}
+              <div className="skeleton-banner shimmer-ivory" style={{ height: "42px", width: "100%", borderRadius: "8px" }} />
+            </div>
+
+            {/* Quantity + Add to Cart Row */}
+            <div className="product-purchase-actions-row" style={{ marginTop: "4px" }}>
+              <div className="skeleton-qty-box shimmer-ivory" />
+              <div className="skeleton-cta-btn shimmer-ivory" />
+            </div>
+
+            {/* Trust Icons Grid Skeleton (2x2 on mobile, 4 on desktop) */}
+            <div className="trust-icons-container">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="trust-card skeleton-trust-card">
+                  <div className="skeleton-circle shimmer-ivory" style={{ width: "22px", height: "22px", margin: "0 auto 6px auto" }} />
+                  <div className="skeleton-pill shimmer-ivory" style={{ width: "70%", height: "10px", margin: "0 auto" }} />
+                </div>
+              ))}
+            </div>
+
+            {/* Delivery & Fulfillment Card Skeleton */}
+            <div className="fulfillment-card skeleton-fulfillment-card">
+              <div className="skeleton-line shimmer-ivory" style={{ width: "160px", height: "18px", marginBottom: "14px" }} />
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div className="skeleton-line shimmer-ivory" style={{ width: "90%", height: "13px" }} />
+                <div className="skeleton-line shimmer-ivory" style={{ width: "80%", height: "13px" }} />
+                <div className="skeleton-line shimmer-ivory" style={{ width: "85%", height: "13px" }} />
+                <div className="skeleton-line shimmer-ivory" style={{ width: "75%", height: "13px" }} />
+              </div>
+            </div>
+
+            {/* Purity Standards Card Skeleton */}
+            <div className="purity-standards-card skeleton-purity-card">
+              <div className="skeleton-line shimmer-ivory" style={{ width: "180px", height: "18px", marginBottom: "14px" }} />
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div className="skeleton-line shimmer-ivory" style={{ width: "70%", height: "13px" }} />
+                <div className="skeleton-line shimmer-ivory" style={{ width: "85%", height: "13px" }} />
+                <div className="skeleton-line shimmer-ivory" style={{ width: "80%", height: "13px" }} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Product Highlights Box Skeleton */}
+        <div className="product-highlights-box skeleton-highlights-box">
+          <div className="skeleton-line shimmer-ivory" style={{ width: "200px", height: "24px", margin: "0 auto 24px auto" }} />
+          <div className="highlights-grid">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                <div className="skeleton-circle shimmer-ivory" style={{ width: "22px", height: "22px", flexShrink: 0 }} />
+                <div className="skeleton-line shimmer-ivory" style={{ flex: 1, height: "15px" }} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Reviews Section Skeleton */}
+        <div className="reviews-section-redesigned skeleton-reviews-box" style={{ marginTop: "40px" }}>
+          <div className="reviews-left-col">
+            <div className="skeleton-line shimmer-ivory" style={{ width: "90px", height: "48px", margin: "0 auto 8px auto" }} />
+            <div className="skeleton-pill shimmer-ivory" style={{ width: "120px", height: "14px", margin: "0 auto" }} />
+          </div>
+          <div className="reviews-center-col">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                <div className="skeleton-pill shimmer-ivory" style={{ width: "24px", height: "12px" }} />
+                <div className="skeleton-line shimmer-ivory" style={{ flex: 1, height: "8px", borderRadius: "4px" }} />
+                <div className="skeleton-pill shimmer-ivory" style={{ width: "24px", height: "12px" }} />
+              </div>
+            ))}
+          </div>
+          <div className="reviews-right-col">
+            <div className="skeleton-line shimmer-ivory" style={{ width: "140px", height: "16px", marginBottom: "8px" }} />
+            <div className="skeleton-pill shimmer-ivory" style={{ width: "180px", height: "42px", borderRadius: "8px" }} />
           </div>
         </div>
       </div>

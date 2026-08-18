@@ -95,7 +95,7 @@ const Gifting = () => {
     };
 
     dispatch(addToCart(cartPayload));
-    toast.success(`${activeProduct.name} added to your shopping bag!`);
+    toast.success(`${activeProduct.name} added to cart! 🛍️`, { product: activeProduct });
     setActiveProduct(null);
   };
 

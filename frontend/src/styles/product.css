@@ -4888,4 +4888,191 @@
     grid-template-columns: 1fr !important;
     gap: 12px !important;
   }
-}
+}
+
+/* ================= PRODUCT DETAIL SKELETON STYLES ================= */
+
+.product-detail-skeleton-container {
+  min-height: 80vh;
+}
+
+/* Luxury Warm Ivory Shimmer */
+.shimmer-ivory {
+  background: linear-gradient(90deg, #F5EFE6 0%, #FAF6F0 50%, #F5EFE6 100%) !important;
+  background-size: 200% 100% !important;
+  animation: shimmerLuxury 1.6s ease-in-out infinite !important;
+}
+
+@keyframes shimmerLuxury {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-pill {
+  border-radius: 6px !important;
+}
+
+.skeleton-line {
+  border-radius: 6px !important;
+}
+
+.skeleton-circle {
+  border-radius: 50% !important;
+}
+
+.skeleton-star-item {
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 4px !important;
+}
+
+.skeleton-breadcrumb-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.skeleton-gallery-card {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important;
+  background: #FAF7F2 !important;
+  border: 1px solid #ECE7DF !important;
+  border-radius: 16px !important;
+}
+
+.skeleton-main-image {
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: 12px !important;
+}
+
+.skeleton-thumbnails-row {
+  display: flex !important;
+  gap: 10px !important;
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+}
+.skeleton-thumbnails-row::-webkit-scrollbar {
+  display: none !important;
+}
+
+.skeleton-thumb {
+  width: 72px !important;
+  height: 72px !important;
+  min-width: 72px !important;
+  border-radius: 8px !important;
+  border: 1px solid #ECE7DF !important;
+  background: #FAF7F2 !important;
+}
+
+.skeleton-qty-box {
+  width: 110px !important;
+  height: 50px !important;
+  border-radius: 10px !important;
+  flex-shrink: 0 !important;
+}
+
+.skeleton-cta-btn {
+  flex: 1 !important;
+  height: 50px !important;
+  border-radius: 10px !important;
+}
+
+.skeleton-trust-card {
+  min-height: 80px !important;
+  border: 1px solid #ECE7DF !important;
+  background: #FAF7F2 !important;
+  padding: 14px 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+
+.skeleton-fulfillment-card,
+.skeleton-purity-card {
+  border: 1px solid #E6D8C3 !important;
+  background: #FAF7F2 !important;
+}
+
+.skeleton-highlights-box {
+  border: 1px solid #E8E0D4 !important;
+  background: #FAF7F2 !important;
+}
+
+.skeleton-reviews-box {
+  border-top: 1px solid #E8E0D4 !important;
+}
+
+/* Mobile responsive skeleton styles */
+@media (max-width: 768px) {
+  .skeleton-gallery-card {
+    border-radius: 12px !important;
+    padding: 10px !important;
+    max-height: 380px !important;
+  }
+
+  .skeleton-thumb {
+    width: 64px !important;
+    height: 64px !important;
+    min-width: 64px !important;
+  }
+
+  .skeleton-qty-box,
+  .skeleton-cta-btn {
+    height: 46px !important;
+  }
+
+  .skeleton-trust-card {
+    min-height: 68px !important;
+    padding: 10px 8px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .skeleton-gallery-card {
+    max-height: 320px !important;
+  }
+
+  .skeleton-thumb {
+    width: 56px !important;
+    height: 56px !important;
+    min-width: 56px !important;
+  }
+
+  .skeleton-qty-box {
+    width: 95px !important;
+    height: 44px !important;
+  }
+
+  .skeleton-cta-btn {
+    height: 44px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .skeleton-gallery-card {
+    max-height: 260px !important;
+  }
+
+  .skeleton-thumb {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+  }
+
+  .skeleton-qty-box {
+    width: 100% !important;
+  }
+
+  .skeleton-cta-btn {
+    width: 100% !important;
+  }
+}
+

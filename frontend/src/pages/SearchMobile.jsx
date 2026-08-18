@@ -149,7 +149,7 @@ const SearchMobile = () => {
         originalPrice: product.originalPrice || product.price,
       })
     );
-    toast.success("Added to Shopping Bag! 🛍️");
+    toast.success(`${product.name} added to cart! 🛍️`, { product });
   };
 
   // Highlight matching text in search results

@@ -8,84 +8,278 @@
 
 @media (min-width: 769px) {
   .premium-toast-container {
-    margin: 24px !important;
+    margin: 20px !important;
+    top: 20px !important;
+    left: 20px !important;
   }
 }
 
 @media (max-width: 768px) {
   .premium-toast-container {
-    top: 84px !important; /* Safe area below mobile header */
+    top: 76px !important; /* Positioned right below header */
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
     padding: 0 16px !important;
+    display: flex !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
   }
 }
 
-/* Base Luxury Card styling */
+/* Base Luxury Notification Card */
 .luxury-toast-card {
   position: relative !important;
   background: #FFFFFF !important;
-  border: 1px solid #ECE7DF !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid #EAE4DC !important;
+  border-left: 3.5px solid #C8A165 !important; /* Subtle VENUS CARE Gold Brand Accent */
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
   border-radius: 14px !important;
   padding: 14px 16px !important;
   display: flex !important;
-  align-items: center !important;
-  gap: 12px !important;
-  width: 360px !important;
+  align-items: flex-start !important;
+  gap: 14px !important;
+  width: 380px !important;
   max-width: 100% !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
   pointer-events: auto !important;
-  font-family: 'Inter', -apple-system, sans-serif !important;
-  border-left: 4px solid #C8A165 !important; /* Gold Accent */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
 }
 
 @media (max-width: 768px) {
   .luxury-toast-card {
     width: 100% !important;
-    max-width: 360px !important;
+    max-width: calc(100vw - 32px) !important;
+    padding: 12px 14px !important;
+    gap: 12px !important;
+    border-radius: 12px !important;
+    margin: 0 auto !important;
   }
 }
 
-/* Product layout inside Toast */
-.toast-product-layout {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
+@media (max-width: 360px) {
+  .luxury-toast-card {
+    max-width: calc(100vw - 20px) !important;
+    padding: 10px 12px !important;
+    gap: 10px !important;
+  }
 }
 
-.toast-product-thumb {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  object-fit: cover;
+/* ================= CART SUCCESS NOTIFICATION LAYOUT ================= */
+
+.luxury-cart-success-card {
+  display: flex !important;
+  align-items: center !important;
+  border-left-color: #C8A165 !important;
+}
+
+/* Product thumbnail wrapper */
+.cart-toast-image-wrapper {
+  width: 68px;
+  height: 68px;
+  min-width: 68px;
+  min-height: 68px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #FAF7F2;
   border: 1px solid #ECE7DF;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.toast-product-info {
+.cart-toast-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .cart-toast-image-wrapper {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    min-height: 64px;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .cart-toast-image-wrapper {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+  }
+}
+
+/* Cart Toast Body */
+.cart-toast-body {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  gap: 6px;
   flex: 1;
+  min-width: 0;
+  padding-right: 18px; /* Safe space away from close button */
+}
+
+.cart-toast-text-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
 }
 
-.toast-product-name {
+.cart-toast-product-name {
   font-family: 'Inter', sans-serif;
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 700;
-  color: #1A1A1A;
-  white-space: nowrap;
+  color: #111112;
+  margin: 0;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: break-word;
 }
 
-.toast-product-msg {
-  font-size: 11.5px;
+.cart-toast-success-subtext {
+  font-size: 12px;
   color: #6B7280;
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.3;
 }
 
-/* Left icon styling for standard toasts */
+@media (max-width: 768px) {
+  .cart-toast-product-name {
+    font-size: 13px;
+  }
+  .cart-toast-success-subtext {
+    font-size: 11.5px;
+  }
+}
+
+@media (max-width: 360px) {
+  .cart-toast-product-name {
+    font-size: 12px;
+  }
+  .cart-toast-success-subtext {
+    font-size: 11px;
+  }
+}
+
+/* Action Buttons Row */
+.cart-toast-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.cart-toast-view-cart-btn {
+  background: #111112;
+  color: #FFFFFF !important;
+  border: 1px solid #111112;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+}
+
+.cart-toast-view-cart-btn:hover {
+  background: #C8A165;
+  border-color: #C8A165;
+  color: #FFFFFF !important;
+}
+
+.cart-toast-continue-btn {
+  background: #FFFFFF;
+  color: #111112;
+  border: 1px solid #D8D2C7;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+}
+
+.cart-toast-continue-btn:hover {
+  background: #FAF7F2;
+  border-color: #C8A165;
+  color: #C8A165;
+}
+
+@media (max-width: 768px) {
+  .cart-toast-view-cart-btn,
+  .cart-toast-continue-btn {
+    padding: 5px 11px;
+    font-size: 9.5px;
+  }
+}
+
+@media (max-width: 360px) {
+  .cart-toast-actions-row {
+    gap: 6px;
+  }
+  .cart-toast-view-cart-btn,
+  .cart-toast-continue-btn {
+    padding: 4px 9px;
+    font-size: 9px;
+  }
+}
+
+/* Close Icon Button */
+.luxury-toast-close-btn {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  background: transparent !important;
+  border: none !important;
+  color: #9CA3AF !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  transition: all 0.15s ease !important;
+}
+
+.luxury-toast-close-btn:hover {
+  color: #111112 !important;
+  background: #F3F4F6 !important;
+}
+
+/* ================= STANDARD TOASTS (Wishlist, Removed, Error, Warning) ================= */
+
 .toast-left-color-circle {
   width: 32px;
   height: 32px;
@@ -97,12 +291,36 @@
   font-size: 14px;
 }
 
-/* Specific Notification Type Styles */
+.toast-content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding-right: 18px;
+}
+
+.toast-title-text {
+  font-family: 'Cinzel', serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #111112;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.toast-message-body {
+  font-size: 12.5px;
+  color: #4B5563;
+  line-height: 1.4;
+}
+
+/* Non-cart Type Specific Accents */
 .luxury-toast-card.success-toast {
-  border-left-color: #C8A165 !important; /* Maintain gold accent */
+  border-left-color: #C8A165 !important;
 }
 .success-toast .toast-left-color-circle {
-  background: rgba(200, 161, 101, 0.08);
+  background: rgba(200, 161, 101, 0.1);
   color: #C8A165;
 }
 
@@ -139,137 +357,8 @@
   color: #DC2626;
 }
 
-/* Content layout */
-.toast-content-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.toast-title-text {
-  font-family: 'Cinzel', serif;
-  font-size: 11px;
-  font-weight: 700;
-  color: #1A1A1A;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.toast-message-body {
-  font-size: 12.5px;
-  color: #4B5563;
-  line-height: 1.4;
-}
-
-.toast-subtext {
-  display: block;
-  font-size: 10.5px;
-  color: #9CA3AF;
-  margin-top: 2px;
-}
-
-/* Toast action button rows */
-.toast-buttons-row {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.toast-action-view-cart-btn {
-  background: #1A1A1A;
-  color: #FFFFFF;
-  border: none;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-family: 'Cinzel', serif;
-  font-size: 9.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  display: inline-block;
-  text-align: center;
-}
-
-.toast-action-view-cart-btn:hover {
-  background: #C8A165;
-}
-
-.toast-action-continue-btn {
-  background: transparent;
-  color: #1A1A1A;
-  border: 1px solid #ECE7DF;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-family: 'Cinzel', serif;
-  font-size: 9.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.toast-action-continue-btn:hover {
-  background: #FAFAFA;
-  border-color: #C8A165;
-}
-
-/* Close icon */
-.toast-luxury-close-btn {
-  background: none !important;
-  border: none !important;
-  color: #9CA3AF !important;
-  font-size: 12px !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 18px !important;
-  height: 18px !important;
-  padding: 0 !important;
-  border-radius: 50% !important;
-  flex-shrink: 0 !important;
-  transition: all 0.2s ease !important;
-}
-
-.toast-luxury-close-btn:hover {
-  color: #1A1A1A !important;
-  background: rgba(0, 0, 0, 0.04) !important;
-}
-
-/* Progress bar (green by default for success) */
-.toast-progress-bar-line {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  background: #16A34A; /* Green progress bar */
-  transition: width 0.1s linear;
-}
-
-.success-toast .toast-progress-bar-line {
-  background: #16A34A !important;
-}
-.wishlist-toast .toast-progress-bar-line {
-  background: #DB2777 !important;
-}
-.removed-toast .toast-progress-bar-line {
-  background: #DC2626 !important;
-}
-.warning-toast .toast-progress-bar-line {
-  background: #D97706 !important;
-}
-.error-toast .toast-progress-bar-line {
-  background: #DC2626 !important;
-}
-
 @keyframes shakeToast {
   0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-6px); }
-  40%, 80% { transform: translateX(6px); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
 }
