@@ -778,7 +778,7 @@ const ProductDetail = () => {
   }
 
   return (
-    <div className="product-detail-wrapper route-fade-in" style={{ background: "#FFFFFF", padding: "40px 24px" }}>
+    <div className="product-detail-wrapper route-fade-in">
       {/* Breadcrumb */}
       <div className="product-detail-breadcrumb" style={{ color: "#666666", fontSize: "14px", marginBottom: "24px" }}>
         <Link to="/" style={{ color: "#B8945A", textDecoration: "none" }}>Home</Link>
@@ -791,11 +791,11 @@ const ProductDetail = () => {
       </div>
 
       {/* Main product detail */}
-      <div className="product-detail-layout" style={{ display: "grid", gridTemplateColumns: "minmax(520px, 620px) minmax(420px, 520px)", gap: "64px", background: "transparent", border: "none", padding: 0, boxShadow: "none", alignItems: "start" }}>
+      <div className="product-detail-layout">
         
         {/* Left Column (Sticky Gallery) */}
-        <div className="product-gallery-column" style={{ display: "flex", flexDirection: "column", gap: "16px", position: "sticky", top: "96px", alignSelf: "start", height: "fit-content" }}>
-          <div className="product-gallery-card" style={{ background: "#FFFFFF", border: "1px solid #ECECEC", borderRadius: "28px", padding: "24px", position: "relative", height: "560px", boxShadow: "none" }}>
+        <div className="product-gallery-column">
+          <div className="product-gallery-card">
             {discount > 0 && (
               <span className="discount-badge" style={{ top: "24px", left: "24px", background: "#B8945A", color: "#FFFFFF", padding: "6px 12px", fontSize: "11px", fontWeight: "700" }}>
                 {discount}% OFF
@@ -843,7 +843,7 @@ const ProductDetail = () => {
               {product.category}
             </span>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px" }}>
-              <h1 className="product-detail-title" style={{ fontFamily: "Cinzel, serif", fontSize: "40px", color: "#111112", margin: "8px 0 4px 0", fontWeight: "600", flex: 1 }}>
+              <h1 className="product-detail-title">
                 {product.name}
               </h1>
               <button
@@ -955,7 +955,7 @@ const ProductDetail = () => {
             )}
             
             {user?.role !== "admin" && (
-              <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+              <div className="product-purchase-actions-row">
                 {/* Quantity picker */}
                 {product.stock > 0 && (
                   <div style={{ display: "flex", alignItems: "center", border: "1px solid #E8E0D4", borderRadius: "12px", background: "#FFFFFF", overflow: "hidden" }}>
@@ -977,7 +977,7 @@ const ProductDetail = () => {
                   </div>
                 )}
 
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1, minWidth: "160px" }}>
                   {product.stock === 0 ? (
                     <button
                       disabled
@@ -1033,17 +1033,7 @@ const ProductDetail = () => {
           )}
 
           {/* Trust Icons Section */}
-          <div 
-            className="trust-icons-container"
-            style={{ 
-              display: "grid", 
-              gridTemplateColumns: "repeat(4, 1fr)", 
-              gap: "12px", 
-              borderTop: "1px solid #E8E0D4", 
-              paddingTop: "24px", 
-              textAlign: "center" 
-            }}
-          >
+          <div className="trust-icons-container">
             <div className="trust-card" style={{ fontSize: "12px", color: "#111112", fontWeight: "600", padding: "10px", background: "#FAF7F2", borderRadius: "10px" }}>🪔<br /><span style={{ display: "block", marginTop: "4px", color: "#6B6B6B" }}>Imported Oils</span></div>
             <div className="trust-card" style={{ fontSize: "12px", color: "#111112", fontWeight: "600", padding: "10px", background: "#FAF7F2", borderRadius: "10px" }}>🐰<br /><span style={{ display: "block", marginTop: "4px", color: "#6B6B6B" }}>Cruelty-Free</span></div>
             <div className="trust-card" style={{ fontSize: "12px", color: "#111112", fontWeight: "600", padding: "10px", background: "#FAF7F2", borderRadius: "10px" }}>📜<br /><span style={{ display: "block", marginTop: "4px", color: "#6B6B6B" }}>IFRA Certified</span></div>
@@ -1051,7 +1041,7 @@ const ProductDetail = () => {
           </div>
 
           {/* Fulfillment Information Card */}
-          <div style={{ background: "#FAF7F2", border: "1px solid #E6D8C3", borderRadius: "20px", padding: "24px", marginTop: "24px" }}>
+          <div style={{ background: "#FAF7F2", border: "1px solid #E6D8C3", borderRadius: "20px", padding: "24px", marginTop: "24px" }} className="fulfillment-card">
             <h4 style={{ fontFamily: "Playfair Display, serif", fontSize: "18px", color: "#1A1A1A", marginBottom: "16px" }}>Delivery & fulfillment</h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px", fontSize: "13px", color: "#5F5F5F" }}>
               <div>🚚 <strong>Estimated Delivery:</strong> {product.fulfillment?.eta || "Delivered within 2 - 4 business days."}</div>
@@ -1166,7 +1156,7 @@ const ProductDetail = () => {
 
       {/* SECTION 2 — PRODUCT HIGHLIGHTS */}
       {Array.isArray(product.highlights) && product.highlights.length > 0 && (
-        <div style={{ marginTop: "80px", background: "#FFFFFF", borderRadius: "16px", padding: "40px", border: "1px solid #E8E0D4" }}>
+        <div className="product-highlights-box">
           <h3 style={{ fontFamily: "Cinzel, serif", fontSize: "28px", color: "#111112", marginBottom: "28px", textAlign: "center" }}>Product Highlights</h3>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "24px" }}>
             {product.highlights.map((highlight, idx) => (
