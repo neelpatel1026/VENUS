@@ -1194,10 +1194,7 @@
   
   .mobile-navbar-container {
     display: flex !important;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    position: relative;
     height: 56px; /* Standard premium slim height to maximize viewport on mobile */
     background-color: #FFFFFF;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
