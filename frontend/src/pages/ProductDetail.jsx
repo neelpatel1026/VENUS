@@ -480,12 +480,29 @@ const ProductDetail = () => {
       const method = editReviewId ? "PUT" : "POST";
       const activeOrderId = searchParams.get("orderId") || eligibleOrderId;
       
+      const mediaList = [];
+      uploadedImages.forEach(img => {
+        if (typeof img === 'string') {
+          mediaList.push({ url: img, type: "image", public_id: "" });
+        } else if (img && img.url) {
+          mediaList.push({ url: img.url, type: "image", public_id: img.public_id || "" });
+        }
+      });
+      if (uploadedVideo) {
+        if (typeof uploadedVideo === 'string') {
+          mediaList.push({ url: uploadedVideo, type: "video", public_id: "" });
+        } else if (uploadedVideo.url) {
+          mediaList.push({ url: uploadedVideo.url, type: "video", public_id: uploadedVideo.public_id || "" });
+        }
+      }
+
       const payload = {
         rating,
         title,
         review: reviewContent,
-        images: uploadedImages,
-        video: uploadedVideo,
+        images: uploadedImages.map(img => typeof img === 'string' ? img : img.url),
+        video: typeof uploadedVideo === 'string' ? uploadedVideo : (uploadedVideo?.url || ""),
+        media: mediaList,
         location: locationInput,
         variant: variantInput,
         recommend,
@@ -595,6 +612,7 @@ const ProductDetail = () => {
   const [uploadingMedia, setUploadingMedia] = useState(false);
 
   const handleRealUpload = async (e, type) => {
+    if (uploadingMedia) return;
     const files = e.target?.files ? Array.from(e.target.files) : [];
     if (files.length === 0) return;
 
@@ -641,10 +659,10 @@ const ProductDetail = () => {
         const data = await res.json();
         if (res.ok && data.url) {
           if (type === "image") {
-            setUploadedImages((prev) => [...prev, data.url]);
+            setUploadedImages((prev) => [...prev, { url: data.url, secure_url: data.url, type: "image", public_id: data.public_id || "" }]);
             toast.success(`Image "${file.name}" uploaded successfully! 📸`);
           } else {
-            setUploadedVideo(data.url);
+            setUploadedVideo({ url: data.url, secure_url: data.url, type: "video", public_id: data.public_id || "" });
             toast.success(`Video "${file.name}" uploaded successfully! 📹`);
           }
         } else {
@@ -1592,29 +1610,32 @@ const ProductDetail = () => {
 
                <form onSubmit={handleSubmitReview} className="modal-form-luxury" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                  {!user && (
-                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }} className="guest-info-fields">
-                     <div className="form-input-group">
-                       <label style={{ fontWeight: "600", fontSize: "13px", color: "#1A1A1A" }}>Your Name</label>
-                       <input
-                         type="text"
-                         placeholder="Enter your name"
-                         value={guestName}
-                         onChange={(e) => setGuestName(e.target.value)}
-                         required
-                       />
-                     </div>
-                     <div className="form-input-group">
-                       <label style={{ fontWeight: "600", fontSize: "13px", color: "#1A1A1A" }}>Your Email</label>
-                       <input
-                         type="email"
-                         placeholder="Enter your email"
-                         value={guestEmail}
-                         onChange={(e) => setGuestEmail(e.target.value)}
-                         required
-                       />
-                     </div>
-                   </div>
-                 )}
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }} className="guest-info-fields">
+                      <div className="form-input-group">
+                        <label style={{ fontWeight: "600", fontSize: "13px", color: "#1A1A1A" }}>Your Name</label>
+                        <input
+                          type="text"
+                          placeholder="Enter your name"
+                          value={guestName}
+                          onChange={(e) => setGuestName(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="form-input-group">
+                        <label style={{ fontWeight: "600", fontSize: "13px", color: "#1A1A1A" }}>Your Email</label>
+                        <input
+                          type="email"
+                          placeholder="Enter your email"
+                          value={guestEmail}
+                          onChange={(e) => setGuestEmail(e.target.value)}
+                          required
+                        />
+                        <span style={{ fontSize: "11px", color: "#6B7280", marginTop: "4px", display: "block" }}>
+                          Your email will not be displayed publicly.
+                        </span>
+                      </div>
+                    </div>
+                  )}
                  {/* Step 2 — Essential fields */}
                 <div className="form-input-group">
                   <label style={{ fontWeight: "600", fontSize: "13px", color: "#1A1A1A" }}>Review Title</label>
@@ -1783,6 +1804,34 @@ const ProductDetail = () => {
                          minWidth: "140px"
                        }}
                      >
+                       📸 Take Photo
+                       <input 
+                         type="file" 
+                         accept="image/*" 
+                         capture="environment"
+                         onChange={(e) => handleRealUpload(e, "image")} 
+                         style={{ display: "none" }} 
+                       />
+                     </label>
+
+                     <label 
+                       className="upload-btn-premium"
+                       style={{ 
+                         display: "inline-flex", 
+                         alignItems: "center", 
+                         justifyContent: "center", 
+                         background: "#FFFFFF", 
+                         border: "1px solid #D9C8A8", 
+                         borderRadius: "12px", 
+                         height: "44px", 
+                         padding: "0 22px", 
+                         cursor: "pointer", 
+                         fontSize: "13px", 
+                         fontWeight: "600",
+                         color: "#111111",
+                         minWidth: "140px"
+                       }}
+                     >
                        🎥 Choose Video
                        <input 
                          type="file" 
@@ -1803,23 +1852,26 @@ const ProductDetail = () => {
                    {/* Previews */}
                    {((uploadedImages.length > 0) || uploadedVideo) && (
                      <div className="uploaded-previews-flex" style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginTop: "20px", justifyContent: "center" }}>
-                       {uploadedImages.map((img, idx) => (
-                         <div key={idx} className="preview-media-card" style={{ position: "relative", width: "88px", height: "88px", borderRadius: "14px", overflow: "hidden", border: "1px solid #ECECEC" }}>
-                           <img src={img} alt="Preview attachment" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                           <button 
-                             type="button" 
-                             onClick={() => setUploadedImages(prev => prev.filter((_, i) => i !== idx))} 
-                             className="remove-media-btn"
-                             aria-label="Remove image"
-                             style={{ position: "absolute", top: "4px", right: "4px", background: "rgba(0,0,0,0.6)", border: "none", color: "#FFFFFF", borderRadius: "50%", width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", cursor: "pointer" }}
-                           >
-                             <FiX />
-                           </button>
-                         </div>
-                       ))}
+                       {uploadedImages.map((img, idx) => {
+                         const imgSrc = typeof img === "string" ? img : (img?.url || img?.secure_url || "");
+                         return (
+                           <div key={idx} className="preview-media-card" style={{ position: "relative", width: "88px", height: "88px", borderRadius: "14px", overflow: "hidden", border: "1px solid #ECECEC" }}>
+                             <img src={imgSrc} alt="Preview attachment" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                             <button 
+                               type="button" 
+                               onClick={() => setUploadedImages(prev => prev.filter((_, i) => i !== idx))} 
+                               className="remove-media-btn"
+                               aria-label="Remove image"
+                               style={{ position: "absolute", top: "4px", right: "4px", background: "rgba(0,0,0,0.6)", border: "none", color: "#FFFFFF", borderRadius: "50%", width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", cursor: "pointer" }}
+                             >
+                               <FiX />
+                             </button>
+                           </div>
+                         );
+                       })}
                        {uploadedVideo && (
                          <div className="preview-media-card video-card" style={{ position: "relative", width: "88px", height: "88px", borderRadius: "14px", overflow: "hidden", border: "1px solid #ECECEC" }}>
-                           <video src={uploadedVideo} muted playsInline style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                           <video src={typeof uploadedVideo === "string" ? uploadedVideo : (uploadedVideo?.url || uploadedVideo?.secure_url || "")} muted playsInline style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                            <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFFFFF", pointerEvents: "none" }}>▶</div>
                            <button 
                              type="button" 

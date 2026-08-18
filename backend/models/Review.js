@@ -71,6 +71,13 @@ const reviewSchema = new mongoose.Schema(
     video: {
       type: String,
     },
+    media: [
+      {
+        url: { type: String, required: true },
+        type: { type: String, enum: ["image", "video"], required: true },
+        public_id: { type: String }
+      }
+    ],
     location: {
       type: String,
       default: "",

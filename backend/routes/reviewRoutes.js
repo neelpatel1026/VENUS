@@ -45,7 +45,12 @@ router.post("/upload", returnUpload.single("file"), async (req, res) => {
       });
     };
     const uploadResult = await uploadFromBuffer(req.file.buffer);
-    res.status(200).json({ url: uploadResult.secure_url });
+    res.status(200).json({ 
+      url: uploadResult.secure_url,
+      secure_url: uploadResult.secure_url,
+      type: resourceType,
+      public_id: uploadResult.public_id
+    });
   } catch (error) {
     console.error("🔴 Cloudinary review upload error:", error);
     res.status(500).json({ message: "Upload failed: " + error.message });

@@ -43,7 +43,7 @@ const updateProductRatingStats = async (productId) => {
  */
 const createReview = async (req, res) => {
   try {
-    const { productId, rating, title, review, images, video, location, variant, recommend, isAnonymous, skinType, pros, cons, guestName, guestEmail } = req.body;
+    const { productId, rating, title, review, images, video, media, location, variant, recommend, isAnonymous, skinType, pros, cons, guestName, guestEmail } = req.body;
     
     // Determine user info
     const userId = req.user ? req.user._id : new mongoose.Types.ObjectId();
@@ -63,6 +63,40 @@ const createReview = async (req, res) => {
       return res.status(400).json({ message: "Review must be between 20 and 1000 characters" });
     }
 
+    // Process media array
+    const finalMedia = [];
+    if (Array.isArray(media) && media.length > 0) {
+      finalMedia.push(...media);
+    } else {
+      if (Array.isArray(images)) {
+        images.forEach(img => {
+          if (img) {
+            const url = typeof img === 'string' ? img : (img.url || img.secure_url || "");
+            if (url) {
+              finalMedia.push({
+                url,
+                type: "image",
+                public_id: img.public_id || ""
+              });
+            }
+          }
+        });
+      }
+      if (video) {
+        const url = typeof video === 'string' ? video : (video.url || video.secure_url || "");
+        if (url) {
+          finalMedia.push({
+            url,
+            type: "video",
+            public_id: video.public_id || ""
+          });
+        }
+      }
+    }
+
+    const imagesArray = finalMedia.filter(m => m.type === "image").map(m => m.url);
+    const videoUrl = finalMedia.find(m => m.type === "video")?.url || "";
+
     // 5. Create Review (Bypass order verification for guest support)
     const finalVariant = variant || "Standard Edition";
     const newReview = new Review({
@@ -75,8 +109,9 @@ const createReview = async (req, res) => {
       title: title.trim(),
       review: review.trim(),
       isVerifiedPurchase: req.user ? true : false,
-      images: Array.isArray(images) ? images : [],
-      video: typeof video === "string" ? video : "",
+      images: imagesArray,
+      video: videoUrl,
+      media: finalMedia,
       location: typeof location === "string" ? location : "",
       variant: finalVariant,
       recommend: recommend !== false,
@@ -109,7 +144,7 @@ const createReview = async (req, res) => {
  */
 const editReview = async (req, res) => {
   try {
-    const { rating, title, review, images, video, location, variant, recommend, isAnonymous, skinType, pros, cons } = req.body;
+    const { rating, title, review, images, video, media, location, variant, recommend, isAnonymous, skinType, pros, cons } = req.body;
     const reviewId = req.params.id;
     const userId = req.user._id;
 
@@ -136,8 +171,47 @@ const editReview = async (req, res) => {
     if (rating) reviewObj.rating = rating;
     if (title) reviewObj.title = title.trim();
     if (review) reviewObj.review = review.trim();
-    if (Array.isArray(images)) reviewObj.images = images;
-    if (typeof video === "string") reviewObj.video = video;
+
+    // Process updated media
+    const finalMedia = [];
+    if (Array.isArray(media) && media.length > 0) {
+      finalMedia.push(...media);
+    } else if (Array.isArray(images) || video) {
+      if (Array.isArray(images)) {
+        images.forEach(img => {
+          if (img) {
+            const url = typeof img === 'string' ? img : (img.url || img.secure_url || "");
+            if (url) {
+              finalMedia.push({
+                url,
+                type: "image",
+                public_id: img.public_id || ""
+              });
+            }
+          }
+        });
+      }
+      if (video) {
+        const url = typeof video === 'string' ? video : (video.url || video.secure_url || "");
+        if (url) {
+          finalMedia.push({
+            url,
+            type: "video",
+            public_id: video.public_id || ""
+          });
+        }
+      }
+    }
+
+    if (finalMedia.length > 0) {
+      reviewObj.media = finalMedia;
+      reviewObj.images = finalMedia.filter(m => m.type === "image").map(m => m.url);
+      reviewObj.video = finalMedia.find(m => m.type === "video")?.url || "";
+    } else {
+      if (Array.isArray(images)) reviewObj.images = images;
+      if (typeof video === "string") reviewObj.video = video;
+    }
+
     if (typeof location === "string") reviewObj.location = location;
     if (typeof variant === "string") reviewObj.variant = variant;
     if (typeof recommend === "boolean") reviewObj.recommend = recommend;
@@ -291,12 +365,13 @@ const getProductReviews = async (req, res) => {
       isHidden: false,
       $or: [
         { images: { $exists: true, $not: { $size: 0 } } },
-        { video: { $exists: true, $ne: "" } }
+        { video: { $exists: true, $ne: "" } },
+        { media: { $exists: true, $not: { $size: 0 } } }
       ]
     })
       .sort({ createdAt: -1 })
       .limit(10)
-      .select("images video customerName rating title review createdAt");
+      .select("images video media customerName rating title review createdAt");
 
     // Dynamic Review Highlight Chips Count
     const allReviewsText = await Review.find({ productId, isHidden: false }).select("review");
@@ -325,9 +400,51 @@ const getProductReviews = async (req, res) => {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5); // top 5 highlights
 
+    const normalizeMediaForReview = (rev) => {
+      if (!rev) return null;
+      const doc = rev.toObject ? rev.toObject() : rev;
+      
+      const normalizedMedia = [];
+      if (Array.isArray(doc.media) && doc.media.length > 0) {
+        normalizedMedia.push(...doc.media);
+      } else {
+        if (Array.isArray(doc.images)) {
+          doc.images.forEach(img => {
+            if (img) {
+              const url = typeof img === 'string' ? img : (img.url || img.secure_url || "");
+              if (url) {
+                normalizedMedia.push({
+                  url,
+                  type: "image",
+                  public_id: img.public_id || ""
+                });
+              }
+            }
+          });
+        }
+        if (doc.video) {
+          const url = typeof doc.video === 'string' ? doc.video : (doc.video.url || doc.video.secure_url || "");
+          if (url) {
+            normalizedMedia.push({
+              url,
+              type: "video",
+              public_id: doc.video.public_id || ""
+            });
+          }
+        }
+      }
+      return { ...doc, media: normalizedMedia };
+    };
+
+    const normalizedReviews = reviews.map(normalizeMediaForReview);
+    const normalizedCustomerGallery = customerGallery.map(normalizeMediaForReview);
+    const normalizedTopPositiveReview = normalizeMediaForReview(topPositiveReview);
+    const normalizedTopCriticalReview = normalizeMediaForReview(topCriticalReview);
+    const normalizedLatestReview = normalizeMediaForReview(latestReview);
+
     res.status(200).json({
       success: true,
-      reviews,
+      reviews: normalizedReviews,
       pagination: {
         total: totalReviews,
         page,
@@ -341,12 +458,12 @@ const getProductReviews = async (req, res) => {
         recommendRate,
         verifiedCount,
       },
-      customerGallery,
+      customerGallery: normalizedCustomerGallery,
       highlights: computedChips,
       featured: {
-        topPositiveReview,
-        topCriticalReview,
-        latestReview,
+        topPositiveReview: normalizedTopPositiveReview,
+        topCriticalReview: normalizedTopCriticalReview,
+        latestReview: normalizedLatestReview,
       }
     });
   } catch (error) {
