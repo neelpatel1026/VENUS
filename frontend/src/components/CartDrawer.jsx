@@ -314,7 +314,7 @@ const CartDrawer = () => {
               )}
             </div>
 
-            {/* 5. Sticky Bottom Checkout Panel */}
+            {/* 5. Compact Sticky Bottom Checkout Panel */}
             {cartItems.length > 0 && (
               <div className="cart-drawer-footer">
                 <div className="footer-subtotal-row">
@@ -325,20 +325,20 @@ const CartDrawer = () => {
                   <strong className="subtotal-amount">₹{subtotal.toFixed(2)}</strong>
                 </div>
                 
-                <div className="footer-actions-buttons">
-                  <button
-                    className="btn-footer-checkout-gold"
-                    onClick={() => {
-                      handleClose();
-                      navigate("/checkout");
-                    }}
-                  >
-                    <span>Proceed to Checkout</span>
-                    <FiArrowRight className="btn-arrow-icon" />
-                  </button>
+                <button
+                  className="btn-footer-checkout-gold"
+                  onClick={() => {
+                    handleClose();
+                    navigate("/checkout");
+                  }}
+                >
+                  <span>Proceed to Checkout</span>
+                  <FiArrowRight className="btn-arrow-icon" />
+                </button>
 
-                  <button
-                    className="btn-footer-view-bag"
+                <div className="footer-secondary-links-row">
+                  <button 
+                    className="footer-link-secondary"
                     onClick={() => {
                       handleClose();
                       navigate("/cart");
@@ -346,14 +346,14 @@ const CartDrawer = () => {
                   >
                     View Bag ({totalItemsCount})
                   </button>
+                  <span className="footer-links-divider">•</span>
+                  <button 
+                    className="footer-link-secondary" 
+                    onClick={handleClose}
+                  >
+                    Continue Shopping
+                  </button>
                 </div>
-
-                <button 
-                  className="btn-drawer-footer-continue" 
-                  onClick={handleClose}
-                >
-                  Continue Shopping
-                </button>
               </div>
             )}
           </motion.aside>
