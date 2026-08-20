@@ -700,8 +700,6 @@ const ProductDetail = () => {
         qty: selectedQty,
       }),
     );
-
-    toast.success(`${product.name} added to cart! 🛍️`, { product });
   };
 
   const getStageClass = (index) => {
@@ -1201,23 +1199,6 @@ const ProductDetail = () => {
 
         </div>
       </div>
-
-      {/* Sticky Mobile Add to Cart Bar */}
-      {product.stock > 0 && (
-        <div className="sticky-mobile-cart-bar">
-          <div className="sticky-cart-price-info">
-            <span className="sticky-cart-price-label">Total Price</span>
-            <strong className="sticky-cart-price-val">₹{(product.price * selectedQty).toFixed(2)}</strong>
-          </div>
-          <button 
-            type="button"
-            onClick={handleAddToCart}
-            className="sticky-cart-submit-btn"
-          >
-            Add To Cart ({selectedQty})
-          </button>
-        </div>
-      )}
 
       {/* SECTION 2 — PRODUCT HIGHLIGHTS */}
       {Array.isArray(product.highlights) && product.highlights.length > 0 && (
@@ -1936,25 +1917,23 @@ const ProductDetail = () => {
         </div>
       )}
 
-      {/* Sticky Mobile Add To Cart / Buy Now Panel */}
+      {/* Single Fixed Mobile Sticky CTA Bar (Bellavita / Nykaa Luxe Standards) */}
       {user?.role !== "admin" && product.stock > 0 && (
-        <div className="mobile-sticky-cart">
+        <div className="single-mobile-sticky-bar">
           <button 
-            onClick={handleAddToCart}
-            className="mobile-sticky-btn add-to-cart"
             type="button"
-            style={{ flex: 1, height: "52px", border: "1px solid #111111", background: "none", color: "#111111", borderRadius: "8px", fontWeight: "700", cursor: "pointer" }}
+            onClick={handleAddToCart}
+            className="mobile-sticky-cta-btn btn-mobile-add-bag"
           >
             Add to Bag
           </button>
           <button 
+            type="button"
             onClick={() => {
               handleAddToCart();
-              navigate("/cart");
+              navigate("/checkout");
             }}
-            className="mobile-sticky-btn buy-now"
-            type="button"
-            style={{ flex: 1, height: "52px", border: "none", background: "#111111", color: "#FFFFFF", borderRadius: "8px", fontWeight: "700", cursor: "pointer" }}
+            className="mobile-sticky-cta-btn btn-mobile-buy-now"
           >
             Buy Now
           </button>

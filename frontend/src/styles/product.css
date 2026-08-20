@@ -4013,8 +4013,8 @@
   line-height: 1.4;
 }
 
-/* Sticky Mobile Add to Cart Bar (Hidden on desktop) */
-.sticky-mobile-cart-bar {
+/* Single Fixed Mobile Sticky CTA Bar (Hidden on desktop) */
+.single-mobile-sticky-bar {
   display: none;
 }
 
@@ -4699,7 +4699,8 @@
     margin-bottom: 12px !important;
   }
 
-  .sticky-mobile-cart-bar {
+  /* Single Clean Mobile Sticky Action Bar (Bellavita / Nykaa Luxe Standards) */
+  .single-mobile-sticky-bar {
     display: flex !important;
     position: fixed !important;
     bottom: 0 !important;
@@ -4707,43 +4708,55 @@
     right: 0 !important;
     width: 100% !important;
     background: #FFFFFF !important;
-    border-top: 1px solid #E6D8C3 !important;
-    padding: 10px 16px !important;
-    justify-content: space-between !important;
+    border-top: 1px solid #ECE7DF !important;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)) 16px !important;
+    gap: 12px !important;
     align-items: center !important;
-    z-index: 999 !important;
-    box-shadow: 0 -4px 15px rgba(0,0,0,0.06) !important;
+    z-index: 1500 !important;
+    box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.08) !important;
     box-sizing: border-box !important;
   }
 
-  .sticky-cart-price-info {
-    display: flex !important;
-    flex-direction: column !important;
-  }
-
-  .sticky-cart-price-label {
-    font-size: 10px !important;
-    color: #6B6B6B !important;
-  }
-
-  .sticky-cart-price-val {
-    font-size: 18px !important;
-    color: #1A1A1A !important;
-    font-family: 'Playfair Display', serif !important;
+  .mobile-sticky-cta-btn {
+    flex: 1 !important;
+    height: 48px !important;
+    border-radius: 30px !important;
+    font-size: 13px !important;
     font-weight: 700 !important;
-  }
-
-  .sticky-cart-submit-btn {
-    background: #111111 !important;
-    color: #FFFFFF !important;
-    padding: 10px 18px !important;
-    border-radius: 8px !important;
-    font-weight: 700 !important;
-    border: none !important;
-    font-size: 12px !important;
+    letter-spacing: 0.6px !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
     cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .btn-mobile-add-bag {
+    background: #FFFFFF !important;
+    border: 1.5px solid #1A1A1A !important;
+    color: #1A1A1A !important;
+  }
+
+  .btn-mobile-add-bag:active {
+    background: #F5F5F5 !important;
+    transform: scale(0.98) !important;
+  }
+
+  .btn-mobile-buy-now {
+    background: linear-gradient(135deg, #C8A25A 0%, #B89350 100%) !important;
+    border: none !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 15px rgba(200, 162, 90, 0.35) !important;
+  }
+
+  .btn-mobile-buy-now:active {
+    background: linear-gradient(135deg, #B89350 0%, #A88340 100%) !important;
+    transform: scale(0.98) !important;
+  }
+
+  .product-detail-wrapper {
+    padding-bottom: 90px !important;
   }
 
   .product-highlights-box {

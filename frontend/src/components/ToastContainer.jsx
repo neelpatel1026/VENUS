@@ -138,68 +138,9 @@ const ToastItem = ({ t }) => {
     );
   }
 
-  // Cart Success Notification (Bellavita-style luxury card)
-  if (meta.isCartSuccess && meta.productData) {
-    return (
-      <motion.div
-        layout
-        initial={{ y: -16, opacity: 0, scale: 0.96 }}
-        animate={t.visible ? { y: 0, opacity: 1, scale: 1 } : { y: -16, opacity: 0, scale: 0.96 }}
-        exit={{ y: -16, opacity: 0, scale: 0.96 }}
-        transition={{ duration: 0.22, ease: "easeOut" }}
-        className="luxury-toast-card luxury-cart-success-card"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={(e) => handleTouchEnd(e, t.id)}
-        style={{ pointerEvents: "auto" }}
-      >
-        {/* Close Button */}
-        <button
-          type="button"
-          className="luxury-toast-close-btn"
-          onClick={() => toast.dismiss(t.id)}
-          aria-label="Close notification"
-        >
-          <FiX />
-        </button>
-
-        {/* Product Image */}
-        <div className="cart-toast-image-wrapper">
-          <img
-            src={meta.productData.image}
-            alt={meta.productData.name}
-            className="cart-toast-img"
-            onError={(e) => {
-              e.target.src = "/cosmetic_1.avif";
-            }}
-          />
-        </div>
-
-        {/* Product Info & Action Buttons */}
-        <div className="cart-toast-body">
-          <div className="cart-toast-text-block">
-            <h4 className="cart-toast-product-name">{meta.productData.name}</h4>
-            <p className="cart-toast-success-subtext">Added to cart successfully</p>
-          </div>
-
-          <div className="cart-toast-actions-row">
-            <Link
-              to="/cart"
-              className="cart-toast-view-cart-btn"
-              onClick={() => toast.dismiss(t.id)}
-            >
-              VIEW CART →
-            </Link>
-            <button
-              type="button"
-              className="cart-toast-continue-btn"
-              onClick={() => toast.dismiss(t.id)}
-            >
-              CONTINUE
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    );
+  // Cart Success Notification (Suppressed to eliminate duplicate popups; cart drawer handles feedback)
+  if (meta.isCartSuccess) {
+    return null;
   }
 
   // Standard non-cart notification

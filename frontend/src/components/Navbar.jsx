@@ -763,7 +763,7 @@ const Navbar = () => {
                         <FaMapMarkerAlt className="info-row-icon" /> Ahmedabad, Gujarat, India
                       </div>
                       <div className="support-info-item-row-static">
-                        <FaClock className="info-row-icon" /> Mon–Sat | 9:00 AM – 7:00 PM
+                        <FaClock className="info-row-icon" /> Mon–Sat | 10:00 AM – 6:00 PM
                       </div>
                     </div>
 
