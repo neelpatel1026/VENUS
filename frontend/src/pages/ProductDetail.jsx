@@ -319,24 +319,40 @@ const ProductDetail = () => {
 
   // Vote Helpful
   const handleHelpfulVote = async (reviewId) => {
-    if (!user || !user.token) {
-      toast.error("Please login to vote");
+    let clientId = localStorage.getItem("venus_review_client_id");
+    if (!clientId) {
+      clientId = "client_" + Math.random().toString(36).substring(2) + Date.now().toString(36);
+      localStorage.setItem("venus_review_client_id", clientId);
+    }
+
+    const localVoted = JSON.parse(localStorage.getItem("venus_helpful_voted") || "[]");
+    if (localVoted.includes(reviewId)) {
+      toast.error("You have already voted this review as helpful");
       return;
     }
+
     try {
+      const headers = { "Content-Type": "application/json" };
+      if (user?.token) {
+        headers["Authorization"] = `Bearer ${user.token}`;
+      }
       const res = await fetch(`/api/reviews/${reviewId}/helpful`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
+        headers,
+        body: JSON.stringify({ clientId }),
       });
       const data = await res.json();
       if (res.ok) {
-        toast.success("Voted as helpful! 👍");
+        toast.success("Marked as helpful! 👍");
+        localStorage.setItem("venus_helpful_voted", JSON.stringify([...localVoted, reviewId]));
         setReviews((prev) =>
           prev.map((r) =>
             r._id === reviewId
-              ? { ...r, helpfulCount: data.helpfulCount, helpfulUsers: [...r.helpfulUsers, user._id] }
+              ? { 
+                  ...r, 
+                  helpfulCount: data.helpfulCount, 
+                  helpfulUsers: user ? [...(r.helpfulUsers || []), user._id] : (r.helpfulUsers || []) 
+                }
               : r
           )
         );
@@ -1461,6 +1477,356 @@ const ProductDetail = () => {
           </div>
         </div>
       )}
+
+      {/* SECTION — REVIEWS LISTING & FILTERS */}
+      <div className="product-reviews-container font-outfit" style={{ maxWidth: "1240px", margin: "40px auto 60px auto", padding: "0 20px" }}>
+        
+        {/* Review Toolbar with Search, Sorting & Filters */}
+        <div className="reviews-toolbar-card-luxury" style={{ marginBottom: "32px" }}>
+          <div className="toolbar-search-sort-row" style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
+            
+            {/* Search within reviews */}
+            <div className="luxury-search-input-box" style={{ flex: "1 1 280px" }}>
+              <input
+                type="text"
+                placeholder="Search within reviews (e.g. fragrance, texture, results)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button 
+                  type="button" 
+                  onClick={() => setSearchQuery("")} 
+                  className="clear-btn"
+                  aria-label="Clear search"
+                >
+                  <FiX />
+                </button>
+              )}
+            </div>
+
+            {/* Sorting Dropdown */}
+            <div className="luxury-custom-sort-dropdown-container" style={{ width: "200px" }}>
+              <select
+                className="luxury-sort-select-element font-outfit"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                aria-label="Sort Reviews"
+              >
+                <option value="newest">Most Recent</option>
+                <option value="highest">Highest Rating</option>
+                <option value="lowest">Lowest Rating</option>
+                <option value="helpful">Most Helpful</option>
+                <option value="photos">With Photos</option>
+                <option value="videos">With Videos</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Filter Chips Toolbar */}
+          <div className="toolbar-filter-chips-rows">
+            {/* Rating Stars Filter */}
+            <div className="filter-chips-flex">
+              <span className="row-label">Rating:</span>
+              <button
+                type="button"
+                onClick={() => setRatingFilter("")}
+                className={`filter-chip-pill ${ratingFilter === "" ? "active" : ""}`}
+              >
+                All ({stats?.totalReviews || 0})
+              </button>
+              {[5, 4, 3, 2, 1].map((st) => (
+                <button
+                  key={st}
+                  type="button"
+                  onClick={() => setRatingFilter(ratingFilter === String(st) ? "" : String(st))}
+                  className={`filter-chip-pill ${ratingFilter === String(st) ? "active" : ""}`}
+                >
+                  {st} ★ ({stats?.breakdown?.[st] || 0})
+                </button>
+              ))}
+            </div>
+
+            {/* Media & Verification Filter */}
+            <div className="filter-chips-flex chips-row-border">
+              <span className="row-label">Filter:</span>
+              <button
+                type="button"
+                onClick={() => setMediaFilter(mediaFilter === "photos" ? "" : "photos")}
+                className={`filter-chip-pill ${mediaFilter === "photos" ? "active" : ""}`}
+              >
+                📷 With Photos
+              </button>
+              <button
+                type="button"
+                onClick={() => setMediaFilter(mediaFilter === "videos" ? "" : "videos")}
+                className={`filter-chip-pill ${mediaFilter === "videos" ? "active" : ""}`}
+              >
+                🎥 With Videos
+              </button>
+              <button
+                type="button"
+                onClick={() => setVerifiedFilter(!verifiedFilter)}
+                className={`filter-chip-pill ${verifiedFilter ? "active" : ""}`}
+              >
+                ✔ Verified Purchase ({stats?.verifiedCount || 0})
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Reviews Feed Stack */}
+        {reviewsLoading && reviews.length === 0 ? (
+          <div className="reviews-skeleton-stack-luxury">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="review-skeleton-card-luxury shimmer">
+                <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                  <div className="skeleton-avatar" />
+                  <div style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1 }}>
+                    <div className="skeleton-text" style={{ width: "140px", height: "14px" }} />
+                    <div className="skeleton-text" style={{ width: "80px", height: "10px" }} />
+                  </div>
+                </div>
+                <div className="skeleton-text" style={{ width: "60%", height: "14px", marginTop: "8px" }} />
+                <div className="skeleton-text" style={{ width: "90%", height: "12px" }} />
+                <div className="skeleton-text" style={{ width: "80%", height: "12px" }} />
+              </div>
+            ))}
+          </div>
+        ) : reviews.length > 0 ? (
+          <div className="reviews-feed-stack-luxury">
+            {reviews.map((rev) => {
+              const reviewImages = rev.images || (Array.isArray(rev.media) ? rev.media.filter(m => m.type === "image").map(m => m.url) : []);
+              const reviewVideo = rev.video || (Array.isArray(rev.media) ? rev.media.find(m => m.type === "video")?.url : "");
+              const allMediaList = [
+                ...reviewImages,
+                ...(reviewVideo ? [reviewVideo] : [])
+              ];
+              const isHelpfulVoted = user && rev.helpfulUsers && rev.helpfulUsers.includes(user._id);
+
+              return (
+                <div key={rev._id} className="review-card-item-luxury font-outfit">
+                  {/* Card Header */}
+                  <div className="review-card-header-luxury">
+                    <div className="review-user-row-luxury">
+                      <div className="review-user-avatar-luxury font-serif">
+                        {rev.customerName ? rev.customerName.charAt(0).toUpperCase() : "V"}
+                      </div>
+                      <div className="review-user-details-luxury">
+                        <div className="user-name-badges">
+                          <h4>{rev.customerName || "Verified Customer"}</h4>
+                          {rev.isVerifiedPurchase && (
+                            <span className="verified-purchase-badge-green" title="Verified Buyer">
+                              ✔ Verified Purchase
+                            </span>
+                          )}
+                        </div>
+                        {rev.location && (
+                          <span className="location-badge-gray">
+                            📍 {rev.location}
+                          </span>
+                        )}
+                        {rev.variant && (
+                          <span className="variant-label-text">
+                            Edition: {rev.variant}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="review-stars-date-luxury">
+                      <div className="stars-row-luxury">
+                        {[...Array(5)].map((_, idx) => (
+                          <HiStar
+                            key={idx}
+                            style={{ color: idx < rev.rating ? "#C8A165" : "#E5E7EB" }}
+                          />
+                        ))}
+                      </div>
+                      <span className="date-meta-text">
+                        {new Date(rev.createdAt).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric"
+                        })}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Card Body */}
+                  <div className="review-card-body-luxury">
+                    <div className="title-row-badges">
+                      <h5>{rev.title}</h5>
+                      {rev.edited && <span className="edited-badge-luxury">(edited)</span>}
+                    </div>
+
+                    <p className="detailed-feedback-text">
+                      {rev.review}
+                    </p>
+
+                    {/* Skin type & Pros / Cons if available */}
+                    {(rev.skinType || rev.pros || rev.cons) && (
+                      <div className="pros-cons-grid-luxury">
+                        {rev.skinType && (
+                          <div className="pro-con-item">
+                            <span className="icon-badge pro">✨</span>
+                            <span className="text-content"><strong>Skin Type:</strong> {rev.skinType}</span>
+                          </div>
+                        )}
+                        {rev.pros && (
+                          <div className="pro-con-item">
+                            <span className="icon-badge pro">✓</span>
+                            <span className="text-content"><strong>Pros:</strong> {rev.pros}</span>
+                          </div>
+                        )}
+                        {rev.cons && (
+                          <div className="pro-con-item">
+                            <span className="icon-badge con">✕</span>
+                            <span className="text-content"><strong>Cons:</strong> {rev.cons}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Attached Photos and Videos */}
+                    {allMediaList.length > 0 && (
+                      <div className="attached-media-preview-luxury-row">
+                        {allMediaList.map((mediaUrl, mIdx) => {
+                          const isVid = mediaUrl.includes(".mp4") || mediaUrl.includes(".mov") || mediaUrl.includes(".webm");
+                          return (
+                            <div
+                              key={mIdx}
+                              className="media-thumbnail-card-luxury"
+                              onClick={() => handleOpenLightbox(allMediaList, mIdx)}
+                            >
+                              {isVid ? (
+                                <>
+                                  <video src={mediaUrl} muted playsInline />
+                                  <span className="play-overlay-icon">▶</span>
+                                </>
+                              ) : (
+                                <>
+                                  <img src={mediaUrl} alt="" loading="lazy" />
+                                  <span className="zoom-overlay-icon">🔍</span>
+                                </>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* Merchant Reply if available */}
+                    {rev.merchantReply?.replyText && (
+                      <div className="merchant-reply-card-luxury">
+                        <div className="reply-header">
+                          <strong>Venus Care Response</strong>
+                          {rev.merchantReply.repliedAt && (
+                            <span className="reply-date">
+                              {new Date(rev.merchantReply.repliedAt).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
+                            </span>
+                          )}
+                        </div>
+                        <p className="reply-body-text">{rev.merchantReply.replyText}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Card Actions Footer */}
+                  <div className="review-card-actions-luxury">
+                    <div className="vote-actions-flex-luxury">
+                      <button
+                        type="button"
+                        onClick={() => handleHelpfulVote(rev._id)}
+                        className={`helpful-vote-btn-luxury ${isHelpfulVoted ? "voted" : ""}`}
+                        aria-label="Vote helpful"
+                      >
+                        👍 Helpful ({rev.helpfulCount || 0})
+                      </button>
+                    </div>
+
+                    <div className="meta-actions-flex-luxury">
+                      {(user && (user._id === rev.userId || user.role === "admin")) && (
+                        <div className="owner-edits-group">
+                          {user._id === rev.userId && (
+                            <button
+                              type="button"
+                              onClick={() => openEditReviewModal(rev)}
+                              className="edit-link-btn"
+                            >
+                              Edit
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteReview(rev._id)}
+                            className="delete-link-btn"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => handleReportReview(rev._id)}
+                        className="report-action-btn-luxury"
+                        disabled={rev.reported}
+                      >
+                        {rev.reported ? "Reported" : "Report"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Load More Reviews Button */}
+            {totalPages > page && (
+              <button
+                type="button"
+                onClick={() => setPage(prev => prev + 1)}
+                className="btn-load-more-reviews-luxury-gold"
+                disabled={reviewsLoading}
+              >
+                {reviewsLoading ? "Loading..." : "Load More Reviews"}
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="reviews-empty-state-luxury font-outfit">
+            <span className="empty-state-icon">✍️</span>
+            <h4>No Reviews Found</h4>
+            <p>
+              {searchQuery || ratingFilter || mediaFilter || verifiedFilter
+                ? "No reviews match your current filters. Try resetting the filters to see all feedback."
+                : "Be the first to review this luxury formulation and share your experience with other shoppers!"}
+            </p>
+            {searchQuery || ratingFilter || mediaFilter || verifiedFilter ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setRatingFilter("");
+                  setMediaFilter("");
+                  setVerifiedFilter(false);
+                  setSearchQuery("");
+                }}
+                className="btn-browse-shop-luxury-gold"
+              >
+                Clear All Filters
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={openWriteReviewModal}
+                className="btn-browse-shop-luxury-gold"
+              >
+                Write First Review
+              </button>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* SECTION 7 — YOU MAY ALSO LIKE */}
       {recommendations.length > 0 && (

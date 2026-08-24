@@ -97,18 +97,36 @@ const createReview = async (req, res) => {
     const imagesArray = finalMedia.filter(m => m.type === "image").map(m => m.url);
     const videoUrl = finalMedia.find(m => m.type === "video")?.url || "";
 
-    // 5. Create Review (Bypass order verification for guest support)
+    // 5. Check Verified Purchase status
+    let isVerifiedPurchase = false;
+    let verifiedOrderId = null;
+    if (req.user) {
+      try {
+        const deliveredOrder = await Order.findOne({
+          userId: req.user._id,
+          status: "Delivered",
+          "items.productId": productId,
+        });
+        if (deliveredOrder) {
+          isVerifiedPurchase = true;
+          verifiedOrderId = deliveredOrder._id;
+        }
+      } catch (err) {
+        console.warn("Could not check delivered order for verified purchase badge:", err.message);
+      }
+    }
+
     const finalVariant = variant || "Standard Edition";
     const newReview = new Review({
       productId,
-      userId,
-      orderId: new mongoose.Types.ObjectId(), // Generate placeholder order ID
+      userId: req.user ? req.user._id : null,
+      orderId: verifiedOrderId,
       customerName: displayName,
       customerEmail: displayEmail,
       rating,
       title: title.trim(),
       review: review.trim(),
-      isVerifiedPurchase: req.user ? true : false,
+      isVerifiedPurchase,
       images: imagesArray,
       video: videoUrl,
       media: finalMedia,
@@ -312,6 +330,12 @@ const getProductReviews = async (req, res) => {
       sortQuery = { rating: 1, createdAt: -1 };
     } else if (sort === "helpful") {
       sortQuery = { helpfulCount: -1, createdAt: -1 };
+    } else if (sort === "photos") {
+      query.images = { $exists: true, $not: { $size: 0 } };
+      sortQuery = { createdAt: -1 };
+    } else if (sort === "videos") {
+      query.video = { $exists: true, $ne: "" };
+      sortQuery = { createdAt: -1 };
     } else if (sort === "oldest") {
       sortQuery = { createdAt: 1 };
     }
@@ -479,7 +503,7 @@ const getProductReviews = async (req, res) => {
 const voteHelpful = async (req, res) => {
   try {
     const reviewId = req.params.id;
-    const userId = req.user._id;
+    const userId = req.user ? req.user._id : (req.body.clientId || null);
 
     const review = await Review.findById(reviewId);
     if (!review) {
@@ -487,18 +511,19 @@ const voteHelpful = async (req, res) => {
     }
 
     // Check if user already voted helpful
-    const hasVoted = review.helpfulUsers.includes(userId);
-    if (hasVoted) {
+    if (userId && review.helpfulUsers && review.helpfulUsers.some(id => id.toString() === userId.toString())) {
       return res.status(400).json({ message: "You have already voted this review as helpful" });
     }
 
-    review.helpfulUsers.push(userId);
-    review.helpfulCount += 1;
+    if (userId && mongoose.Types.ObjectId.isValid(userId)) {
+      review.helpfulUsers.push(userId);
+    }
+    review.helpfulCount = (review.helpfulCount || 0) + 1;
     
     // Remove from unhelpful if they had voted unhelpful before
-    if (review.unhelpfulUsers.includes(userId)) {
+    if (userId && review.unhelpfulUsers) {
       review.unhelpfulUsers = review.unhelpfulUsers.filter(id => id.toString() !== userId.toString());
-      review.unhelpfulCount = Math.max(0, review.unhelpfulCount - 1);
+      review.unhelpfulCount = Math.max(0, (review.unhelpfulCount || 0) - 1);
     }
     
     await review.save();

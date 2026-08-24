@@ -10,12 +10,12 @@ const reviewSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      default: null,
     },
     orderId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Order",
-      required: true,
+      default: null,
     },
     customerName: {
       type: String,
@@ -61,7 +61,7 @@ const reviewSchema = new mongoose.Schema(
     ],
     isVerifiedPurchase: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     images: [
       {
@@ -70,6 +70,7 @@ const reviewSchema = new mongoose.Schema(
     ],
     video: {
       type: String,
+      default: "",
     },
     media: [
       {
@@ -130,9 +131,10 @@ const reviewSchema = new mongoose.Schema(
 
 // Production Indexes for Review collection
 reviewSchema.index({ productId: 1, isHidden: 1 });
-reviewSchema.index({ userId: 1, productId: 1, orderId: 1 }, { unique: true });
+reviewSchema.index({ userId: 1, productId: 1 }, { sparse: true });
 reviewSchema.index({ userId: 1, createdAt: -1 });
 reviewSchema.index({ isHidden: 1, createdAt: -1 });
 reviewSchema.index({ rating: -1 });
+reviewSchema.index({ helpfulCount: -1 });
 
 module.exports = mongoose.model("Review", reviewSchema);

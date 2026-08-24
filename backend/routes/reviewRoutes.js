@@ -59,6 +59,9 @@ router.post("/upload", returnUpload.single("file"), async (req, res) => {
 
 const { reviewSubmitLimiter } = require("../middleware/authLimiter");
 router.post("/", reviewSubmitLimiter, createReview);
+router.post("/:id/helpful", voteHelpful);
+router.post("/:id/unhelpful", voteUnhelpful);
+router.post("/:id/report", reportReview);
 
 // Private/customer routes
 router.use(protect);
@@ -66,9 +69,6 @@ router.get("/check-eligibility", checkEligibility);
 router.get("/myreviews", getMyReviews);
 router.put("/:id", reviewSubmitLimiter, editReview);
 router.delete("/:id", deleteReview);
-router.post("/:id/helpful", voteHelpful);
-router.post("/:id/unhelpful", voteUnhelpful);
-router.post("/:id/report", reportReview);
 
 // Admin routes
 const adminLimiter = require("../middleware/adminLimiter");
