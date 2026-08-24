@@ -177,12 +177,12 @@ const ProductCard = ({ product }) => {
             {product.stock > 0 ? "Add To Cart" : "Out Of Stock"}
           </button>
         ) : (
-          <div 
-            className="luxury-add-to-cart-btn font-serif"
-            style={{ textAlign: "center", textDecoration: "none", display: "block" }}
+          <span 
+            className="admin-view-details-btn font-serif"
+            aria-label="View product details"
           >
-            View Details
-          </div>
+            VIEW DETAILS
+          </span>
         )}
       </div>
     </Link>
