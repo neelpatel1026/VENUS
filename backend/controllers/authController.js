@@ -123,18 +123,19 @@ const registerUser = async (req, res) => {
     //   phone,
     // });
 
-    const adminEmails = process.env.ADMIN_EMAILS.split(',');
+    const adminEmails = (process.env.ADMIN_EMAILS || "")
+      .split(",")
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean);
 
-const user = await User.create({
-  name: name.trim(),
-  email: email.toLowerCase().trim(),
-  password: hashedPassword,
-  phone,
-  role: adminEmails.includes(
-    email.toLowerCase().trim()
-  )
-    ? "admin" : "user",
-});
+    const user = await User.create({
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
+      password: hashedPassword,
+      phone,
+      provider: "local",
+      role: adminEmails.includes(email.toLowerCase().trim()) ? "admin" : "user",
+    });
 
     /* ================= RESPONSE ================= */
     // Send welcome email asynchronously
@@ -224,44 +225,86 @@ const loginUser = async (req, res) => {
   }
 };
 
-// GOOGLE LOGIN
+// GOOGLE LOGIN & SAFE AUTO-REGISTRATION
 const googleLogin = async (req, res) => {
-
   try {
-
     const { credential } = req.body;
 
-    // VERIFY GOOGLE TOKEN
+    if (!credential) {
+      return res.status(400).json({
+        success: false,
+        message: "Google credential token is required",
+      });
+    }
+
+    // 1. VERIFY GOOGLE ID TOKEN VIA OFFICIAL GOOGLE CLIENT
     const ticket = await client.verifyIdToken({
       idToken: credential,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
+    if (!payload) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid Google authentication payload",
+      });
+    }
 
-    const { sub, email, name, email_verified } = payload;
+    const { sub, email, name, picture, email_verified } = payload;
 
-    // CHECK VERIFIED GOOGLE EMAIL
+    // 2. CHECK VERIFIED GOOGLE EMAIL
     if (!email_verified) {
       return res.status(401).json({
-        message: 'Google email not verified',
+        success: false,
+        message: "Google email is not verified",
       });
     }
 
-    // FIND EXISTING USER
-    let user = await User.findOne({ email });
+    const normalizedEmail = email.toLowerCase().trim();
 
-    // BLOCK DIRECT GOOGLE REGISTER
-    if (!user) {
-      return res.status(401).json({
-        message: 'Please register first before Google Login',
+    // 3. FIND EXISTING USER BY EMAIL
+    let user = await User.findOne({ email: normalizedEmail });
+
+    if (user) {
+      // LINK GOOGLE ACCOUNT & UPDATE PROFILE METADATA IF NEEDED
+      let needsSave = false;
+      if (!user.googleId) {
+        user.googleId = sub;
+        needsSave = true;
+      }
+      if (!user.avatarUrl && picture) {
+        user.avatarUrl = picture;
+        needsSave = true;
+      }
+      if (!user.emailVerified) {
+        user.emailVerified = true;
+        needsSave = true;
+      }
+      // Note: Existing role is strictly preserved (never altered)
+      if (needsSave) {
+        await user.save();
+      }
+    } else {
+      // 4. AUTO-CREATE NEW USER ACCOUNT
+      // Strict Admin Safety Rule: Auto-created Google user role is ALWAYS "user"
+      user = await User.create({
+        name: name ? name.trim() : "Google User",
+        email: normalizedEmail,
+        password: "",
+        phone: "",
+        avatarUrl: picture || "",
+        googleId: sub,
+        provider: "google",
+        emailVerified: true,
+        role: "user",
       });
-    }
 
-    // SAVE GOOGLE ID FIRST TIME
-    if (!user.googleId) {
-      user.googleId = sub;
-      await user.save();
+      // Send welcome email asynchronously for newly auto-registered Google user
+      const { sendWelcomeEmail } = require("../utils/notificationService.js");
+      sendWelcomeEmail(user).catch((err) => {
+        console.error("❌ Welcome email for Google user failed:", err.message);
+      });
     }
 
     const token = generateToken(user._id);
@@ -272,17 +315,16 @@ const googleLogin = async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      phone: user.phone,
+      phone: user.phone || "",
+      avatarUrl: user.avatarUrl || "",
       role: user.role,
       token,
     });
-
   } catch (error) {
-
-    console.log(error);
-
+    console.error("[AUTH] Google authentication error:", error);
     res.status(500).json({
-      message: 'Google login failed',
+      success: false,
+      message: "Google login failed. Please try again.",
     });
   }
 };

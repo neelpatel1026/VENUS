@@ -26,9 +26,13 @@ const userSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      required: true,
-      unique: true,
+      default: "",
       trim: true,
+    },
+    provider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
     },
 
     googleId: {
@@ -161,5 +165,6 @@ const userSchema = new mongoose.Schema(
 userSchema.index({ role: 1, createdAt: -1 });
 userSchema.index({ createdAt: -1 });
 userSchema.index({ googleId: 1 }, { sparse: true });
+userSchema.index({ phone: 1 }, { unique: true, sparse: true });
 
 module.exports = mongoose.model("User", userSchema);

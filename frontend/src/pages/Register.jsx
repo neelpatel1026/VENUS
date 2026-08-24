@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { motion } from "framer-motion";
@@ -39,6 +39,71 @@ const Register = () => {
 
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  // GOOGLE LOGIN SUCCESS CALLBACK
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setLoading(true);
+      const res = await api.post("/api/auth/google-login", {
+        credential: credentialResponse.credential,
+      });
+
+      login(res.data);
+      toast.success("Welcome! Account connected with Google.");
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+      if (!navigator.onLine) {
+        toast.error("No internet connection");
+      } else if (error.code === "ECONNABORTED") {
+        toast.error("Request timed out");
+      } else {
+        toast.error(error?.response?.data?.message || "Google Authentication Failed");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // GSI SCRIPT INITIALIZATION FOR REGISTER
+  useEffect(() => {
+    const loadGsiScript = () => {
+      if (document.getElementById("google-gsi-client")) {
+        if (window.google) initGoogleGsi();
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.id = "google-gsi-client";
+      script.async = true;
+      script.defer = true;
+      script.onload = () => initGoogleGsi();
+      document.body.appendChild(script);
+    };
+
+    const initGoogleGsi = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          callback: handleGoogleSuccess,
+        });
+
+        setTimeout(() => {
+          const container = document.getElementById("google-register-btn-container");
+          if (container) {
+            const parentWidth = Math.max(200, Math.min(container.offsetWidth || 340, 400));
+            window.google.accounts.id.renderButton(container, {
+              theme: "outline",
+              size: "large",
+              width: parentWidth,
+            });
+          }
+        }, 100);
+      }
+    };
+
+    loadGsiScript();
+  }, []);
 
   // Password rules verification (Length: 6-50 characters)
   const rules = {
@@ -382,8 +447,22 @@ const Register = () => {
               )}
             </button>
 
+            {/* OR DIVIDER */}
+            <div className="auth-divider">OR</div>
+
+            {/* GOOGLE SIGN IN */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginBottom: "20px",
+              }}
+            >
+              <div id="google-register-btn-container" style={{ width: "100%" }}></div>
+            </div>
+
             {/* LOGIN REDIRECT LINK */}
-            <p style={{ margin: "24px 0 0 0", textAlign: "center", fontSize: "14px", color: "#6B7280" }}>
+            <p style={{ margin: "16px 0 0 0", textAlign: "center", fontSize: "14px", color: "#6B7280" }}>
               Already have an account?{" "}
               <Link to="/login" className="auth-link">
                 Sign In
