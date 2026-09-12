@@ -101,9 +101,9 @@ const Shop = () => {
   const filteredProducts = products
     .filter(p => {
       const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            (p.category && p.category.toLowerCase().includes(searchQuery.toLowerCase()));
-      const matchesCategory = selectedCategory === 'All' || 
-                              (p.category && p.category.trim().toLowerCase() === selectedCategory.trim().toLowerCase());
+        (p.category && p.category.toLowerCase().includes(searchQuery.toLowerCase()));
+      const matchesCategory = selectedCategory === 'All' ||
+        (p.category && p.category.trim().toLowerCase() === selectedCategory.trim().toLowerCase());
 
       let matchesPrice = true;
       if (priceRange === 'under-500') matchesPrice = p.price < 500;
@@ -122,10 +122,10 @@ const Shop = () => {
   return (
     <div className="shop-page-wrapper route-fade-in" style={{ background: '#FFFFFF', minHeight: '100vh' }}>
       <div className="shop-container-inner">
-        
+
         {/* BACK NAV ACTION */}
-        <button 
-          type="button" 
+        <button
+          type="button"
           onClick={handleBackClick}
           className="shop-back-nav-btn font-outfit"
         >
@@ -178,7 +178,7 @@ const Shop = () => {
 
           {/* Row 2: Filters controls (Side-by-side dropdowns) */}
           <div className="shop-filters-row-luxury">
-            
+
             {/* Price Filter dropdown */}
             <div className="shop-filter-select-wrapper">
               <select
@@ -215,8 +215,8 @@ const Shop = () => {
                 title="Reset Filters"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M2.15 2v6h6M21.85 22v-6h-6"/>
-                  <path d="M22 11.5a10 10 0 1 0-1.9 5.5"/>
+                  <path d="M2.15 2v6h6M21.85 22v-6h-6" />
+                  <path d="M22 11.5a10 10 0 1 0-1.9 5.5" />
                 </svg>
               </button>
             )}
@@ -235,22 +235,22 @@ const Shop = () => {
             <span style={{ fontSize: "28px" }}>⚠️</span>
             <h4 style={{ fontFamily: "Cinzel, serif", fontSize: "16px", margin: "12px 0 6px 0", color: "#1A1A1A" }}>Connection Delayed</h4>
             <p style={{ fontSize: "13px", color: "#6B7280", margin: "0 0 16px 0", lineHeight: "1.5" }}>{errorMsg}</p>
-            <button 
-              onClick={handleRetry} 
+            <button
+              onClick={handleRetry}
               style={{ padding: "10px 24px", background: "#C9A45C", color: "#FFFFFF", border: "none", borderRadius: "20px", fontSize: "12px", fontWeight: "700", textTransform: "uppercase", cursor: "pointer", boxShadow: "0 4px 10px rgba(200, 161, 101, 0.2)" }}
             >
               Retry Loading
             </button>
           </div>
         ) : filteredProducts.length === 0 ? (
-          
+
           /* 5. ELEGANT EMPTY STATE */
-          <div 
-            style={{ 
-              textAlign: 'center', 
-              padding: '60px 20px', 
-              background: '#FFFFFF', 
-              border: '1px solid rgba(0, 0, 0, 0.06)', 
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '60px 20px',
+              background: '#FFFFFF',
+              border: '1px solid rgba(0, 0, 0, 0.06)',
               borderRadius: '24px',
               maxWidth: '500px',
               margin: '40px auto'
@@ -293,7 +293,7 @@ const Shop = () => {
                 Showing <strong>{filteredProducts.length}</strong> of {products.length} premium products
               </span>
             </div>
-            
+
             {/* Products grid */}
             <div className="product-grid">
               {filteredProducts.map((product) => (
