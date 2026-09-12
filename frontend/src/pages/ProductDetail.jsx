@@ -1213,6 +1213,24 @@ const ProductDetail = () => {
             </div>
           </div>
 
+          {/* Mandatory Cosmetic Labeling & Regulatory Compliance Card */}
+          <div className="fulfillment-card cosmetic-compliance-card" style={{ marginTop: "24px", background: "#FAF9F6", border: "1px solid #EFEBE4", borderRadius: "16px", padding: "20px" }}>
+            <h4 className="fulfillment-card-title" style={{ fontFamily: "Cinzel, serif", fontSize: "15px", fontWeight: "700", color: "#1A1A1A", marginBottom: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
+              <span>⚖️</span> Regulatory & Cosmetic Labeling Information
+            </h4>
+            <div className="fulfillment-items-list" style={{ display: "grid", gridTemplateColumns: "1fr", gap: "10px", fontSize: "13px", color: "#4B5563", lineHeight: "1.6" }}>
+              <div>📦 <strong>Net Quantity:</strong> <span>{product.netQuantity || "100 ml / 3.38 fl. oz."}</span></div>
+              <div>🏷️ <strong>Batch Number:</strong> <span>{product.batchNumber || "VC-2026-08B"}</span></div>
+              <div>📅 <strong>MFG / EXP Dates:</strong> <span>MFG: {product.mfgDate || "08/2026"} | EXP: {product.expDate || "08/2028 (24 Months from MFG)"}</span></div>
+              <div>🏬 <strong>Manufacturer Info:</strong> <span>{product.manufacturerInfo || "Formulated & Manufactured by VENUS CARE Organics Pvt Ltd, Plot 42, GIDC Industrial Estate, Gujarat - 382445"}</span></div>
+              <div>📞 <strong>Customer Support:</strong> <span>{product.customerCareContact || "Email: support@venuscare.in | Support Hotline: +91 1800-123-83687"}</span></div>
+              <div>⚠️ <strong>Safety Warnings:</strong> <span>{product.safetyWarnings || "For external use only. Patch test recommended before use. Avoid direct contact with eyes."}</span></div>
+            </div>
+            <p style={{ fontSize: "11.5px", color: "#9CA3AF", marginTop: "14px", fontStyle: "italic", marginBottom: 0 }}>
+              *VENUS CARE cosmetic products are dermatologically tested for cosmetic skin care and beauty radiance. They do not claim to treat, cure, or diagnose medical conditions.
+            </p>
+          </div>
+
         </div>
       </div>
 

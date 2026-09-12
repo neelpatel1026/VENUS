@@ -205,6 +205,35 @@ const productSchema = new mongoose.Schema(
   averageRating: {
     type: Number,
     default: 4.8
+  },
+  // Indian Drugs & Cosmetics Compliance Fields
+  netQuantity: {
+    type: String,
+    default: "100 ml / 3.38 fl. oz."
+  },
+  batchNumber: {
+    type: String,
+    default: "VC-2026-08B"
+  },
+  mfgDate: {
+    type: String,
+    default: "08/2026"
+  },
+  expDate: {
+    type: String,
+    default: "08/2028 (24 Months from MFG)"
+  },
+  manufacturerInfo: {
+    type: String,
+    default: "Formulated & Manufactured by VENUS CARE Organics Pvt Ltd, Plot 42, GIDC Industrial Estate, Gujarat - 382445"
+  },
+  customerCareContact: {
+    type: String,
+    default: "Email: support@venuscare.in | Customer Care: +91 1800-123-83687"
+  },
+  safetyWarnings: {
+    type: String,
+    default: "For external use only. Perform a patch test 24 hours before full application. Avoid direct contact with eyes."
   }
 },
 {
