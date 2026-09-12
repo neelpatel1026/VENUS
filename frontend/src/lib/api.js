@@ -1,10 +1,17 @@
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+// Resolve API base URL dynamically based on environment
+const getBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  // In development, default to local Express backend server
+  return "http://localhost:5000";
+};
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
+  baseURL: getBaseUrl(),
+  timeout: 15000, // 15s timeout to account for cold starts
   withCredentials: true,
 });
 

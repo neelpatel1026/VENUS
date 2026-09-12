@@ -730,8 +730,10 @@
   }
 
   .btn-footer-checkout-gold {
-    height: 44px;
-    font-size: 12.5px;
+    height: 50px !important;
+    min-height: 50px !important;
+    font-size: 13px !important;
+    border-radius: 25px !important;
   }
 
   .footer-link-secondary {

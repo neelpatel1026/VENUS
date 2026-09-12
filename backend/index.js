@@ -55,12 +55,13 @@ app.use(cors({
       return callback(null, true);
     }
     const isAllowed = allowedOrigins.includes(origin) || 
-      (!isProd && (origin.endsWith(".vercel.app") || /^http:\/\/localhost:\d+$/.test(origin)));
+      (!isProd && (origin.endsWith(".vercel.app") || origin.endsWith(".onrender.com") || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)));
     
     if (isAllowed) {
       callback(null, true);
     } else {
-      callback(new Error('CORS blocked'));
+      console.warn(`[CORS WARN] Blocked request from origin: ${origin}`);
+      callback(null, false);
     }
   },
   credentials: true,

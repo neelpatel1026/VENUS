@@ -9,21 +9,32 @@ const protect = async (req, res, next) => {
     token = req.cookies.token;
   }
 
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const userId = decoded.id || decoded._id;
-      req.user = await User.findById(userId).select('-password');
-      if (!req.user) {
-        return res.status(401).json({ success: false, message: 'Not authorized, user not found' });
-      }
-      return next();
-    } catch (error) {
-      return res.status(401).json({ success: false, message: 'Not authorized, token failed' });
-    }
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'Access denied. Authentication token required.' });
   }
 
-  return res.status(401).json({ success: false, message: 'Not authorized, no token' });
+  try {
+    // Explicitly mandate HS256 algorithm to prevent JWT algorithm confusion / downgrade attacks
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
+    const userId = decoded.id || decoded._id;
+
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Invalid authentication payload.' });
+    }
+
+    const user = await User.findById(userId).select('-password');
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'User account no longer exists.' });
+    }
+
+    req.user = user;
+    return next();
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ success: false, message: 'Session expired. Please log in again.' });
+    }
+    return res.status(401).json({ success: false, message: 'Authentication failed. Invalid token.' });
+  }
 };
 
 module.exports = { protect };

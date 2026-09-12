@@ -12,36 +12,25 @@ let cacheTimestamp = 0;
 const getProducts = async (req, res) => {
   const startTime = Date.now();
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 100;
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(48, Math.max(1, parseInt(req.query.limit) || 12));
     const skip = (page - 1) * limit;
     const sortBy = req.query.sortBy || 'createdAt';
     const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
 
-    // Use lightweight memory caching for default requests
-    if (page === 1 && limit === 100 && sortBy === 'createdAt' && sortOrder === -1) {
-      if (productCache && (Date.now() - cacheTimestamp < 60000)) {
-        res.set("X-Cache", "HIT");
-        res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=30");
-        return res.status(200).json(productCache);
-      }
-    }
-
     const sortOption = {};
     sortOption[sortBy] = sortOrder;
 
+    // Field projection optimized for catalog rendering (reduces payload by ~80%)
+    const catalogFields = "_id name category price originalPrice stock imageUrl images subtitle tagline isBestSeller discountPercentage rating reviewCount createdAt";
+
     const products = await Product.find({})
-      .select("name description category price originalPrice stock imageUrl images subtitle tagline highlights howToUse ingredients benefits faq otherInfo comboProducts notes usageTags isBestSeller discountPercentage rating reviewCount availableAsGift giftWrapAvailable luxuryGiftBoxAvailable giftMessageAllowed giftBadgeText estimatedPackingTime giftPrice createdAt")
+      .select(catalogFields)
       .sort(sortOption)
       .skip(skip)
       .limit(limit)
-      .maxTimeMS(8000) // 8 seconds MongoDB timeout guard
+      .maxTimeMS(5000)
       .lean();
-
-    if (page === 1 && limit === 100 && sortBy === 'createdAt' && sortOrder === -1) {
-      productCache = products;
-      cacheTimestamp = Date.now();
-    }
 
     res.set("X-Cache", "MISS");
     res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=30");
@@ -58,25 +47,25 @@ const getProducts = async (req, res) => {
 const getFeaturedProducts = async (req, res) => {
   const startTime = Date.now();
   try {
+    const fieldsToSelect = "_id name price originalPrice rating reviewCount imageUrl images stock category subtitle isBestSeller discountPercentage";
+
     let products = await Product.find({ isBestSeller: true })
-      .select("_id name slug price originalPrice rating imageUrl stock category subtitle")
+      .select(fieldsToSelect)
       .limit(8)
-      .maxTimeMS(3000)
+      .maxTimeMS(5000)
       .lean();
 
     if (!products || products.length === 0) {
       products = await Product.find({})
-        .select("_id name slug price originalPrice rating imageUrl stock category subtitle")
+        .select(fieldsToSelect)
         .sort({ createdAt: -1 })
         .limit(8)
-        .maxTimeMS(3000)
+        .maxTimeMS(5000)
         .lean();
     }
 
-    console.log('Featured products count:', products.length);
-
     const duration = Date.now() - startTime;
-    console.log(`[PERFORMANCE] GET /api/products/featured | Duration: ${duration}ms | Payload size: ~${JSON.stringify(products).length} bytes`);
+    console.log(`[PERFORMANCE] GET /api/products/featured | Duration: ${duration}ms | Count: ${products.length}`);
     res.status(200).json(products);
   } catch (error) {
     console.error("🔴 Error fetching featured products:", error);

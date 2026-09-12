@@ -7,8 +7,8 @@ const adminLimiter = require("../middleware/adminLimiter");
 
 const router = express.Router();
 
-router.post('/order', paymentLimiter, createOrder);
-router.post('/verify', paymentLimiter, verifyPayment);
+router.post('/order', protect, paymentLimiter, createOrder);
+router.post('/verify', protect, paymentLimiter, verifyPayment);
 router.post('/refund/:id', protect, admin, adminLimiter, refundPayment);
 
 module.exports = router;

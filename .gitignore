@@ -150,3 +150,5 @@ temp/
 
 .vercel
 .render
+scratch/
+**/scratch/

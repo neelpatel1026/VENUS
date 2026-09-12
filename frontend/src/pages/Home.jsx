@@ -46,38 +46,44 @@ const Home = () => {
       setLoading(true);
       setError("");
 
-      // Query the optimized, lightweight featured products API endpoint
-      const res = await api.get("/api/products/featured", { signal });
-      const duration = Date.now() - fetchStart;
-      console.log(`[PERFORMANCE] Frontend Home Products load: ${duration}ms | Retry: ${isRetryAttempt}`);
+      let productList = [];
 
-      if (res.data && Array.isArray(res.data)) {
-        console.log('Featured API response:', res.data);
-        setProducts(res.data);
+      try {
+        // 1. Try featured products endpoint first
+        const res = await api.get("/api/products/featured", { signal });
+        if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+          productList = res.data;
+        }
+      } catch (e) {
+        console.warn("Featured API failed, attempting general products endpoint:", e.message);
+      }
+
+      // 2. Fallback to main products endpoint if featured returned empty or failed
+      if (productList.length === 0) {
+        const fallbackRes = await api.get("/api/products?limit=8", { signal });
+        if (fallbackRes.data && Array.isArray(fallbackRes.data)) {
+          productList = fallbackRes.data;
+        }
+      }
+
+      const duration = Date.now() - fetchStart;
+      console.log(`[PERFORMANCE] Frontend Home Products loaded: ${productList.length} items in ${duration}ms`);
+
+      if (productList.length > 0) {
+        setProducts(productList);
         try {
-          localStorage.setItem("venus_products_cache", JSON.stringify(res.data));
+          localStorage.setItem("venus_products_cache", JSON.stringify(productList));
           localStorage.setItem("venus_products_cache_time", String(Date.now()));
         } catch (e) {
           console.warn("Saving products to local cache failed:", e);
         }
+      } else if (products.length === 0) {
+        setError("Unable to load products. Please check your connection.");
       }
     } catch (err) {
-      if (axios.isCancel(err)) {
-        console.log("Fetch products request aborted");
-        return;
-      }
-      console.error("Products load failed:", err);
-
-      // Auto-retry once on failure if this was the first attempt
-      if (!isRetryAttempt) {
-        console.log("Attempting automatic retry for products...");
-        return fetchProducts(signal, true);
-      }
-      
-      // If we already have cached backup products, keep them and do not render the error screen
-      if (products && products.length > 0) {
-        console.log("Product fetch failed; serving cached backup list");
-      } else {
+      if (axios.isCancel(err)) return;
+      console.error("Products load error:", err);
+      if (products.length === 0) {
         setError("Unable to load products. Please check your internet connection.");
       }
     } finally {

@@ -5,22 +5,93 @@ const Product = require("../models/Product");
 
 const createOrder = async (req, res) => {
   try {
+    const { items, couponCode, coinsUsed } = req.body;
+
+    // 1. Validate items array
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      // Fallback if client passed raw amount in fallback mode
+      const rawAmount = Number(req.body.amount);
+      if (!rawAmount || rawAmount <= 0) {
+        return res.status(400).json({ success: false, message: "Invalid order items or amount" });
+      }
+      const instance = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET,
+      });
+      const order = await instance.orders.create({ amount: Math.round(rawAmount * 100), currency: "INR" });
+      return res.json(order);
+    }
+
+    // 2. Authoritative database price calculation
+    let calculatedSubtotal = 0;
+    for (const item of items) {
+      const prodId = item.productId || item._id;
+      const product = await Product.findById(prodId);
+      if (!product) {
+        return res.status(400).json({ success: false, message: `Product not found` });
+      }
+      calculatedSubtotal += product.price * (item.qty || 1);
+    }
+
+    if (calculatedSubtotal <= 0) {
+      return res.status(400).json({ success: false, message: "Cart total cannot be ₹0" });
+    }
+
+    // 3. Coupon discount validation
+    let calculatedDiscount = 0;
+    if (couponCode) {
+      const Coupon = require("../models/Coupon");
+      const { checkCouponValidity, calculateCouponDiscount } = require("./couponController");
+      const appliedCoupon = await Coupon.findOne({ code: String(couponCode).toUpperCase() });
+      if (appliedCoupon) {
+        const validation = await checkCouponValidity(appliedCoupon, items, req.user ? req.user._id : null);
+        if (validation.valid) {
+          calculatedDiscount = calculateCouponDiscount(appliedCoupon, items);
+        }
+      }
+    }
+
+    // 4. Rewards coin discount validation
+    const requestCoinsUsed = Number(coinsUsed) || 0;
+    let validCoinsDiscount = 0;
+    const postCouponSubtotal = Math.max(0, calculatedSubtotal - calculatedDiscount);
+
+    if (req.user && requestCoinsUsed > 0) {
+      const User = require("../models/User");
+      const userProfile = await User.findById(req.user._id);
+      if (userProfile && !userProfile.isWalletFrozen) {
+        validCoinsDiscount = Math.min(postCouponSubtotal, Math.min(userProfile.walletBalance, requestCoinsUsed));
+      }
+    }
+
+    const postCoinsSubtotal = Math.max(0, postCouponSubtotal - validCoinsDiscount);
+
+    // 5. Instant 10% Online Payment Discount (UPI / Card / Net Banking)
+    const paymentMethodDiscount = parseFloat((postCoinsSubtotal * 0.10).toFixed(2));
+    const calculatedTotal = parseFloat(Math.max(0, postCoinsSubtotal - paymentMethodDiscount).toFixed(2));
+
     const instance = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
     });
 
-    // Razorpay accepts amount in paise
     const options = {
-      amount: req.body.amount * 100,
+      amount: Math.round(calculatedTotal * 100), // amount in paise
       currency: "INR",
+      receipt: `rcpt_${Date.now().toString().slice(-8)}`
     };
 
     const order = await instance.orders.create(options);
-    if (!order) return res.status(500).send("Some error occured");
-    res.json(order);
+    if (!order) return res.status(500).json({ success: false, message: "Error creating Razorpay order" });
+
+    res.json({
+      ...order,
+      authoritativeTotal: calculatedTotal,
+      onlineDiscount: paymentMethodDiscount
+    });
   } catch (error) {
-    res.status(500).send(error);
+    console.error("Razorpay Order Creation Error:", error);
+    res.status(500).json({ success: false, message: error.message || "Payment initiation failed" });
   }
 };
 

@@ -547,9 +547,14 @@ const Checkout = () => {
   // Recalculate dynamic coin deductions to never exceed order total
   const rawPostCouponTotal = Math.max(0, totalPrice - discountAmount);
   const actualCoinsUsed = useCoins ? Math.min(rawPostCouponTotal, walletCoinsBalance) : 0;
-  
+  const postCoinsTotal = Math.max(0, rawPostCouponTotal - actualCoinsUsed);
+
+  // Instant 10% discount on remaining balance for Online Payments (UPI, Card, Net Banking)
+  const isOnlinePayment = paymentMethod !== "COD";
+  const onlineDiscountAmount = isOnlinePayment ? parseFloat((postCoinsTotal * 0.10).toFixed(2)) : 0;
+
   const codFee = paymentMethod === "COD" ? 50 : 0;
-  const finalTotal = parseFloat(Math.max(0, rawPostCouponTotal - actualCoinsUsed + codFee).toFixed(2));
+  const finalTotal = parseFloat(Math.max(0, postCoinsTotal - onlineDiscountAmount + codFee).toFixed(2));
 
   const applyCoupon = async () => {
     if (!couponCode.trim()) {

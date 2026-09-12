@@ -135,19 +135,24 @@ const addOrderItems = async (req, res) => {
     }
 
     // ---------------------------------------------------------
-    // AUTHORITATIVE FEES & TOTAL CALCULATION
+    // AUTHORITATIVE FEES & TOTAL CALCULATION WITH INSTANT 10% ONLINE DISCOUNT
     // ---------------------------------------------------------
     const paymentMethod = req.body.paymentMethod || "COD";
     const isCOD = paymentMethod === "COD";
+    const isOnlinePayment = !isCOD; // UPI, Card, Net Banking, Razorpay
     const authoritativeCodFee = isCOD ? 50 : 0;
     const authoritativeShippingCharge = 0; // Standard Free Shipping
 
     // Calculate maximum allowable coin discount (cannot exceed subtotal after coupon discount)
     const postCouponSubtotal = Math.max(0, calculatedSubtotal - calculatedDiscount);
     const validCoinsDiscount = Math.min(postCouponSubtotal, requestCoinsUsed);
+    const postCoinsSubtotal = Math.max(0, postCouponSubtotal - validCoinsDiscount);
+
+    // Instant 10% discount on remaining total for Online Payments (UPI, Card, Net Banking)
+    const paymentMethodDiscount = isOnlinePayment ? parseFloat((postCoinsSubtotal * 0.10).toFixed(2)) : 0;
 
     const calculatedTotal = parseFloat(
-      Math.max(0, postCouponSubtotal - validCoinsDiscount + authoritativeCodFee + authoritativeShippingCharge).toFixed(2)
+      Math.max(0, postCoinsSubtotal - paymentMethodDiscount + authoritativeCodFee + authoritativeShippingCharge).toFixed(2)
     );
 
     // Verify against request tampering
@@ -158,8 +163,10 @@ const addOrderItems = async (req, res) => {
           $inc: { stock: rolledBackItem.qty },
         });
       }
-      return res.status(400).json({ message: "Price verification mismatch" });
+      return res.status(400).json({ message: `Price verification mismatch. Server total: ₹${calculatedTotal}, received: ₹${totalAmount}` });
     }
+
+    const totalDiscountAmount = calculatedDiscount + paymentMethodDiscount;
 
     const order = new Order({
       userId: req.user._id,
@@ -174,7 +181,7 @@ const addOrderItems = async (req, res) => {
         price: item.price,
       })),
       subtotal: calculatedSubtotal,
-      discountAmount: calculatedDiscount,
+      discountAmount: totalDiscountAmount,
       couponCode: couponCode ? couponCode.toUpperCase() : "",
       coinsUsed: validCoinsDiscount,
       shippingCharge: authoritativeCodFee + authoritativeShippingCharge,

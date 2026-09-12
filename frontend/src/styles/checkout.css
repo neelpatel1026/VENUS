@@ -1536,3 +1536,48 @@
   20%, 60% { transform: translateX(-4px); }
   40%, 80% { transform: translateX(4px); }
 }
+
+/* ==========================================================================
+   CHECKOUT MOBILE LUXURY & TOUCH TARGET ENHANCEMENTS
+   ========================================================================== */
+
+@media (max-width: 992px) {
+  .checkout-two-columns-layout {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .checkout-page-container {
+    padding: 20px 14px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .address-cards-stack {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .checkout-section-block {
+    padding: 20px 16px !important;
+    border-radius: 16px !important;
+  }
+
+  /* Touch Targets (Minimum 48px height for all action triggers) */
+  .checkout-place-order-btn,
+  .checkout-action-btn,
+  .payment-method-card-luxury {
+    min-height: 50px !important;
+    height: 50px !important;
+    border-radius: 25px !important;
+    font-size: 13.5px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .checkout-back-nav-btn {
+    min-height: 44px !important;
+    padding: 8px 12px !important;
+  }
+}
