@@ -7,12 +7,12 @@ import '../styles/product.css';
 import api from '../lib/api';
 import axios from 'axios';
 import { updateSEOMetadata } from '../utils/seoHelper';
+import { useProducts } from '../hooks/useProducts';
 
 const Shop = () => {
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState('');
+  const { data: products = [], isLoading: loading, isError, refetch } = useProducts();
+  const errorMsg = isError ? 'Unable to load products. Please try again.' : '';
   const [searchParams] = useSearchParams();
 
   const handleBackClick = () => {
@@ -38,43 +38,17 @@ const Shop = () => {
     }
   }, [searchParams]);
 
-  const fetchProducts = async (signal) => {
-    try {
-      setLoading(true);
-      setErrorMsg('');
-      const res = await api.get('/api/products', { signal });
-      setProducts(res.data);
-    } catch (error) {
-      if (axios.isCancel(error)) {
-        console.log("Fetch products request cancelled");
-        return;
-      }
-      console.error(error);
-      setErrorMsg('Unable to load products. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    const controller = new AbortController();
-    fetchProducts(controller.signal);
-
     // Inject SEO Metadata
     updateSEOMetadata({
       title: "Shop Luxury Skincare Collection",
       description: "Browse the VENUS CARE skincare rituals catalog. Formulated with dermatological science and organic botanicals for complete skin nourishment.",
       canonicalUrl: "https://venuscare.in/shop"
     });
-
-    return () => {
-      controller.abort();
-    };
   }, []);
 
   const handleRetry = () => {
-    const controller = new AbortController();
-    fetchProducts(controller.signal);
+    refetch();
   };
 
   // Reset Filters

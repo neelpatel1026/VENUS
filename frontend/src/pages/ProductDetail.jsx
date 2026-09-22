@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../context/AuthContext";
 import { getOptimizedImageUrl } from "../utils/imageHelper.js";
 import { updateSEOMetadata, injectJsonLd } from "../utils/seoHelper";
+import { useProduct, useFeaturedProducts } from "../hooks/useProducts";
 import "../styles/product.css";
 
 import ProductCard from "../components/ProductCard";
@@ -18,9 +19,9 @@ const ProductDetail = () => {
   const [searchParams] = useSearchParams();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const { data: product = null, isLoading: loading, isError } = useProduct(id);
+  const error = isError ? "Failed to load product" : "";
+  const { data: featuredData = [] } = useFeaturedProducts();
   const [openFaq, setOpenFaq] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
 
@@ -79,97 +80,77 @@ const ProductDetail = () => {
   const modalRef = useRef(null);
   const activeTriggerRef = useRef(null);
 
-  // Fetch Product
+  // Dynamic SEO, JSON-LD, and Recently Viewed updates when product changes
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(`/api/products/${id}`);
-        if (!res.ok) {
-          throw new Error("Failed to fetch product");
-        }
-        const data = await res.json();
-        setProduct(data);
-        
-        // Dynamically Inject Product SEO Metadata, OG tags, and Canonical Link
-        updateSEOMetadata({
-          title: data.name,
-          description: data.description ? data.description.substring(0, 155) : "Buy premium luxury cosmetics on VENUS CARE.",
-          canonicalUrl: `https://venuscare.in/product/${data._id}`,
-          ogType: "product",
-          ogImage: data.imageUrl || "https://venuscare.in/cosmetic_1.avif"
-        });
+    if (!product) return;
 
-        // Inject Product JSON-LD
-        injectJsonLd("product-jsonld", {
-          "@context": "https://schema.org",
-          "@type": "Product",
-          "name": data.name,
-          "image": data.imageUrl,
-          "description": data.description,
-          "sku": data._id,
-          "offers": {
-            "@type": "Offer",
-            "url": `https://venuscare.in/product/${data._id}`,
-            "priceCurrency": "INR",
-            "price": data.price,
-            "availability": data.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
-          }
-        });
+    // Dynamically Inject Product SEO Metadata, OG tags, and Canonical Link
+    updateSEOMetadata({
+      title: product.name,
+      description: product.description ? product.description.substring(0, 155) : "Buy premium luxury cosmetics on VENUS CARE.",
+      canonicalUrl: `https://venuscare.in/product/${product._id}`,
+      ogType: "product",
+      ogImage: product.imageUrl || "https://venuscare.in/cosmetic_1.avif"
+    });
 
-        // Inject Breadcrumb JSON-LD
-        injectJsonLd("breadcrumb-jsonld", {
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            {
-              "@type": "ListItem",
-              "position": 1,
-              "name": "Home",
-              "item": "https://venuscare.in"
-            },
-            {
-              "@type": "ListItem",
-              "position": 2,
-              "name": data.category || "Shop",
-              "item": `https://venuscare.in/shop?category=${encodeURIComponent(data.category || "")}`
-            },
-            {
-              "@type": "ListItem",
-              "position": 3,
-              "name": data.name,
-              "item": `https://venuscare.in/product/${data._id}`
-            }
-          ]
-        });
-
-        try {
-          const viewed = JSON.parse(localStorage.getItem("venus_recently_viewed") || "[]");
-          const updated = [data, ...viewed.filter((p) => p._id !== data._id)].slice(0, 8);
-          localStorage.setItem("venus_recently_viewed", JSON.stringify(updated));
-        } catch (e) {
-          console.error("Failed to save recently viewed product", e);
-        }
-
-        // Fetch recommended/featured products
-        try {
-          const rRes = await fetch("/api/products/featured");
-          if (rRes.ok) {
-            const rData = await rRes.json();
-            setRecommendations(rData.filter((item) => item._id !== data._id).slice(0, 4));
-          }
-        } catch (re) {
-          console.error("Failed to fetch recommended products", re);
-        }
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load product");
-      } finally {
-        setLoading(false);
+    // Inject Product JSON-LD
+    injectJsonLd("product-jsonld", {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": product.name,
+      "image": product.imageUrl,
+      "description": product.description,
+      "sku": product._id,
+      "offers": {
+        "@type": "Offer",
+        "url": `https://venuscare.in/product/${product._id}`,
+        "priceCurrency": "INR",
+        "price": product.price,
+        "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
       }
-    };
-    fetchProduct();
-  }, [id]);
+    });
+
+    // Inject Breadcrumb JSON-LD
+    injectJsonLd("breadcrumb-jsonld", {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://venuscare.in"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": product.category || "Shop",
+          "item": `https://venuscare.in/shop?category=${encodeURIComponent(product.category || "")}`
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": product.name,
+          "item": `https://venuscare.in/product/${product._id}`
+        }
+      ]
+    });
+
+    try {
+      const viewed = JSON.parse(localStorage.getItem("venus_recently_viewed") || "[]");
+      const updated = [product, ...viewed.filter((p) => p._id !== product._id)].slice(0, 8);
+      localStorage.setItem("venus_recently_viewed", JSON.stringify(updated));
+    } catch (e) {
+      console.error("Failed to save recently viewed product", e);
+    }
+  }, [product]);
+
+  // Update recommendations from cached featured products
+  useEffect(() => {
+    if (featuredData && Array.isArray(featuredData) && product) {
+      setRecommendations(featuredData.filter((item) => item._id !== product._id).slice(0, 4));
+    }
+  }, [featuredData, product]);
 
   // Focus Trap and Escape key listener for Write Review Modal (WCAG 2.1 AA Compliance)
   useEffect(() => {
@@ -226,6 +207,7 @@ const ProductDetail = () => {
 
   // Fetch Reviews
   const fetchReviews = async (resetPage = false) => {
+    if (!id || id === "detail") return;
     try {
       setReviewsLoading(true);
       const nextPage = resetPage ? 1 : page;
@@ -256,7 +238,7 @@ const ProductDetail = () => {
 
   // Check Eligibility
   const checkReviewEligibility = async () => {
-    if (!user || !user.token) {
+    if (!user || !user.token || !id || id === "detail") {
       setEligible(false);
       return;
     }

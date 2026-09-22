@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { FaStar, FaChevronLeft, FaChevronRight, FaCheckCircle } from "react-icons/fa";
-import user1 from "../assets/user1.jpg";
-import user2 from "../assets/user2.jpg";
-import user3 from "../assets/user3.jpg";
-import user4 from "../assets/user4.jpg";
-import user5 from "../assets/user5.jpg";
+import user1 from "../assets/user1.webp";
+import user2 from "../assets/user2.webp";
+import user3 from "../assets/user3.webp";
+import user4 from "../assets/user4.webp";
+import user5 from "../assets/user5.webp";
 import "../styles/testimonial.css";
 
 const testimonials = [

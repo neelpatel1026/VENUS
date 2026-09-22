@@ -213,6 +213,8 @@ const PageLoader = () => (
 );
 
 import api from "./lib/api";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./hooks/useProducts";
 
 function App() {
   const { toasts } = useToasterStore();
@@ -254,9 +256,10 @@ function App() {
   }, [toasts]);
 
   return (
-    <Router>
-      {/* TOAST SYSTEM CONTEXT SAFE */}
-      <ToastContainer />
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        {/* TOAST SYSTEM CONTEXT SAFE */}
+        <ToastContainer />
 
       {/* AUTO SCROLL TOP */}
 
@@ -417,6 +420,7 @@ function App() {
       <WhatsAppSupportButton />
       <Footer />
     </Router>
+  </QueryClientProvider>
   );
 }
 

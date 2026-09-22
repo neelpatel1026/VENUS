@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import "../styles/navbar.css";
 import toast from "react-hot-toast";
 import api from "../lib/api";
+import { prefetchShop, prefetchAbout, prefetchContact, prefetchGifting, prefetchOffers } from "../utils/prefetch";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -45,6 +46,10 @@ const Navbar = () => {
 
   const [recentlyViewed, setRecentlyViewed] = useState([]);
   const [expandedCategory, setExpandedCategory] = useState(null);
+
+  const toggleExpand = (cat) => {
+    setExpandedCategory((prev) => (prev === cat ? null : cat));
+  };
 
   useEffect(() => {
     if (showSearchOverlay) {
@@ -118,20 +123,24 @@ const Navbar = () => {
     }
   }, [cartItems.length]);
 
-  // Fetch products for real-time search suggestions
-  useEffect(() => {
-    const fetchSearchData = async () => {
-      try {
-        const res = await api.get("/api/products");
-        if (Array.isArray(res.data)) {
-          setAllProducts(res.data);
-        }
-      } catch (err) {
-        console.error("Failed to load products for search suggestions:", err);
+  // Fetch products for real-time search suggestions ON DEMAND (not eagerly on startup)
+  const fetchSearchData = async () => {
+    if (allProducts.length > 0) return;
+    try {
+      const res = await api.get("/api/products");
+      if (Array.isArray(res.data)) {
+        setAllProducts(res.data);
       }
-    };
-    fetchSearchData();
-  }, []);
+    } catch (err) {
+      console.error("Failed to load products for search suggestions:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (showSearchOverlay && allProducts.length === 0) {
+      fetchSearchData();
+    }
+  }, [showSearchOverlay, allProducts.length]);
 
   // Update instant search suggestions dynamically (debounced by 300ms)
   useEffect(() => {
@@ -311,6 +320,8 @@ const Navbar = () => {
                   className="nav-search-input"
                   placeholder="Search..."
                   value={searchQuery}
+                  onFocus={fetchSearchData}
+                  onMouseEnter={fetchSearchData}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   aria-label="Search catalog products"
                 />
@@ -321,6 +332,8 @@ const Navbar = () => {
             <button 
               className="nav-icon-btn mobile-only-search-btn" 
               onClick={() => navigate("/search")}
+              onMouseEnter={fetchSearchData}
+              onTouchStart={fetchSearchData}
               aria-label="Open search"
             >
               <FiSearch className="nav-icon" />

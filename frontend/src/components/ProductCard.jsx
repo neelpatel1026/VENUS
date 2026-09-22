@@ -5,12 +5,19 @@ import toast from "react-hot-toast";
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { getOptimizedImageUrl } from "../utils/imageHelper.js";
+import { prefetchProductDetail } from "../utils/prefetch.js";
+import { prefetchProductData } from "../hooks/useProducts.js";
 import { FaHeart, FaRegHeart, FaStar, FaEye } from "react-icons/fa";
 import "../styles/product.css";
 
 const ProductCard = ({ product }) => {
   const { user } = useContext(AuthContext);
   const dispatch = useDispatch();
+
+  const handlePrefetch = () => {
+    prefetchProductDetail();
+    if (product?._id) prefetchProductData(product._id);
+  };
 
   // Wishlist persistence hook
   const [isWishlisted, setIsWishlisted] = useState(() => {
@@ -59,6 +66,8 @@ const ProductCard = ({ product }) => {
   return (
     <Link 
       to={`/product/${product._id}`} 
+      onMouseEnter={handlePrefetch}
+      onTouchStart={handlePrefetch}
       className="product-card-luxury font-outfit"
       style={{ textDecoration: "none", color: "inherit", display: "flex", flexDirection: "column" }}
     >

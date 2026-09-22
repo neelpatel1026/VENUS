@@ -21,80 +21,15 @@ import "swiper/css/navigation";
 
 import api from "../lib/api";
 import { updateSEOMetadata, injectJsonLd } from "../utils/seoHelper";
+import { prefetchShop } from "../utils/prefetch";
+import { useFeaturedProducts } from "../hooks/useProducts";
 
 const Home = () => {
-  const [products, setProducts] = useState(() => {
-    // Populate with last successful product list backup if less than 5 minutes old
-    try {
-      const cached = localStorage.getItem("venus_products_cache");
-      const stamp = localStorage.getItem("venus_products_cache_time");
-      if (cached && stamp && (Date.now() - Number(stamp) < 300000)) {
-        return JSON.parse(cached);
-      }
-    } catch (e) {
-      console.warn("Products local storage recovery failed:", e);
-    }
-    return [];
-  });
-  const [loading, setLoading] = useState(products.length === 0);
-  const [error, setError] = useState("");
+  const { data: products = [], isLoading: loading, isError, refetch } = useFeaturedProducts();
   const [visibleProductsCount, setVisibleProductsCount] = useState(8);
-
-  const fetchProducts = async (signal, isRetryAttempt = false) => {
-    const fetchStart = Date.now();
-    try {
-      setLoading(true);
-      setError("");
-
-      let productList = [];
-
-      try {
-        // 1. Try featured products endpoint first
-        const res = await api.get("/api/products/featured", { signal });
-        if (res.data && Array.isArray(res.data) && res.data.length > 0) {
-          productList = res.data;
-        }
-      } catch (e) {
-        console.warn("Featured API failed, attempting general products endpoint:", e.message);
-      }
-
-      // 2. Fallback to main products endpoint if featured returned empty or failed
-      if (productList.length === 0) {
-        const fallbackRes = await api.get("/api/products?limit=8", { signal });
-        if (fallbackRes.data && Array.isArray(fallbackRes.data)) {
-          productList = fallbackRes.data;
-        }
-      }
-
-      const duration = Date.now() - fetchStart;
-      console.log(`[PERFORMANCE] Frontend Home Products loaded: ${productList.length} items in ${duration}ms`);
-
-      if (productList.length > 0) {
-        setProducts(productList);
-        try {
-          localStorage.setItem("venus_products_cache", JSON.stringify(productList));
-          localStorage.setItem("venus_products_cache_time", String(Date.now()));
-        } catch (e) {
-          console.warn("Saving products to local cache failed:", e);
-        }
-      } else if (products.length === 0) {
-        setError("Unable to load products. Please check your connection.");
-      }
-    } catch (err) {
-      if (axios.isCancel(err)) return;
-      console.error("Products load error:", err);
-      if (products.length === 0) {
-        setError("Unable to load products. Please check your internet connection.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const error = isError ? "Unable to load products. Please check your connection." : "";
 
   useEffect(() => {
-    const controller = new AbortController();
-    fetchProducts(controller.signal);
-
     // Inject SEO Metadata
     updateSEOMetadata({
       title: "VENUS CARE | Premium Luxury Cosmetic & Skincare",
@@ -113,15 +48,10 @@ const Home = () => {
         "https://instagram.com/venuscareofficial"
       ]
     });
-
-    return () => {
-      controller.abort();
-    };
   }, []);
 
   const handleRetry = () => {
-    const controller = new AbortController();
-    fetchProducts(controller.signal);
+    refetch();
   };
 
   return (
@@ -137,19 +67,19 @@ const Home = () => {
         </div>
         <div className="category-scroll-relative-wrapper">
           <div className="category-scroll-wrapper">
-            <Link to="/shop?category=Face%20Care" className="category-chip-item">
+            <Link to="/shop?category=Face%20Care" onMouseEnter={prefetchShop} onTouchStart={prefetchShop} className="category-chip-item">
               <span className="chip-icon">✨</span> Face Care
             </Link>
-            <Link to="/shop?category=Fragrance" className="category-chip-item">
+            <Link to="/shop?category=Fragrance" onMouseEnter={prefetchShop} onTouchStart={prefetchShop} className="category-chip-item">
               <span className="chip-icon">🌸</span> Fragrance
             </Link>
-            <Link to="/shop?category=Body%20Care" className="category-chip-item">
+            <Link to="/shop?category=Body%20Care" onMouseEnter={prefetchShop} onTouchStart={prefetchShop} className="category-chip-item">
               <span className="chip-icon">🧴</span> Body Care
             </Link>
-            <Link to="/shop?category=Serum" className="category-chip-item">
+            <Link to="/shop?category=Serum" onMouseEnter={prefetchShop} onTouchStart={prefetchShop} className="category-chip-item">
               <span className="chip-icon">💧</span> Serums
             </Link>
-            <Link to="/shop?category=Gifting" className="category-chip-item">
+            <Link to="/shop?category=Gifting" onMouseEnter={prefetchShop} onTouchStart={prefetchShop} className="category-chip-item">
               <span className="chip-icon">🎁</span> Gift Sets
             </Link>
           </div>
