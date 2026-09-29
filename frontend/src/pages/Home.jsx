@@ -98,13 +98,13 @@ const Home = () => {
           </p>
         </div>
 
-        {loading ? (
+        {loading && products.length === 0 ? (
           <div className="featured-products-grid">
             {[...Array(4)].map((_, index) => (
               <ProductCardSkeleton key={index} />
             ))}
           </div>
-        ) : error ? (
+        ) : error && products.length === 0 ? (
           <div className="error-fallback-luxury" style={{ textAlign: "center", padding: "40px 20px", background: "#FFF8F8", border: "1px dashed #EF4444", borderRadius: "16px", maxWidth: "450px", margin: "0 auto" }}>
             <span style={{ fontSize: "28px" }}>⚠️</span>
             <h4 style={{ fontFamily: "Cinzel, serif", fontSize: "16px", margin: "12px 0 6px 0", color: "#1A1A1A" }}>Connection Delayed</h4>

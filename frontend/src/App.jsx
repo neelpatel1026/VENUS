@@ -224,6 +224,8 @@ function App() {
 
     const loadCsrf = async () => {
       try {
+        // Fire non-blocking health wakeup ping alongside CSRF token fetch
+        api.get("/api/health").catch(() => {});
         await api.get("/api/csrf/token");
       } catch (error) {
         console.error("Failed to retrieve CSRF token", error);

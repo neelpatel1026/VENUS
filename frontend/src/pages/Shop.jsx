@@ -198,13 +198,13 @@ const Shop = () => {
         </div>
 
         {/* 4. PRODUCT GRID OR SKELETONS */}
-        {loading ? (
+        {loading && products.length === 0 ? (
           <div className="product-grid">
             {[...Array(8)].map((_, idx) => (
               <ProductCardSkeleton key={idx} />
             ))}
           </div>
-        ) : errorMsg ? (
+        ) : errorMsg && products.length === 0 ? (
           <div className="error-fallback-luxury" style={{ textAlign: "center", padding: "40px 20px", background: "#FFF8F8", border: "1px dashed #EF4444", borderRadius: "16px", maxWidth: "450px", margin: "40px auto" }}>
             <span style={{ fontSize: "28px" }}>⚠️</span>
             <h4 style={{ fontFamily: "Cinzel, serif", fontSize: "16px", margin: "12px 0 6px 0", color: "#1A1A1A" }}>Connection Delayed</h4>
